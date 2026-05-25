@@ -49,42 +49,56 @@ foreach ($productos as $prod) {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col pb-28">
-
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div>
-                <h1 class="font-extrabold text-xl tracking-tight text-slate-900">
-                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
-                </h1>
-            </div>
-            <div class="flex items-center space-x-3">
-                <a href="admin.php" class="text-xs font-bold text-slate-650 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
-                    Iniciar Sesión
-                </a>
-            </div>
+<body class="bg-slate-100 text-[#0F172A] min-h-screen">
+    <div class="max-w-md mx-auto min-h-screen bg-[#F8FAFC] flex flex-col shadow-2xl border-x border-slate-200/50 relative pb-28">
+     <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm">
+        <div class="w-full px-6 py-3.5 flex items-center justify-between">
+            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+            <a href="/admin" class="text-[11px] font-bold text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg px-3 py-1.5 transition-all bg-white shadow-sm">
+                Iniciar Sesión
+            </a>
         </div>
-        
-        <!-- Categorías Deslizables -->
-        <?php if (!empty($categorias)): ?>
-            <div class="border-t border-slate-50 bg-white">
-                <nav class="max-w-2xl mx-auto px-4 py-2.5 flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
-                    <?php foreach ($categorias as $cat): 
-                        if (empty($productosPorCategoria[$cat['id']])) continue;
-                    ?>
-                        <a href="#cat-<?= h($cat['id']) ?>" 
-                           class="px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-650 hover:bg-slate-100 rounded-full font-bold text-xs whitespace-nowrap transition-all">
-                            <?= h($cat['nombre_categoria']) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </nav>
-            </div>
-        <?php endif; ?>
     </header>
 
+    <!-- Hero Banner -->
+    <div class="relative bg-gradient-to-r from-[#10B981] to-[#06B6D4] h-28 w-full flex-shrink-0">
+        <!-- Avatar circular -->
+        <div class="absolute -bottom-6 left-6 w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center border border-slate-100">
+            <span class="text-2xl font-black bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">
+                <?= mb_substr(h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'P'), 0, 1) ?>
+            </span>
+        </div>
+    </div>
+    
+    <!-- Info del Local -->
+    <div class="pt-8 px-6 pb-2 space-y-1">
+        <h2 class="text-lg font-extrabold text-slate-900">
+            <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+        </h2>
+        <p class="text-xs text-slate-450 leading-relaxed">
+            Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp.
+        </p>
+    </div>
+
+    <!-- Categorías Deslizables (Sticky) -->
+    <?php if (!empty($categorias)): ?>
+        <div class="px-6 py-2.5 border-y border-slate-100/80 bg-white sticky top-[52px] z-20 shadow-sm">
+            <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
+                <?php foreach ($categorias as $cat): 
+                    if (empty($productosPorCategoria[$cat['id']])) continue;
+                ?>
+                    <a href="#cat-<?= h($cat['id']) ?>" 
+                       class="px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-650 hover:bg-slate-100 rounded-full font-bold text-xs whitespace-nowrap transition-all">
+                        <?= h($cat['nombre_categoria']) ?>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+        </div>
+    <?php endif; ?>
+
     <!-- Contenido del Menú -->
-    <main class="max-w-2xl w-full mx-auto px-4 py-6 space-y-8 flex-1">
+    <main class="w-full px-4 py-6 space-y-8 flex-1">
         <?php if (empty($productos)): ?>
             <div class="text-center py-20 max-w-sm mx-auto space-y-3">
                 <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
@@ -95,7 +109,7 @@ foreach ($productos as $prod) {
                     Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
                 </p>
                 <div class="pt-2">
-                    <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
+                    <a href="/admin" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
                         Ir al Panel ↗
                     </a>
                 </div>
@@ -143,14 +157,18 @@ foreach ($productos as $prod) {
         <?php endif; ?>
     </main>
 
-    <!-- Footer -->
-    <footer class="text-center text-[10px] text-slate-450 py-8">
-        Powered by <span class="font-extrabold bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+    <!-- Footer Bar -->
+    <footer class="bg-white border-t border-slate-100 py-4 px-6 mt-auto flex items-center justify-between text-xs font-semibold text-slate-550">
+        <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+        <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-650 transition-colors flex items-center gap-1">
+            <span>Powered by</span>
+            <span class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent font-extrabold">PronttoGo</span>
+        </a>
     </footer>
 
     <!-- Carrito Flotante -->
-    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-2xl mx-auto z-45 hidden">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all animate-bounce">
+    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-45 hidden">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all">
             <div class="flex items-center space-x-2">
                 <span>🛒</span>
                 <span id="cart-count">0 artículos</span>
@@ -163,7 +181,8 @@ foreach ($productos as $prod) {
     <div id="cart-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
         <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
         
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-100 flex flex-col max-w-2xl mx-auto overflow-hidden">
+        <!-- Panel Desplizable -->
+        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-100 flex flex-col max-w-md mx-auto overflow-hidden">
             <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
                 <div>
                     <h3 class="font-extrabold text-lg text-slate-800">Mi Pedido</h3>
@@ -190,7 +209,7 @@ foreach ($productos as $prod) {
                 </button>
             </div>
         </div>
-    </div>
+    </div> <!-- Fin del contenedor max-w-md -->
 
     <!-- Script del Carrito (Vanilla JS) -->
     <script>

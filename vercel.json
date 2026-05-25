@@ -10,6 +10,10 @@
       "destination": "/api/admin.php"
     },
     {
+      "source": "/admin.php",
+      "destination": "/api/admin.php"
+    },
+    {
       "source": "/",
       "destination": "/api/index.php"
     }

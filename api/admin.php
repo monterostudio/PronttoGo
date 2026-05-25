@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     
     if ($password === ADMIN_PASSWORD) {
         $_SESSION['admin_logged_in'] = true;
-        redirect('admin.php');
+        redirect('/admin');
     } else {
         $error = 'Contraseña de administrador incorrecta.';
     }
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     $_SESSION = [];
     session_destroy();
-    redirect('admin.php');
+    redirect('/admin');
 }
 
 // --- VERIFICAR AUTENTICACIÓN ---
