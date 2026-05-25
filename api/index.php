@@ -48,7 +48,7 @@ foreach ($productos as $prod) {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col pb-28">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col">
 
     <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
@@ -60,28 +60,23 @@ foreach ($productos as $prod) {
         </div>
     </header>
 
-    <!-- Wrapper de Contenido de Presentación -->
-    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6 space-y-6">
-        <!-- Hero Banner -->
-        <div class="relative bg-gradient-to-r from-[#10B981] to-[#06B6D4] h-32 md:h-48 w-full rounded-2xl md:rounded-3xl shadow-sm flex-shrink-0 overflow-hidden">
-            <div class="absolute inset-0 bg-black/5"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
-        </div>
-        
-        <!-- Info del Local con Logo Solapado (Sin colisión de texto) -->
-        <div class="relative flex flex-col md:flex-row md:items-end -mt-10 md:-mt-14 px-4 md:px-8 pb-4 gap-4 md:gap-6 z-10">
-            <!-- Avatar Circular/Cuadrado redondeado -->
-            <div class="w-20 h-20 md:w-28 md:h-28 bg-white rounded-2xl shadow-md flex items-center justify-center border border-slate-100 shrink-0">
-                <span class="text-3xl md:text-4xl font-black bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">
-                    <?= mb_substr(h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'P'), 0, 1) ?>
-                </span>
-            </div>
-            <!-- Info del Local -->
-            <div class="flex-1 min-w-0">
-                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+    <!-- Hero Section (Presentación Minimalista Unificada de Alto Nivel) -->
+    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6">
+        <div class="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-lg overflow-hidden border border-slate-800">
+            <!-- Destellos decorativos premium en el fondo -->
+            <div class="absolute -right-16 -top-16 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -left-16 -bottom-16 w-52 h-52 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10 space-y-4 max-w-2xl">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
+                        ⚡ Pedidos por WhatsApp
+                    </span>
+                </div>
+                <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight">
                     <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
-                </h2>
-                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-xl">
+                </h1>
+                <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-medium">
                     Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp de forma directa y rápida.
                 </p>
             </div>
@@ -89,7 +84,7 @@ foreach ($productos as $prod) {
     </div>
 
     <!-- Contenedor del Catálogo y Sidebar (Grid Responsivo) -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-8 flex-1">
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-8 flex-1 pb-24 md:pb-12">
         
         <!-- Sidebar de Categorías (Solo Visible en Escritorio) -->
         <?php if (!empty($categorias)): ?>
@@ -210,7 +205,7 @@ foreach ($productos as $prod) {
 
     <!-- Footer Bar -->
     <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-semibold text-slate-500">
+        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-semibold text-slate-500">
             <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
             <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-655 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
