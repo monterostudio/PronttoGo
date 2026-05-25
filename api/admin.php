@@ -96,7 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // 1. ACTUALIZAR CONFIGURACIÓN DE LA TIENDA
         if ($action === 'update_profile') {
             $nombre = trim($_POST['nombre'] ?? '');
-            $whatsapp = preg_replace('/[^0-9]/', '', $_POST['telefono_whatsapp'] ?? '');
+            $codigo_pais = preg_replace('/[^0-9]/', '', $_POST['codigo_pais'] ?? '');
+            $telefono_local = preg_replace('/[^0-9]/', '', $_POST['telefono_local'] ?? '');
+            $whatsapp = $codigo_pais . $telefono_local;
             
             if (empty($nombre) || empty($whatsapp)) {
                 $error = 'El nombre del comercio y el teléfono de WhatsApp son obligatorios.';
@@ -106,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     'telefono_whatsapp' => $whatsapp
                 ]);
                 if ($response['success']) {
-                    $success = 'Datos del local actualizados con éxito.';
+                    $success = 'Perfil comercial actualizado con éxito.';
                 } else {
                     $error = 'Error al actualizar el perfil en la base de datos.';
                 }
@@ -265,16 +267,16 @@ foreach ($categorias as $cat) {
 
     <!-- Header -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
             <div>
-                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+                <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
             </div>
             
-            <div class="flex items-center gap-3">
-                <a href="/" target="_blank" class="text-xs font-bold text-emerald-600 hover:text-white border border-emerald-200 hover:bg-[#10B981] hover:border-transparent rounded-xl px-4 py-2 transition-all bg-white shadow-sm flex items-center gap-1">
+            <div class="flex items-center gap-1.5 sm:gap-3">
+                <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-emerald-600 hover:text-white border border-emerald-200 hover:bg-[#10B981] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1 whitespace-nowrap">
                     Ver Tienda ↗
                 </a>
-                <a href="admin.php?action=logout" class="text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-4 py-2 hover:bg-red-50 transition-all shadow-sm">
+                <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap">
                     Cerrar Sesión
                 </a>
             </div>
@@ -302,7 +304,7 @@ foreach ($categorias as $cat) {
         <!-- Tabs de Navegación -->
         <div class="bg-white p-2 rounded-2xl border border-slate-100 flex shadow-sm">
             <button onclick="switchTab('#profile')" id="tab-btn-profile" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                Datos del Local
+                Perfil Comercial
             </button>
             <button onclick="switchTab('#categories')" id="tab-btn-categories" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
                 Categorías
@@ -312,11 +314,11 @@ foreach ($categorias as $cat) {
             </button>
         </div>
 
-        <!-- ================= TAB: DATOS DEL LOCAL ================= -->
+        <!-- ================= TAB: PERFIL COMERCIAL ================= -->
         <section id="profile" class="tab-content bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div class="border-b border-slate-50 pb-4">
-                <h2 class="text-xl font-extrabold tracking-tight">Datos del Local</h2>
-                <p class="text-xs text-slate-400">Configuración básica que verán tus clientes.</p>
+                <h2 class="text-xl font-extrabold tracking-tight">Perfil</h2>
+                <p class="text-xs text-slate-400">Ajustes principales del comercio y contacto de WhatsApp que se mostrarán en el catálogo digital.</p>
             </div>
             
             <form action="admin.php" method="POST" class="space-y-4 max-w-xl">
@@ -330,10 +332,45 @@ foreach ($categorias as $cat) {
                 </div>
                 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos (Código de país incluido)</label>
-                    <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp']) ?>" required
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                    <p class="text-[11px] text-slate-400 mt-1">Ingresa solo números. Ej: 584121234567 para Venezuela (sin el signo + ni ceros iniciales).</p>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
+                    <div class="flex gap-2">
+                        <select name="codigo_pais" required
+                                class="w-1/3 min-w-[120px] px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                            <?php
+                            $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
+                            $selected_code = $phone_split['code'];
+                            $local_number = $phone_split['local'];
+                            
+                            $prefixes = [
+                                '58'  => 'Venezuela (+58)',
+                                '57'  => 'Colombia (+57)',
+                                '54'  => 'Argentina (+54)',
+                                '56'  => 'Chile (+56)',
+                                '52'  => 'México (+52)',
+                                '51'  => 'Perú (+51)',
+                                '34'  => 'España (+34)',
+                                '591' => 'Bolivia (+591)',
+                                '593' => 'Ecuador (+593)',
+                                '595' => 'Paraguay (+595)',
+                                '598' => 'Uruguay (+598)',
+                                '502' => 'Guatemala (+502)',
+                                '503' => 'El Salvador (+503)',
+                                '504' => 'Honduras (+504)',
+                                '505' => 'Nicaragua (+505)',
+                                '506' => 'Costa Rica (+506)',
+                                '507' => 'Panamá (+507)',
+                                '1'   => 'EUA / PR / RD (+1)'
+                            ];
+                            foreach ($prefixes as $code => $label):
+                                $selected = ($selected_code == $code) ? 'selected' : '';
+                            ?>
+                                <option value="<?= h($code) ?>" <?= $selected ?>><?= h($label) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
+                               class="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número telefónico local sin el signo + ni ceros al inicio.</p>
                 </div>
 
                 <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">

@@ -22,7 +22,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // 2. Cargar variables de entorno (Supabase y Admin Password)
 // TODO(security): Se definen las credenciales por defecto directamente en el código por solicitud del usuario para simplificar la publicación en Vercel y evitar fricción de configuración.
 $supabaseUrl = getenv('SUPABASE_URL') ?: 'https://pusrebyszbtyefcjmvsh.supabase.co';
-$supabaseKey = getenv('SUPABASE_KEY') ?: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1c3JlYnlzemJ0eWVmY2ptdnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMTY4MzgsImV4cCI6MjA5NDc5MjgzOH0.LH-1P95uf0aF-NS_n9Jhofcj9CVhAym_nFwUVFfzj_o';
+$supabaseKey = getenv('SUPABASE_KEY') ?: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1c3JlYnlzemJ0eWVmY2ptdnNoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTIxNjgzOCwiZXhwIjoyMDk0NzkyODM4fQ.UUbI-8OuKFxE6lMja0s8SYNMkSpJD2V2lwv2rjEa0kk';
 $adminPassword = getenv('ADMIN_PASSWORD') ?: 'admin123'; // Contraseña por defecto
 
 // Soporte opcional para desarrollo local
@@ -118,6 +118,44 @@ function supabase_request(string $method, string $path, array $data = null) {
         'status' => $httpCode,
         'data' => $decodedData,
         'raw' => $response
+    ];
+}
+
+// Helper para dividir el número de WhatsApp en código de país y número local
+function split_whatsapp_number(string $number): array {
+    $prefixes = [
+        '591' => 'Bolivia (+591)',
+        '593' => 'Ecuador (+593)',
+        '595' => 'Paraguay (+595)',
+        '598' => 'Uruguay (+598)',
+        '502' => 'Guatemala (+502)',
+        '503' => 'El Salvador (+503)',
+        '504' => 'Honduras (+504)',
+        '505' => 'Nicaragua (+505)',
+        '506' => 'Costa Rica (+506)',
+        '507' => 'Panamá (+507)',
+        '34'  => 'España (+34)',
+        '51'  => 'Perú (+51)',
+        '52'  => 'México (+52)',
+        '54'  => 'Argentina (+54)',
+        '56'  => 'Chile (+56)',
+        '57'  => 'Colombia (+57)',
+        '58'  => 'Venezuela (+58)',
+        '1'   => 'Estados Unidos / PR / RD (+1)'
+    ];
+    
+    foreach ($prefixes as $prefix => $name) {
+        if (strpos($number, $prefix) === 0) {
+            return [
+                'code' => $prefix,
+                'local' => substr($number, strlen($prefix))
+            ];
+        }
+    }
+    
+    return [
+        'code' => '',
+        'local' => $number
     ];
 }
 
