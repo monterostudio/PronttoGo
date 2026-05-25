@@ -40,6 +40,14 @@ define('SUPABASE_URL', rtrim($supabaseUrl ?: '', '/'));
 define('SUPABASE_KEY', $supabaseKey ?: '');
 define('ADMIN_PASSWORD', $adminPassword);
 
+// Autodetectar entorno local para desactivar validación SSL de cURL en Windows/Laragon
+$isLocalhost = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'])
+    || (isset($_SERVER['HTTP_HOST']) && preg_match('/(localhost|127\.0\.0\.1|\.local|\.test)$/i', $_SERVER['HTTP_HOST']));
+
+if (!defined('SUPABASE_SSL_VERIFY')) {
+    define('SUPABASE_SSL_VERIFY', !$isLocalhost);
+}
+
 // Validar credenciales de Supabase al usarlas
 function check_supabase_config() {
     if (empty(SUPABASE_URL) || empty(SUPABASE_KEY)) {
@@ -85,6 +93,7 @@ function supabase_request(string $method, string $path, array $data = null) {
         $sslVerify = false;
     }
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $sslVerify);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $sslVerify ? 2 : 0);
     
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

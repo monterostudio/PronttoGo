@@ -31,6 +31,19 @@ $productosPorCategoria = [];
 foreach ($productos as $prod) {
     $productosPorCategoria[$prod['categoria_id']][] = $prod;
 }
+
+// Determinar si hay algún error de conexión o base de datos (visible solo en entorno local)
+$dbError = null;
+$isLocalhost = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'])
+    || (isset($_SERVER['HTTP_HOST']) && preg_match('/(localhost|127\.0\.0\.1|\.local|\.test)$/i', $_SERVER['HTTP_HOST']));
+
+if ($isLocalhost) {
+    if (!$resCategorias['success']) {
+        $dbError = 'Error de Categorías: ' . ($resCategorias['error'] ?? $resCategorias['raw'] ?? 'Error de conexión.');
+    } elseif (!$resProductos['success']) {
+        $dbError = 'Error de Productos: ' . ($resProductos['error'] ?? $resProductos['raw'] ?? 'Error de conexión.');
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
@@ -50,6 +63,13 @@ foreach ($productos as $prod) {
 </head>
 <body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col">
 
+    <?php if ($dbError): ?>
+        <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
+        <div class="bg-red-600 text-white text-xs font-bold px-4 py-3 text-center shadow-md relative z-50">
+            ⚠️ <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
+        </div>
+    <?php endif; ?>
+
     <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
@@ -61,12 +81,12 @@ foreach ($productos as $prod) {
     </header>
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium) -->
-    <div class="relative w-full bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-white overflow-hidden border-b border-slate-800">
+    <div class="relative w-full bg-gradient-to-r from-slate-900 via-slate-955 to-slate-900 text-white overflow-hidden border-b border-slate-800">
         <!-- Luces decorativas de fondo -->
         <div class="absolute right-1/4 top-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
         <div class="absolute left-1/4 bottom-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
         
-        <!-- Contenido centrado y alineado a la grilla principal -->
+        <!-- Contenido centrado y alíneado a la grilla principal -->
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-4 relative z-10">
             <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
                 ⚡ Pedidos por WhatsApp
