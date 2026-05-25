@@ -60,42 +60,39 @@ foreach ($productos as $prod) {
         </div>
     </header>
 
-    <!-- Hero Section (Presentación Minimalista Unificada de Alto Nivel) -->
-    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6">
-        <div class="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-lg overflow-hidden border border-slate-800">
-            <!-- Destellos decorativos premium en el fondo -->
-            <div class="absolute -right-16 -top-16 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl"></div>
-            <div class="absolute -left-16 -bottom-16 w-52 h-52 bg-cyan-500/10 rounded-full blur-3xl"></div>
-            
-            <div class="relative z-10 space-y-4 max-w-2xl">
-                <div>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
-                        ⚡ Pedidos por WhatsApp
-                    </span>
-                </div>
-                <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight">
-                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
-                </h1>
-                <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-medium">
-                    Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp de forma directa y rápida.
-                </p>
-            </div>
+    <!-- Full Hero Section (Presentación de Ancho Completo Premium) -->
+    <div class="relative w-full bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-white overflow-hidden border-b border-slate-800">
+        <!-- Luces decorativas de fondo -->
+        <div class="absolute right-1/4 top-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute left-1/4 bottom-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        
+        <!-- Contenido centrado y alineado a la grilla principal -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-4 relative z-10">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
+                ⚡ Pedidos por WhatsApp
+            </span>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white max-w-2xl leading-tight">
+                <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+            </h1>
+            <p class="text-xs md:text-base text-slate-400 max-w-xl leading-relaxed font-medium">
+                Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp de forma directa y rápida.
+            </p>
         </div>
     </div>
 
     <!-- Contenedor del Catálogo y Sidebar (Grid Responsivo) -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-8 flex-1 pb-24 md:pb-12">
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-8 flex-1 pb-24 md:pb-12">
         
         <!-- Sidebar de Categorías (Solo Visible en Escritorio) -->
         <?php if (!empty($categorias)): ?>
-            <aside class="hidden md:block w-56 flex-shrink-0 sticky top-24 h-fit bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+            <aside class="hidden md:block w-56 flex-shrink-0 sticky top-24 h-fit space-y-2 pr-4">
                 <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-400 mb-3 px-2">Categorías</h3>
                 <nav class="space-y-1">
                     <?php foreach ($categorias as $cat): 
                         if (empty($productosPorCategoria[$cat['id']])) continue;
                     ?>
                         <a href="#cat-<?= h($cat['id']) ?>" 
-                           class="block px-3 py-2 text-slate-600 hover:text-[#10B981] hover:bg-emerald-50/20 rounded-xl font-bold text-xs transition-all">
+                           class="block px-3.5 py-2.5 text-slate-600 hover:text-[#10B981] hover:bg-emerald-50/20 rounded-xl font-bold text-xs transition-all border border-transparent hover:border-emerald-50">
                             <?= h($cat['nombre_categoria']) ?>
                         </a>
                     <?php endforeach; ?>
@@ -144,7 +141,7 @@ foreach ($productos as $prod) {
                 ?>
                     <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
                         <div class="flex items-center space-x-3">
-                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-800"><?= h($cat['nombre_categoria']) ?></h2>
+                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850"><?= h($cat['nombre_categoria']) ?></h2>
                             <div class="h-0.5 flex-1 bg-gradient-to-r from-[#10B981] to-[#06B6D4] opacity-20 rounded"></div>
                         </div>
 
@@ -153,34 +150,34 @@ foreach ($productos as $prod) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex items-stretch gap-4 relative min-h-[140px]">
+                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch gap-4 relative min-h-[140px] group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
-                                                <h3 class="font-bold text-slate-900 text-sm md:text-base leading-snug"><?= h($prod['nombre']) ?></h3>
+                                                <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
                                                 <?php if (!empty($prod['descripcion'])): ?>
-                                                    <p class="text-xs text-slate-450 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                    <p class="text-xs text-slate-455 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                                 <?php endif; ?>
                                             </div>
                                             <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
                                         </div>
                                         <div class="relative w-20 h-20 md:w-24 md:h-24 shrink-0 flex-none self-center">
-                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-full h-full object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-full h-full object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
                                             <button onclick='addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-white hover:bg-slate-50 text-[#10B981] hover:text-emerald-700 border border-slate-200 hover:border-[#10B981] shadow-md rounded-full font-bold text-[10px] md:text-xs py-1.5 px-4 transition-all whitespace-nowrap flex items-center gap-1 active:scale-95">
-                                                Agregar
+                                            ]) ?>)' class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] md:text-xs py-1.5 px-4 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap flex items-center gap-1">
+                                                + Agregar
                                             </button>
                                         </div>
                                     </div>
                                 <?php else: ?>
                                     <!-- Tarjeta sin Imagen -->
-                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex flex-col justify-between min-h-[120px]">
+                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
-                                            <h3 class="font-bold text-slate-900 text-sm md:text-base leading-snug"><?= h($prod['nombre']) ?></h3>
+                                            <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
-                                                <p class="text-xs text-slate-450 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                <p class="text-xs text-slate-455 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                             <?php endif; ?>
                                         </div>
                                         <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50">
@@ -189,8 +186,8 @@ foreach ($productos as $prod) {
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="bg-white hover:bg-slate-50 text-[#10B981] hover:text-emerald-700 border border-slate-200 hover:border-[#10B981] shadow-sm rounded-full font-bold text-[10px] md:text-xs py-1.5 px-4.5 transition-all whitespace-nowrap active:scale-95">
-                                                Agregar
+                                            ]) ?>)' class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] md:text-xs py-1.5 px-4.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
+                                                + Agregar
                                             </button>
                                         </div>
                                     </div>
