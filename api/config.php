@@ -1,61 +1,56 @@
 <?php
 /**
- * PronttoGo - Archivo de Configuración y Utilidades
- * Desarrollado con PHP nativo y seguridad robusta.
+ * PronttoGo - Archivo de Configuración Simplificado (Single-Store)
+ * Gestiona la sesión, credenciales de Supabase y funciones de utilidad.
  */
 
 // 1. Configuración de Sesión Segura
 if (session_status() === PHP_SESSION_NONE) {
-    // Definir parámetros seguros para las cookies de sesión
     $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
     
     session_start([
         'cookie_lifetime' => 0,             // Expira al cerrar el navegador
         'cookie_path'     => '/',
-        'cookie_domain'   => '',            // Usar el dominio actual
-        'cookie_secure'   => $isSecure,     // HTTPS obligatorio si está disponible
-        'cookie_httponly' => true,          // Impedir acceso de JavaScript (Mitigación XSS)
+        'cookie_domain'   => '',
+        'cookie_secure'   => $isSecure,     // HTTPS si está disponible
+        'cookie_httponly' => true,          // Evita robo de sesión por JS
         'cookie_samesite' => 'Lax',         // Mitigación CSRF básica
-        'use_only_cookies'=> true,          // Evitar secuestro de sesión vía URL
+        'use_only_cookies'=> true,
     ]);
 }
 
-// 2. Cargar variables de entorno (Supabase)
-// Intentar leer de variables de entorno de Vercel / Servidor
+// 2. Cargar variables de entorno (Supabase y Admin Password)
 $supabaseUrl = getenv('SUPABASE_URL');
 $supabaseKey = getenv('SUPABASE_KEY');
+$adminPassword = getenv('ADMIN_PASSWORD') ?: 'admin123'; // Contraseña por defecto
 
-// Soporte para desarrollo local mediante config.local.php
-$localConfigPath = __DIR__ . '/config.local.php';
+// Soporte opcional para desarrollo local
+$localConfigPath = dirname(__DIR__) . '/config.local.php';
 if (file_exists($localConfigPath)) {
     $localConfig = include $localConfigPath;
     if (is_array($localConfig)) {
         $supabaseUrl = $localConfig['SUPABASE_URL'] ?? $supabaseUrl;
         $supabaseKey = $localConfig['SUPABASE_KEY'] ?? $supabaseKey;
+        $adminPassword = $localConfig['ADMIN_PASSWORD'] ?? $adminPassword;
     }
 }
 
-// Definir constantes si están disponibles
 define('SUPABASE_URL', rtrim($supabaseUrl ?: '', '/'));
 define('SUPABASE_KEY', $supabaseKey ?: '');
+define('ADMIN_PASSWORD', $adminPassword);
 
-// Validar que las credenciales no estén vacías al usarlas
+// Validar credenciales de Supabase al usarlas
 function check_supabase_config() {
     if (empty(SUPABASE_URL) || empty(SUPABASE_KEY)) {
         die('<div style="font-family:sans-serif;padding:20px;background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;max-width:500px;margin:50px auto;">
-            <h3 style="margin-top:0;">Error de Configuración</h3>
+            <h3 style="margin-top:0;">Error de Conexión</h3>
             <p>Las variables de entorno <strong>SUPABASE_URL</strong> y <strong>SUPABASE_KEY</strong> no están configuradas.</p>
-            <p>Configúralas en Vercel o crea un archivo local <code>config.local.php</code> con el siguiente formato:</p>
-            <pre style="background:#FFF;padding:10px;border:1px solid #E5E7EB;overflow-x:auto;">&lt;?php
-return [
-  "SUPABASE_URL" =&gt; "https://tu-proyecto.supabase.co",
-  "SUPABASE_KEY" =&gt; "tu-anon-public-key"
-];</pre>
+            <p>Por favor, configúralas en el panel de Vercel o crea un archivo local <code>config.local.php</code> en la raíz del proyecto.</p>
         </div>');
     }
 }
 
-// 3. Cliente cURL Genérico para Supabase REST API
+// 3. Cliente cURL para Supabase REST API
 function supabase_request(string $method, string $path, array $data = null) {
     check_supabase_config();
     
@@ -66,7 +61,6 @@ function supabase_request(string $method, string $path, array $data = null) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
     
-    // Cabeceras de autenticación de Supabase
     $headers = [
         'apikey: ' . SUPABASE_KEY,
         'Authorization: Bearer ' . SUPABASE_KEY
@@ -77,7 +71,6 @@ function supabase_request(string $method, string $path, array $data = null) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
         $headers[] = 'Content-Type: application/json';
         
-        // Solicitar al PostgREST que devuelva el objeto insertado/actualizado
         if ($method === 'POST' || $method === 'PATCH') {
             $headers[] = 'Prefer: return=representation';
         }
@@ -102,7 +95,7 @@ function supabase_request(string $method, string $path, array $data = null) {
         return [
             'success' => false,
             'status' => 500,
-            'error' => 'Error de conexión con la base de datos remota.'
+            'error' => 'Error de conexión con la base de datos.'
         ];
     }
     
@@ -129,7 +122,6 @@ function h(?string $value): string {
 // 5. Prevención CSRF: Generación y Validación de Tokens
 function generate_csrf_token(): string {
     if (empty($_SESSION['_csrf_token'])) {
-        // Generar un token criptográficamente seguro
         $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['_csrf_token'];
@@ -139,7 +131,6 @@ function verify_csrf_token(?string $token): bool {
     if (empty($_SESSION['_csrf_token']) || empty($token)) {
         return false;
     }
-    // Comparación en tiempo constante para evitar ataques de temporización
     return hash_equals($_SESSION['_csrf_token'], $token);
 }
 
@@ -148,16 +139,13 @@ function csrf_input(): string {
     return '<input type="hidden" name="csrf_token" value="' . h($token) . '">';
 }
 
-// 6. Redirecciones Seguras
+// 6. Redirecciones
 function redirect(string $url): void {
     header("Location: " . $url);
     exit;
 }
 
-// 7. Sanitizador de Slugs básico
-function sanitize_slug(string $slug): string {
-    // Convertir a minúsculas, remover caracteres especiales y espacios
-    $slug = strtolower($slug);
-    $slug = preg_replace('/[^a-z0-9\-]/', '', $slug);
-    return trim($slug, '-');
+// 7. Verificar estado de Administrador
+function is_admin_logged_in(): bool {
+    return !empty($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 }

@@ -10,8 +10,8 @@
       "destination": "/api/admin.php"
     },
     {
-      "source": "/((?!admin|config|schema|favicon\\.ico).*)",
-      "destination": "/api/index.php?slug=$1"
+      "source": "/",
+      "destination": "/api/index.php"
     }
   ]
 }
