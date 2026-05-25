@@ -351,7 +351,7 @@ foreach ($categorias as $cat) {
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
                     <div class="flex gap-2 w-full">
                         <select name="codigo_pais" required
-                                class="w-[135px] shrink-0 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                class="w-[155px] shrink-0 pl-3.5 pr-8 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
                             <?php
                             $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
                             $selected_code = $phone_split['code'];
