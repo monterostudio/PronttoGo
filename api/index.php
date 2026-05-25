@@ -1,7 +1,7 @@
 <?php
 /**
- * PronttoGo - Catálogo Público (Single-Store)
- * Renderiza el menú digital del local y maneja el carrito interactivo.
+ * PronttoGo - Catálogo Público Responsivo (Single-Store)
+ * Renderiza el menú digital adaptado a pantallas móviles y de escritorio.
  */
 
 require_once __DIR__ . '/config.php';
@@ -12,9 +12,8 @@ $response = supabase_request('GET', 'configuracion?id=eq.1');
 if ($response['success'] && !empty($response['data'])) {
     $config = $response['data'][0];
 } else {
-    // Valores por defecto de contingencia si no se ha configurado la DB
     $config = [
-        'nombre' => 'Mi Tienda',
+        'nombre' => 'PronttoGo',
         'telefono_whatsapp' => '584121234567'
     ];
 }
@@ -34,11 +33,11 @@ foreach ($productos as $prod) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= h($config['nombre']) ?> - Menú Digital</title>
+    <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?> - Menú Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,126 +48,180 @@ foreach ($productos as $prod) {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-[#0F172A] min-h-screen">
-    <div class="max-w-md mx-auto min-h-screen bg-[#F8FAFC] flex flex-col shadow-2xl border-x border-slate-200/50 relative pb-28">
-     <!-- Header -->
-    <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm">
-        <div class="w-full px-6 py-3.5 flex items-center justify-between">
-            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
-            <a href="/admin" class="text-[11px] font-bold text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg px-3 py-1.5 transition-all bg-white shadow-sm">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col pb-28">
+
+    <!-- Header -->
+    <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
+        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
                 Iniciar Sesión
             </a>
         </div>
     </header>
 
-    <!-- Hero Banner -->
-    <div class="relative bg-gradient-to-r from-[#10B981] to-[#06B6D4] h-28 w-full flex-shrink-0">
-        <!-- Avatar circular -->
-        <div class="absolute -bottom-6 left-6 w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center border border-slate-100">
-            <span class="text-2xl font-black bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">
-                <?= mb_substr(h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'P'), 0, 1) ?>
-            </span>
+    <!-- Wrapper de Contenido de Presentación -->
+    <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6 space-y-6">
+        <!-- Hero Banner -->
+        <div class="relative bg-gradient-to-r from-[#10B981] to-[#06B6D4] h-32 md:h-48 w-full rounded-2xl md:rounded-3xl shadow-sm flex-shrink-0 overflow-hidden">
+            <div class="absolute inset-0 bg-black/5"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
         </div>
-    </div>
-    
-    <!-- Info del Local -->
-    <div class="pt-8 px-6 pb-2 space-y-1">
-        <h2 class="text-lg font-extrabold text-slate-900">
-            <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
-        </h2>
-        <p class="text-xs text-slate-450 leading-relaxed">
-            Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp.
-        </p>
-    </div>
-
-    <!-- Categorías Deslizables (Sticky) -->
-    <?php if (!empty($categorias)): ?>
-        <div class="px-6 py-2.5 border-y border-slate-100/80 bg-white sticky top-[52px] z-20 shadow-sm">
-            <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
-                <?php foreach ($categorias as $cat): 
-                    if (empty($productosPorCategoria[$cat['id']])) continue;
-                ?>
-                    <a href="#cat-<?= h($cat['id']) ?>" 
-                       class="px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-650 hover:bg-slate-100 rounded-full font-bold text-xs whitespace-nowrap transition-all">
-                        <?= h($cat['nombre_categoria']) ?>
-                    </a>
-                <?php endforeach; ?>
-            </nav>
-        </div>
-    <?php endif; ?>
-
-    <!-- Contenido del Menú -->
-    <main class="w-full px-4 py-6 space-y-8 flex-1">
-        <?php if (empty($productos)): ?>
-            <div class="text-center py-20 max-w-sm mx-auto space-y-3">
-                <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                    🍔
-                </div>
-                <h3 class="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
-                <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                    Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
-                </p>
-                <div class="pt-2">
-                    <a href="/admin" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
-                        Ir al Panel ↗
-                    </a>
-                </div>
+        
+        <!-- Info del Local con Logo Solapado (Sin colisión de texto) -->
+        <div class="relative flex flex-col md:flex-row md:items-end -mt-10 md:-mt-14 px-4 md:px-8 pb-4 gap-4 md:gap-6 z-10">
+            <!-- Avatar Circular/Cuadrado redondeado -->
+            <div class="w-20 h-20 md:w-28 md:h-28 bg-white rounded-2xl shadow-md flex items-center justify-center border border-slate-100 shrink-0">
+                <span class="text-3xl md:text-4xl font-black bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">
+                    <?= mb_substr(h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'P'), 0, 1) ?>
+                </span>
             </div>
-        <?php else: ?>
-            <?php foreach ($categorias as $cat): 
-                $items = $productosPorCategoria[$cat['id']] ?? [];
-                if (empty($items)) continue;
-            ?>
-                <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
-                    <div class="flex items-center space-x-3">
-                        <h2 class="text-lg font-extrabold tracking-tight text-slate-800"><?= h($cat['nombre_categoria']) ?></h2>
-                        <div class="h-0.5 flex-1 bg-gradient-to-r from-[#10B981] to-[#06B6D4] opacity-20 rounded"></div>
-                    </div>
+            <!-- Info del Local -->
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+                </h2>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-xl">
+                    Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp de forma directa y rápida.
+                </p>
+            </div>
+        </div>
+    </div>
 
-                    <div class="grid gap-3">
-                        <?php foreach ($items as $prod): ?>
-                            <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex items-start justify-between gap-4 hover:border-slate-200 transition-colors">
-                                <div class="flex-1 space-y-1.5">
-                                    <h3 class="font-bold text-slate-900 text-sm md:text-base"><?= h($prod['nombre']) ?></h3>
-                                    <?php if (!empty($prod['descripcion'])): ?>
-                                        <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed"><?= h($prod['descripcion']) ?></p>
-                                    <?php endif; ?>
-                                    <span class="block font-extrabold text-sm md:text-base text-slate-900">$<?= number_format($prod['precio'], 2) ?></span>
-                                </div>
-                                
-                                <div class="flex flex-col items-center justify-between h-full min-h-[85px] gap-2.5">
-                                    <?php if (!empty($prod['imagen_url'])): ?>
-                                        <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-20 h-20 object-cover rounded-xl bg-slate-50">
-                                    <?php endif; ?>
-                                    
-                                    <button onclick='addToCart(<?= json_encode([
-                                        'id' => $prod['id'],
-                                        'nombre' => $prod['nombre'],
-                                        'precio' => floatval($prod['precio'])
-                                    ]) ?>)' class="px-4 py-1.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all whitespace-nowrap">
-                                        Agregar
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </section>
-            <?php endforeach; ?>
+    <!-- Contenedor del Catálogo y Sidebar (Grid Responsivo) -->
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row gap-8 flex-1">
+        
+        <!-- Sidebar de Categorías (Solo Visible en Escritorio) -->
+        <?php if (!empty($categorias)): ?>
+            <aside class="hidden md:block w-56 flex-shrink-0 sticky top-24 h-fit bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+                <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-400 mb-3 px-2">Categorías</h3>
+                <nav class="space-y-1">
+                    <?php foreach ($categorias as $cat): 
+                        if (empty($productosPorCategoria[$cat['id']])) continue;
+                    ?>
+                        <a href="#cat-<?= h($cat['id']) ?>" 
+                           class="block px-3 py-2 text-slate-600 hover:text-[#10B981] hover:bg-emerald-50/20 rounded-xl font-bold text-xs transition-all">
+                            <?= h($cat['nombre_categoria']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </nav>
+            </aside>
         <?php endif; ?>
+
+        <!-- Columna de Contenido principal -->
+        <div class="flex-1 space-y-8 min-w-0">
+            <!-- Categorías Deslizables (Sticky) - Solo Visible en Móvil -->
+            <?php if (!empty($categorias)): ?>
+                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
+                    <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
+                        <?php foreach ($categorias as $cat): 
+                            if (empty($productosPorCategoria[$cat['id']])) continue;
+                        ?>
+                            <a href="#cat-<?= h($cat['id']) ?>" 
+                               class="mobile-category-pill px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-600 hover:bg-slate-100 rounded-full font-bold text-xs whitespace-nowrap transition-all">
+                                <?= h($cat['nombre_categoria']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </nav>
+                </div>
+            <?php endif; ?>
+
+            <?php if (empty($productos)): ?>
+                <!-- Catálogo Vacío (Simple y Minimalista) -->
+                <div class="text-center py-20 max-w-sm mx-auto space-y-3">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
+                        🍔
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
+                    <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
+                        Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
+                    </p>
+                    <div class="pt-2">
+                        <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
+                            Ir al Panel ↗
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($categorias as $cat): 
+                    $items = $productosPorCategoria[$cat['id']] ?? [];
+                    if (empty($items)) continue;
+                ?>
+                    <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-800"><?= h($cat['nombre_categoria']) ?></h2>
+                            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#10B981] to-[#06B6D4] opacity-20 rounded"></div>
+                        </div>
+
+                        <!-- Grid de Productos (1 en móvil/tablet, 2 en pantallas más grandes) -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <?php foreach ($items as $prod): ?>
+                                <?php if (!empty($prod['imagen_url'])): ?>
+                                    <!-- Tarjeta con Imagen -->
+                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex items-stretch gap-4 relative min-h-[140px]">
+                                        <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+                                            <div class="space-y-1">
+                                                <h3 class="font-bold text-slate-900 text-sm md:text-base leading-snug"><?= h($prod['nombre']) ?></h3>
+                                                <?php if (!empty($prod['descripcion'])): ?>
+                                                    <p class="text-xs text-slate-450 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                <?php endif; ?>
+                                            </div>
+                                            <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
+                                        </div>
+                                        <div class="relative w-20 h-20 md:w-24 md:h-24 shrink-0 flex-none self-center">
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-full h-full object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+                                            <button onclick='addToCart(<?= json_encode([
+                                                'id' => $prod['id'],
+                                                'nombre' => $prod['nombre'],
+                                                'precio' => floatval($prod['precio'])
+                                            ]) ?>)' class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-white hover:bg-slate-50 text-[#10B981] hover:text-emerald-700 border border-slate-200 hover:border-[#10B981] shadow-md rounded-full font-bold text-[10px] md:text-xs py-1.5 px-4 transition-all whitespace-nowrap flex items-center gap-1 active:scale-95">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Tarjeta sin Imagen -->
+                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex flex-col justify-between min-h-[120px]">
+                                        <div class="space-y-1">
+                                            <h3 class="font-bold text-slate-900 text-sm md:text-base leading-snug"><?= h($prod['nombre']) ?></h3>
+                                            <?php if (!empty($prod['descripcion'])): ?>
+                                                <p class="text-xs text-slate-450 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50">
+                                            <span class="font-black text-sm md:text-base text-slate-900">$<?= number_format($prod['precio'], 2) ?></span>
+                                            <button onclick='addToCart(<?= json_encode([
+                                                'id' => $prod['id'],
+                                                'nombre' => $prod['nombre'],
+                                                'precio' => floatval($prod['precio'])
+                                            ]) ?>)' class="bg-white hover:bg-slate-50 text-[#10B981] hover:text-emerald-700 border border-slate-200 hover:border-[#10B981] shadow-sm rounded-full font-bold text-[10px] md:text-xs py-1.5 px-4.5 transition-all whitespace-nowrap active:scale-95">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </main>
 
     <!-- Footer Bar -->
-    <footer class="bg-white border-t border-slate-100 py-4 px-6 mt-auto flex items-center justify-between text-xs font-semibold text-slate-550">
-        <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-        <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-650 transition-colors flex items-center gap-1">
-            <span>Powered by</span>
-            <span class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent font-extrabold">PronttoGo</span>
-        </a>
+    <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-semibold text-slate-500">
+            <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+            <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-655 transition-colors flex items-center gap-1">
+                <span>Powered by</span>
+                <span class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent font-extrabold">PronttoGo</span>
+            </a>
+        </div>
     </footer>
 
-    <!-- Carrito Flotante -->
-    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-45 hidden">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all">
+    <!-- Carrito Flotante (JS) -->
+    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-40 hidden">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
                 <span>🛒</span>
                 <span id="cart-count">0 artículos</span>
@@ -198,23 +251,72 @@ foreach ($productos as $prod) {
             </div>
 
             <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
-                <div class="flex justify-between items-center font-extrabold text-slate-950">
+                <div class="flex justify-between items-center font-extrabold text-slate-955">
                     <span>Total a pagar</span>
                     <span id="drawer-total" class="text-xl">$0.00</span>
                 </div>
                 
-                <button onclick="checkoutOrder()" class="w-full py-4 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-lg transition-all flex justify-center items-center space-x-2">
+                <button onclick="checkoutOrder()" class="w-full py-4 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-lg transition-all flex justify-center items-center space-x-2 active:scale-98">
                     <span>Enviar Pedido por WhatsApp</span>
                     <span>💬</span>
                 </button>
             </div>
         </div>
-    </div> <!-- Fin del contenedor max-w-md -->
+    </div>
 
     <!-- Script del Carrito (Vanilla JS) -->
     <script>
         const whatsappNumber = <?= json_encode($config['telefono_whatsapp']) ?>;
         const cartKey = 'cart_pronttogo';
+
+        // ScrollSpy para Categorías
+        window.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '-10% 0px -75% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        setActiveCategory(id);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('section[id^="cat-"]').forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        function setActiveCategory(id) {
+            // 1. Sidebar en Escritorio
+            document.querySelectorAll('aside nav a').forEach(link => {
+                if (link.getAttribute('href') === `#${id}`) {
+                    link.classList.add('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
+                    link.classList.remove('text-slate-605');
+                } else {
+                    link.classList.remove('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
+                    link.classList.add('text-slate-605');
+                }
+            });
+
+            // 2. Swiper en Móvil
+            document.querySelectorAll('.mobile-category-pill').forEach(pill => {
+                if (pill.getAttribute('href') === `#${id}`) {
+                    pill.classList.add('bg-slate-900', 'text-white', 'border-slate-900');
+                    pill.classList.remove('bg-slate-50', 'text-slate-600', 'border-slate-100');
+                    
+                    // Centrar el elemento en el scroll del swiper móvil
+                    pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    pill.classList.remove('bg-slate-900', 'text-white', 'border-slate-900');
+                    pill.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-100');
+                }
+            });
+        }
 
         function getCart() {
             try {
@@ -313,7 +415,7 @@ foreach ($productos as $prod) {
             // Construir DOM seguro
             cart.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100/55 first:pt-2 last:border-b-0";
+                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 first:pt-2 last:border-b-0";
 
                 const infoEl = document.createElement('div');
                 
@@ -332,16 +434,16 @@ foreach ($productos as $prod) {
                 controlsEl.className = "flex items-center space-x-2.5";
 
                 const btnMinus = document.createElement('button');
-                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-600 transition-colors";
+                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-655 transition-colors";
                 btnMinus.textContent = "−";
                 btnMinus.onclick = () => updateQuantity(item.id, -1);
 
                 const qtyEl = document.createElement('span');
-                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-850";
+                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-800";
                 qtyEl.textContent = item.quantity;
 
                 const btnPlus = document.createElement('button');
-                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-600 transition-colors";
+                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-655 transition-colors";
                 btnPlus.textContent = "+";
                 btnPlus.onclick = () => updateQuantity(item.id, 1);
 
