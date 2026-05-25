@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // --- OBTENCIÓN DE DATOS GENERALES ---
 // Cargar configuración única
 $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
-$config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data'][0] : ['nombre' => 'Mi Tienda', 'telefono_whatsapp' => ''];
+$config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data'][0] : ['nombre' => 'PronttoGo', 'telefono_whatsapp' => ''];
 
 // Cargar categorías ordenadas
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');

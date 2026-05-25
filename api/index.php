@@ -55,15 +55,13 @@ foreach ($productos as $prod) {
     <header class="bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm">
         <div class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
             <div>
-                <h1 class="font-extrabold text-xl tracking-tight text-slate-900"><?= h($config['nombre']) ?></h1>
-                <p class="text-[10px] text-slate-400 font-semibold flex items-center mt-0.5">
-                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#10B981] mr-1.5 animate-pulse"></span>
-                    Abierto para pedidos
-                </p>
+                <h1 class="font-extrabold text-xl tracking-tight text-slate-900">
+                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+                </h1>
             </div>
             <div class="flex items-center space-x-3">
-                <a href="admin.php" class="text-xs font-bold text-slate-500 hover:text-[#10B981] border border-slate-200 hover:border-[#10B981] rounded-xl px-4 py-2 transition-all flex items-center gap-1.5 bg-slate-50 hover:bg-emerald-50/20 shadow-sm">
-                    🔑 Iniciar Sesión
+                <a href="admin.php" class="text-xs font-bold text-slate-650 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
+                    Iniciar Sesión
                 </a>
             </div>
         </div>
@@ -88,17 +86,19 @@ foreach ($productos as $prod) {
     <!-- Contenido del Menú -->
     <main class="max-w-2xl w-full mx-auto px-4 py-6 space-y-8 flex-1">
         <?php if (empty($productos)): ?>
-            <div class="max-w-md mx-auto text-center py-16 px-6 bg-white border border-slate-100 rounded-3xl shadow-lg space-y-5 my-12">
-                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-3xl">
+            <div class="text-center py-20 max-w-sm mx-auto space-y-3">
+                <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
                     🍔
                 </div>
-                <h3 class="font-extrabold text-xl text-slate-900">El catálogo está vacío</h3>
-                <p class="text-slate-400 text-sm max-w-xs mx-auto leading-relaxed">
-                    Estamos preparando los mejores productos para ti. Vuelve más tarde o inicia sesión en el panel para comenzar a cargar artículos.
+                <h3 class="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
+                <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
+                    Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
                 </p>
-                <a href="admin.php" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] text-white font-bold text-xs rounded-xl shadow-md hover:opacity-90 transition-all">
-                    Cargar Productos ↗
-                </a>
+                <div class="pt-2">
+                    <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
+                        Ir al Panel ↗
+                    </a>
+                </div>
             </div>
         <?php else: ?>
             <?php foreach ($categorias as $cat): 
