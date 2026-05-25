@@ -20,8 +20,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // 2. Cargar variables de entorno (Supabase y Admin Password)
-$supabaseUrl = getenv('SUPABASE_URL');
-$supabaseKey = getenv('SUPABASE_KEY');
+// TODO(security): Se definen las credenciales por defecto directamente en el código por solicitud del usuario para simplificar la publicación en Vercel y evitar fricción de configuración.
+$supabaseUrl = getenv('SUPABASE_URL') ?: 'https://pusrebyszbtyefcjmvsh.supabase.co';
+$supabaseKey = getenv('SUPABASE_KEY') ?: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1c3JlYnlzemJ0eWVmY2ptdnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMTY4MzgsImV4cCI6MjA5NDc5MjgzOH0.LH-1P95uf0aF-NS_n9Jhofcj9CVhAym_nFwUVFfzj_o';
 $adminPassword = getenv('ADMIN_PASSWORD') ?: 'admin123'; // Contraseña por defecto
 
 // Soporte opcional para desarrollo local
