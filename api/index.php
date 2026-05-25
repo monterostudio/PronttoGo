@@ -61,9 +61,10 @@ foreach ($productos as $prod) {
                     Abierto para pedidos
                 </p>
             </div>
-            <div class="text-right">
-                <span class="text-[10px] uppercase font-bold text-slate-400">Powered by</span>
-                <span class="block text-xs font-extrabold bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+            <div class="flex items-center space-x-3">
+                <a href="admin.php" class="text-xs font-bold text-slate-500 hover:text-[#10B981] border border-slate-200 hover:border-[#10B981] rounded-xl px-4 py-2 transition-all flex items-center gap-1.5 bg-slate-50 hover:bg-emerald-50/20 shadow-sm">
+                    🔑 Iniciar Sesión
+                </a>
             </div>
         </div>
         
@@ -87,10 +88,17 @@ foreach ($productos as $prod) {
     <!-- Contenido del Menú -->
     <main class="max-w-2xl w-full mx-auto px-4 py-6 space-y-8 flex-1">
         <?php if (empty($productos)): ?>
-            <div class="text-center py-16 space-y-4">
-                <span class="text-4xl">🍔</span>
-                <h3 class="font-bold text-slate-700">El catálogo está vacío</h3>
-                <p class="text-slate-400 text-xs max-w-xs mx-auto">Vuelve más tarde o consulta directamente con el comercio.</p>
+            <div class="max-w-md mx-auto text-center py-16 px-6 bg-white border border-slate-100 rounded-3xl shadow-lg space-y-5 my-12">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-3xl">
+                    🍔
+                </div>
+                <h3 class="font-extrabold text-xl text-slate-900">El catálogo está vacío</h3>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto leading-relaxed">
+                    Estamos preparando los mejores productos para ti. Vuelve más tarde o inicia sesión en el panel para comenzar a cargar artículos.
+                </p>
+                <a href="admin.php" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] text-white font-bold text-xs rounded-xl shadow-md hover:opacity-90 transition-all">
+                    Cargar Productos ↗
+                </a>
             </div>
         <?php else: ?>
             <?php foreach ($categorias as $cat): 
@@ -134,6 +142,11 @@ foreach ($productos as $prod) {
             <?php endforeach; ?>
         <?php endif; ?>
     </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-[10px] text-slate-450 py-8">
+        Powered by <span class="font-extrabold bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+    </footer>
 
     <!-- Carrito Flotante -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-2xl mx-auto z-45 hidden">
