@@ -170,7 +170,7 @@ if ($isLocalhost) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
+                                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
                                                 <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
@@ -193,7 +193,7 @@ if ($isLocalhost) {
                                     </div>
                                 <?php else: ?>
                                     <!-- Tarjeta sin Imagen -->
-                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
+                                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
                                             <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
@@ -253,9 +253,14 @@ if ($isLocalhost) {
                     <h3 class="font-extrabold text-lg text-slate-800">Mi Pedido</h3>
                     <p class="text-xs text-slate-400">Verifica los artículos seleccionados</p>
                 </div>
-                <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
-                    ✕
-                </button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-750 transition-colors">
+                        Vaciar
+                    </button>
+                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                        ✕
+                    </button>
+                </div>
             </div>
 
             <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 flex-1">
@@ -386,6 +391,13 @@ if ($isLocalhost) {
             }
         }
 
+        function clearCart() {
+            if (confirm('¿Seguro que deseas vaciar tu carrito de compras?')) {
+                saveCart([]);
+                toggleCartDrawer(false);
+            }
+        }
+
         function toggleCartDrawer(show) {
             const drawer = document.getElementById('cart-drawer');
             if (show) {
@@ -459,9 +471,21 @@ if ($isLocalhost) {
                 btnPlus.textContent = "+";
                 btnPlus.onclick = () => updateQuantity(item.id, 1);
 
+                const btnRemove = document.createElement('button');
+                btnRemove.className = "w-7 h-7 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-700 transition-colors ml-1.5 font-bold text-xs";
+                btnRemove.textContent = "✕";
+                btnRemove.onclick = () => {
+                    let cart = getCart().filter(i => i.id !== item.id);
+                    saveCart(cart);
+                    if (cart.length === 0) {
+                        toggleCartDrawer(false);
+                    }
+                };
+
                 controlsEl.appendChild(btnMinus);
                 controlsEl.appendChild(qtyEl);
                 controlsEl.appendChild(btnPlus);
+                controlsEl.appendChild(btnRemove);
 
                 itemEl.appendChild(infoEl);
                 itemEl.appendChild(controlsEl);
