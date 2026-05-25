@@ -6,6 +6,14 @@
 
 require_once __DIR__ . '/config.php';
 
+// Cargar configuración de la base de datos (se usa para autenticación y UI)
+$resConfig = supabase_request('GET', 'configuracion?id=eq.1');
+$config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data'][0] : [];
+
+// Resolver credenciales administrativas (base de datos o fallback a config.php)
+$dbAdminUser = !empty($config['admin_user']) ? $config['admin_user'] : ADMIN_USER;
+$dbAdminPassword = !empty($config['admin_password']) ? $config['admin_password'] : ADMIN_PASSWORD;
+
 $error = '';
 $success = '';
 
@@ -44,8 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['login_captcha_b'] = rand(1, 9);
             sleep(1);
         } else {
-            // D. Validar credenciales
-            if ($username === ADMIN_USER && $password === ADMIN_PASSWORD) {
+            // D. Validar credenciales (con fallback texto plano para migración)
+            $login_ok = false;
+            if ($username === $dbAdminUser) {
+                if (password_verify($password, $dbAdminPassword)) {
+                    $login_ok = true;
+                } elseif ($password === $dbAdminPassword) {
+                    $login_ok = true;
+                }
+            }
+
+            if ($login_ok) {
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['login_attempts'] = 0;
                 $_SESSION['login_lock_until'] = 0;
@@ -186,9 +203,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $logo_url = trim($_POST['logo_url'] ?? '');
             $tasa_tipo = trim($_POST['tasa_tipo'] ?? 'manual');
             $tasa_dolar = floatval($_POST['tasa_dolar'] ?? 1.00);
+            
+            $new_admin_user = trim($_POST['admin_user'] ?? '');
+            $new_admin_password = $_POST['admin_password'] ?? '';
 
-            // Tasa automática inteligente si no es manual
-            if ($tasa_tipo !== 'manual') {
+            // Tasa automática inteligente si no es manual y el valor enviado es por defecto
+            if ($tasa_tipo !== 'manual' && $tasa_dolar <= 1.00) {
                 $fetched_rate = fetch_automatic_rate($tasa_tipo);
                 if ($fetched_rate !== null) {
                     $tasa_dolar = $fetched_rate;
@@ -200,19 +220,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (empty($nombre) || empty($whatsapp)) {
                 $error = 'El nombre del comercio y el teléfono de WhatsApp son obligatorios.';
             } else {
-                $response = supabase_request('PATCH', 'configuracion?id=eq.1', [
+                $updateData = [
                     'nombre' => $nombre,
                     'telefono_whatsapp' => $whatsapp,
                     'logo_url' => !empty($logo_url) ? $logo_url : null,
                     'tasa_dolar' => $tasa_dolar,
                     'tasa_tipo' => $tasa_tipo
-                ]);
+                ];
+
+                if (!empty($new_admin_user)) {
+                    $updateData['admin_user'] = $new_admin_user;
+                }
+                
+                if (!empty($new_admin_password)) {
+                    $updateData['admin_password'] = password_hash($new_admin_password, PASSWORD_DEFAULT);
+                }
+
+                $response = supabase_request('PATCH', 'configuracion?id=eq.1', $updateData);
+                
                 if ($response['success']) {
                     $success = 'Perfil comercial actualizado con éxito.';
                     // Actualizar el estado local
                     $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
                     if ($resConfig['success'] && !empty($resConfig['data'])) {
                         $config = $resConfig['data'][0];
+                        // Actualizar credenciales en la sesión/variables de esta ejecución
+                        $dbAdminUser = !empty($config['admin_user']) ? $config['admin_user'] : ADMIN_USER;
+                        $dbAdminPassword = !empty($config['admin_password']) ? $config['admin_password'] : ADMIN_PASSWORD;
                     }
                 } else {
                     $error = 'Error al actualizar el perfil en la base de datos.';
@@ -334,9 +368,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // --- OBTENCIÓN DE DATOS GENERALES ---
-// Cargar configuración única
-$resConfig = supabase_request('GET', 'configuracion?id=eq.1');
-$config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data'][0] : ['nombre' => 'PronttoGo', 'telefono_whatsapp' => ''];
+// Inicializar configuración por defecto si la base de datos falló por completo
+if (empty($config)) {
+    $config = ['nombre' => 'PronttoGo', 'telefono_whatsapp' => ''];
+}
 
 // Cargar categorías ordenadas
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
@@ -491,21 +526,49 @@ foreach ($categorias as $cat) {
                 </div>
 
                 <!-- Tasa de Cambio Inteligente -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Gestión de Tasa de Cambio (Dólar del Día)</label>
-                        <select name="tasa_tipo" id="tasa_tipo" onchange="toggleTasaInput()" required
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
-                            <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Manual / Personalizada</option>
-                            <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
-                            <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
-                        </select>
+                <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 font-semibold">Tasa de Cambio a Moneda Local</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Tipo de Tasa</label>
+                            <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Fija / Personalizada</option>
+                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
+                                <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
+                            <div class="relative">
+                                <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
+                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                <div id="tasa_loading" class="absolute right-3 top-3.5 hidden">
+                                    <svg class="animate-spin h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p id="tasa_note" class="text-[11px] text-slate-400 mt-1">Introduce el valor de cambio manualmente.</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
-                        <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
-                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                        <p id="tasa_note" class="text-[11px] text-slate-400 mt-1">Al elegir una tasa automática, este valor se consultará y actualizará al guardar.</p>
+                </div>
+
+                <!-- Credenciales Administrativas -->
+                <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 font-semibold">Credenciales de Acceso</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Usuario Administrativo</label>
+                            <input type="text" name="admin_user" value="<?= h($dbAdminUser) ?>" required placeholder="ej: admin"
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Nueva Contraseña (Dejar vacío para no cambiar)</label>
+                            <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                        </div>
                     </div>
                 </div>
 
@@ -831,9 +894,8 @@ foreach ($categorias as $cat) {
 
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 font-medium mt-auto">
-        &copy; 2026 PronttoGo. Todos los derechos reservados.
+        &copy; 2026 PronttoGo. Desarrollado por Montero Studio.
     </footer>
 
     <!-- Scripts -->
@@ -885,20 +947,42 @@ foreach ($categorias as $cat) {
             document.getElementById('prod-btn-cancel').classList.add('hidden');
         }
 
-        // Lógica de toggle para entrada de tasa de cambio según el tipo
-        function toggleTasaInput() {
+        async function fetchRateFromClient(type) {
+            const loading = document.getElementById('tasa_loading');
+            const input = document.getElementById('tasa_dolar_input');
+            if (loading) loading.classList.remove('hidden');
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                if (type === 'bcv' && data.rates && data.rates.VES) {
+                    input.value = parseFloat(data.rates.VES).toFixed(2);
+                } else if (type === 'trm' && data.rates && data.rates.COP) {
+                    input.value = Math.round(data.rates.COP);
+                }
+            } catch (err) {
+                console.error('Error fetching rate:', err);
+            } finally {
+                if (loading) loading.classList.add('hidden');
+            }
+        }
+
+        function handleTasaTipoChange(isInitial = false) {
             const type = document.getElementById('tasa_tipo').value;
             const input = document.getElementById('tasa_dolar_input');
             const note = document.getElementById('tasa_note');
             
             if (type === 'manual') {
                 input.removeAttribute('readonly');
-                input.classList.remove('bg-slate-50', 'text-slate-400');
+                input.classList.remove('bg-slate-50', 'text-slate-450');
                 note.textContent = 'Introduce el valor de cambio manualmente.';
             } else {
-                input.setAttribute('readonly', 'true');
-                input.classList.add('bg-slate-50', 'text-slate-400');
-                note.textContent = 'Tasa automática. Se obtendrá del servidor al guardar el formulario.';
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-slate-50', 'text-slate-450');
+                note.textContent = 'Tasa oficial. Puedes ajustarla manualmente o dejar la sugerida.';
+                if (!isInitial) {
+                    fetchRateFromClient(type);
+                }
             }
         }
 
@@ -911,7 +995,7 @@ foreach ($categorias as $cat) {
             switchTab(defaultTab);
             
             if (document.getElementById('tasa_tipo')) {
-                toggleTasaInput();
+                handleTasaTipoChange(true);
             }
         });
     </script>
