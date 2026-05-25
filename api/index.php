@@ -51,6 +51,14 @@ if ($isLocalhost) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?> - Menú Digital</title>
+    <script>
+        // Evitar advertencia del CDN de Tailwind en la consola
+        const _warn = console.warn;
+        console.warn = (...args) => {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+            _warn(...args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,6 +67,26 @@ if ($isLocalhost) {
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Estilos personalizados para los pills de categorías móviles */
+        .mobile-category-pill {
+            transition: all 0.2s ease-in-out;
+        }
+        .mobile-category-pill:hover {
+            background-color: #E2E8F0 !important; /* bg-slate-200 */
+            color: #0F172A !important;            /* text-slate-900 */
+            border-color: #CBD5E1 !important;      /* border-slate-300 */
+        }
+        .mobile-category-pill.active {
+            background-color: #0F172A !important;  /* bg-slate-900 */
+            color: #FFFFFF !important;             /* text-white */
+            border-color: #0F172A !important;      /* border-slate-900 */
+        }
+        .mobile-category-pill.active:hover {
+            background-color: #1E293B !important;  /* bg-slate-800 */
+            color: #FFFFFF !important;             /* Keep text white when active is hovered */
+            border-color: #1E293B !important;
+        }
     </style>
 </head>
 <body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col">
@@ -130,7 +158,7 @@ if ($isLocalhost) {
                             if (empty($productosPorCategoria[$cat['id']])) continue;
                         ?>
                             <a href="#cat-<?= h($cat['id']) ?>" 
-                               class="mobile-category-pill px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-600 hover:bg-slate-100 rounded-full font-bold text-xs whitespace-nowrap transition-all">
+                               class="mobile-category-pill px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-600 rounded-full font-bold text-xs whitespace-nowrap">
                                 <?= h($cat['nombre_categoria']) ?>
                             </a>
                         <?php endforeach; ?>
@@ -286,6 +314,24 @@ if ($isLocalhost) {
         const whatsappNumber = <?= json_encode($config['telefono_whatsapp']) ?>;
         const cartKey = 'cart_pronttogo';
 
+        let isScrolling = false;
+        let scrollTimeout;
+
+        function handleCategoryLinkClick(e) {
+            isScrolling = true;
+            clearTimeout(scrollTimeout);
+            
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const id = href.substring(1);
+                setActiveCategory(id);
+            }
+            
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+            }, 800);
+        }
+
         // ScrollSpy para Categorías
         window.addEventListener('DOMContentLoaded', () => {
             const observerOptions = {
@@ -295,6 +341,7 @@ if ($isLocalhost) {
             };
 
             const observer = new IntersectionObserver((entries) => {
+                if (isScrolling) return;
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const id = entry.target.id;
@@ -306,6 +353,11 @@ if ($isLocalhost) {
             document.querySelectorAll('section[id^="cat-"]').forEach(section => {
                 observer.observe(section);
             });
+
+            // Registrar eventos de clic para detener temporalmente el ScrollSpy y fijar el activo inmediatamente
+            document.querySelectorAll('aside nav a, .mobile-category-pill').forEach(link => {
+                link.addEventListener('click', handleCategoryLinkClick);
+            });
         });
 
         function setActiveCategory(id) {
@@ -313,24 +365,22 @@ if ($isLocalhost) {
             document.querySelectorAll('aside nav a').forEach(link => {
                 if (link.getAttribute('href') === `#${id}`) {
                     link.classList.add('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
-                    link.classList.remove('text-slate-605');
+                    link.classList.remove('text-slate-600');
                 } else {
                     link.classList.remove('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
-                    link.classList.add('text-slate-605');
+                    link.classList.add('text-slate-600');
                 }
             });
 
             // 2. Swiper en Móvil
             document.querySelectorAll('.mobile-category-pill').forEach(pill => {
                 if (pill.getAttribute('href') === `#${id}`) {
-                    pill.classList.add('bg-slate-900', 'text-white', 'border-slate-900');
-                    pill.classList.remove('bg-slate-50', 'text-slate-600', 'border-slate-100');
+                    pill.classList.add('active');
                     
                     // Centrar el elemento en el scroll del swiper móvil
                     pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 } else {
-                    pill.classList.remove('bg-slate-900', 'text-white', 'border-slate-900');
-                    pill.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-100');
+                    pill.classList.remove('active');
                 }
             });
         }

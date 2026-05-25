@@ -40,6 +40,14 @@ if (!$is_logged_in):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Administrativo - PronttoGo</title>
+    <script>
+        // Evitar advertencia del CDN de Tailwind en la consola
+        const _warn = console.warn;
+        console.warn = (...args) => {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+            _warn(...args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -253,6 +261,14 @@ foreach ($categorias as $cat) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - <?= h($config['nombre']) ?></title>
+    <script>
+        // Evitar advertencia del CDN de Tailwind en la consola
+        const _warn = console.warn;
+        console.warn = (...args) => {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+            _warn(...args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -304,7 +320,7 @@ foreach ($categorias as $cat) {
         <!-- Tabs de Navegación -->
         <div class="bg-white p-2 rounded-2xl border border-slate-100 flex shadow-sm">
             <button onclick="switchTab('#profile')" id="tab-btn-profile" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                Perfil Comercial
+                Perfil
             </button>
             <button onclick="switchTab('#categories')" id="tab-btn-categories" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
                 Categorías
@@ -333,9 +349,9 @@ foreach ($categorias as $cat) {
                 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 w-full">
                         <select name="codigo_pais" required
-                                class="w-1/3 min-w-[120px] px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                class="w-[135px] shrink-0 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
                             <?php
                             $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
                             $selected_code = $phone_split['code'];
@@ -343,23 +359,7 @@ foreach ($categorias as $cat) {
                             
                             $prefixes = [
                                 '58'  => 'Venezuela (+58)',
-                                '57'  => 'Colombia (+57)',
-                                '54'  => 'Argentina (+54)',
-                                '56'  => 'Chile (+56)',
-                                '52'  => 'México (+52)',
-                                '51'  => 'Perú (+51)',
-                                '34'  => 'España (+34)',
-                                '591' => 'Bolivia (+591)',
-                                '593' => 'Ecuador (+593)',
-                                '595' => 'Paraguay (+595)',
-                                '598' => 'Uruguay (+598)',
-                                '502' => 'Guatemala (+502)',
-                                '503' => 'El Salvador (+503)',
-                                '504' => 'Honduras (+504)',
-                                '505' => 'Nicaragua (+505)',
-                                '506' => 'Costa Rica (+506)',
-                                '507' => 'Panamá (+507)',
-                                '1'   => 'EUA / PR / RD (+1)'
+                                '57'  => 'Colombia (+57)'
                             ];
                             foreach ($prefixes as $code => $label):
                                 $selected = ($selected_code == $code) ? 'selected' : '';
@@ -368,7 +368,7 @@ foreach ($categorias as $cat) {
                             <?php endforeach; ?>
                         </select>
                         <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
-                               class="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                               class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número telefónico local sin el signo + ni ceros al inicio.</p>
                 </div>
@@ -417,7 +417,30 @@ foreach ($categorias as $cat) {
                     <?php if (empty($categorias)): ?>
                         <p class="text-sm text-slate-400 py-6 text-center">No has registrado categorías aún.</p>
                     <?php else: ?>
-                        <div class="overflow-x-auto">
+                        <!-- Vista de Tarjetas para Móvil -->
+                        <div class="space-y-3 sm:hidden">
+                            <?php foreach ($categorias as $cat): ?>
+                                <div class="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                                    <div>
+                                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">Orden #<?= h($cat['orden_visual']) ?></span>
+                                        <h4 class="font-bold text-slate-800 mt-2"><?= h($cat['nombre_categoria']) ?></h4>
+                                    </div>
+                                    <div>
+                                        <form action="admin.php" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría? Se eliminarán todos los productos asociados.')" class="inline">
+                                            <?= csrf_input() ?>
+                                            <input type="hidden" name="action" value="delete_category">
+                                            <input type="hidden" name="categoria_id" value="<?= h($cat['id']) ?>">
+                                            <button type="submit" class="text-xs font-bold text-red-500 hover:text-red-755 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- Vista de Tabla para Escritorio -->
+                        <div class="hidden sm:block overflow-x-auto">
                             <table class="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">
@@ -528,7 +551,70 @@ foreach ($categorias as $cat) {
                     <?php if (empty($productos)): ?>
                         <p class="text-sm text-slate-400 py-6 text-center">No has registrado productos aún.</p>
                     <?php else: ?>
-                        <div class="overflow-x-auto">
+                        <!-- Vista de Tarjetas para Móvil -->
+                        <div class="space-y-3 sm:hidden">
+                            <?php foreach ($productos as $prod): ?>
+                                <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3 shadow-sm">
+                                    <div class="flex items-center space-x-3">
+                                        <?php if (!empty($prod['imagen_url'])): ?>
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-12 h-12 object-cover rounded-lg bg-slate-100">
+                                        <?php else: ?>
+                                            <div class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-lg font-bold">🍔</div>
+                                        <?php endif; ?>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-bold text-slate-800 truncate"><?= h($prod['nombre']) ?></h4>
+                                            <p class="text-xs text-slate-500 font-semibold mt-0.5"><?= h($categoriasMap[$prod['categoria_id']] ?? 'Sin Categoría') ?></p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-extrabold text-slate-800 text-sm">$<?= number_format($prod['precio'], 2) ?></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <?php if (!empty($prod['descripcion'])): ?>
+                                        <p class="text-[11px] text-slate-550 leading-relaxed bg-slate-55/50 p-2 rounded-lg"><?= h($prod['descripcion']) ?></p>
+                                    <?php endif; ?>
+                                    
+                                    <div class="flex items-center justify-between pt-2.5 border-t border-slate-100">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs font-semibold text-slate-500">Disponible:</span>
+                                            <form action="admin.php" method="POST" class="inline-block">
+                                                <?= csrf_input() ?>
+                                                <input type="hidden" name="action" value="toggle_disponible">
+                                                <input type="hidden" name="producto_id" value="<?= h($prod['id']) ?>">
+                                                <input type="hidden" name="disponible" value="<?= $prod['disponible'] ? '0' : '1' ?>">
+                                                <button type="submit" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none <?= $prod['disponible'] ? 'bg-[#10B981]' : 'bg-slate-200' ?>">
+                                                    <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform <?= $prod['disponible'] ? 'translate-x-6' : 'translate-x-1' ?>"></span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button type="button" onclick='loadProductForEdit(<?= json_encode([
+                                                'id' => $prod['id'],
+                                                'nombre' => $prod['nombre'],
+                                                'categoria_id' => $prod['categoria_id'],
+                                                'descripcion' => $prod['descripcion'] ?? '',
+                                                'precio' => $prod['precio'],
+                                                'imagen_url' => $prod['imagen_url'] ?? '',
+                                                'disponible' => $prod['disponible'] ? 1 : 0
+                                            ]) ?>)' class="text-xs font-bold text-[#06B6D4] bg-cyan-50 hover:bg-cyan-100 px-3.5 py-2 rounded-xl transition-colors">
+                                                Editar
+                                            </button>
+                                            <form action="admin.php" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?')" class="inline">
+                                                <?= csrf_input() ?>
+                                                <input type="hidden" name="action" value="delete_product">
+                                                <input type="hidden" name="producto_id" value="<?= h($prod['id']) ?>">
+                                                <button type="submit" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- Vista de Tabla para Escritorio -->
+                        <div class="hidden sm:block overflow-x-auto">
                             <table class="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">

@@ -121,27 +121,10 @@ function supabase_request(string $method, string $path, array $data = null) {
     ];
 }
 
-// Helper para dividir el número de WhatsApp en código de país y número local
 function split_whatsapp_number(string $number): array {
     $prefixes = [
-        '591' => 'Bolivia (+591)',
-        '593' => 'Ecuador (+593)',
-        '595' => 'Paraguay (+595)',
-        '598' => 'Uruguay (+598)',
-        '502' => 'Guatemala (+502)',
-        '503' => 'El Salvador (+503)',
-        '504' => 'Honduras (+504)',
-        '505' => 'Nicaragua (+505)',
-        '506' => 'Costa Rica (+506)',
-        '507' => 'Panamá (+507)',
-        '34'  => 'España (+34)',
-        '51'  => 'Perú (+51)',
-        '52'  => 'México (+52)',
-        '54'  => 'Argentina (+54)',
-        '56'  => 'Chile (+56)',
         '57'  => 'Colombia (+57)',
-        '58'  => 'Venezuela (+58)',
-        '1'   => 'Estados Unidos / PR / RD (+1)'
+        '58'  => 'Venezuela (+58)'
     ];
     
     foreach ($prefixes as $prefix => $name) {
