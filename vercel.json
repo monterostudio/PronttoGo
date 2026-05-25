@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.7.2"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/api/admin.php"
+    },
+    {
+      "source": "/((?!admin|config|schema|favicon\\.ico).*)",
+      "destination": "/api/index.php?slug=$1"
+    }
+  ]
+}
