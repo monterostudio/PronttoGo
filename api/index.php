@@ -170,7 +170,7 @@ if ($isLocalhost) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch gap-4 relative min-h-[140px] group">
+                                    <div class="bg-white p-4.5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
                                                 <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
@@ -180,13 +180,13 @@ if ($isLocalhost) {
                                             </div>
                                             <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
                                         </div>
-                                        <div class="relative w-20 h-20 md:w-24 md:h-24 shrink-0 flex-none self-center">
-                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-full h-full object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
+                                        <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-20 md:w-24">
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
                                             <button onclick='addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] md:text-xs py-1.5 px-4 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap flex items-center gap-1">
+                                            ]) ?>)' class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>

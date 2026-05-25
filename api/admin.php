@@ -267,16 +267,17 @@ foreach ($categorias as $cat) {
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <div>
-                <a href="/" target="_blank" class="flex items-center space-x-1.5 text-[#0F172A] hover:opacity-80 transition-all">
-                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
-                    <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-50 text-[#10B981] rounded-full">Ver Tienda ↗</span>
-                </a>
-                <p class="text-xs text-slate-400 font-medium">Local: <span class="text-slate-650 font-bold"><?= h($config['nombre']) ?></span></p>
+                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
             </div>
             
-            <a href="admin.php?action=logout" class="text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-4 py-2 hover:bg-red-50 transition-all">
-                Cerrar Sesión
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="/" target="_blank" class="text-xs font-bold text-emerald-600 hover:text-white border border-emerald-200 hover:bg-[#10B981] hover:border-transparent rounded-xl px-4 py-2 transition-all bg-white shadow-sm flex items-center gap-1">
+                    Ver Tienda ↗
+                </a>
+                <a href="admin.php?action=logout" class="text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-4 py-2 hover:bg-red-50 transition-all shadow-sm">
+                    Cerrar Sesión
+                </a>
+            </div>
         </div>
     </header>
 
