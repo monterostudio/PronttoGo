@@ -18,6 +18,11 @@ if ($response['success'] && !empty($response['data'])) {
     ];
 }
 
+// Configuración de Tasa de Cambio y Moneda Local
+$tasa_dolar = floatval($config['tasa_dolar'] ?? 1.00);
+$tasa_tipo = $config['tasa_tipo'] ?? 'manual';
+$moneda_local_nombre = ($tasa_tipo === 'trm') ? 'COP' : 'Bs.';
+
 // 2. CONSULTAR CATEGORÍAS (Ordenadas)
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
 $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
@@ -101,7 +106,12 @@ if ($isLocalhost) {
     <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
-            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+            <div class="flex items-center space-x-2.5">
+                <?php if (!empty($config['logo_url'])): ?>
+                    <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg">
+                <?php endif; ?>
+                <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+            </div>
             <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
                 Iniciar Sesión
             </a>
@@ -116,6 +126,9 @@ if ($isLocalhost) {
         
         <!-- Contenido centrado y alíneado a la grilla principal -->
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-4 relative z-10">
+            <?php if (!empty($config['logo_url'])): ?>
+                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white/10 p-2.5 mb-2">
+            <?php endif; ?>
             <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
                 ⚡ Pedidos por WhatsApp
             </span>
@@ -206,7 +219,12 @@ if ($isLocalhost) {
                                                     <p class="text-xs text-slate-455 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                                 <?php endif; ?>
                                             </div>
-                                            <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
+                                            <div>
+                                                <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <?php if ($tasa_dolar > 1): ?>
+                                                    <span class="block text-xs font-bold text-slate-500 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                         <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-20 md:w-24">
                                             <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
@@ -229,7 +247,12 @@ if ($isLocalhost) {
                                             <?php endif; ?>
                                         </div>
                                         <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50">
-                                            <span class="font-black text-sm md:text-base text-slate-900">$<?= number_format($prod['precio'], 2) ?></span>
+                                            <div>
+                                                <span class="font-black text-sm md:text-base text-slate-900 block">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <?php if ($tasa_dolar > 1): ?>
+                                                    <span class="text-xs font-bold text-slate-500 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                             <button onclick='addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
@@ -266,7 +289,12 @@ if ($isLocalhost) {
                 <span>🛒</span>
                 <span id="cart-count">0 artículos</span>
             </div>
-            <span id="cart-total">$0.00</span>
+            <div class="text-right">
+                <span id="cart-total" class="block font-black text-sm md:text-base">$0.00</span>
+                <?php if ($tasa_dolar > 1): ?>
+                    <span id="cart-total-local" class="block text-[10px] opacity-90 font-bold font-mono"></span>
+                <?php endif; ?>
+            </div>
         </button>
     </div>
 
@@ -298,7 +326,12 @@ if ($isLocalhost) {
             <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
                 <div class="flex justify-between items-center font-extrabold text-slate-955">
                     <span>Total a pagar</span>
-                    <span id="drawer-total" class="text-xl">$0.00</span>
+                    <div class="text-right">
+                        <span id="drawer-total" class="text-xl block">$0.00</span>
+                        <?php if ($tasa_dolar > 1): ?>
+                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 block mt-0.5 font-mono"></span>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 
                 <button onclick="checkoutOrder()" class="w-full py-4 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-lg transition-all flex justify-center items-center space-x-2 active:scale-98">
@@ -483,6 +516,22 @@ if ($isLocalhost) {
             cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
             drawerTotal.textContent = `$${totalPrice.toFixed(2)}`;
 
+            // Tasa de cambio local dinámica
+            const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
+            const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
+            const tasaTipo = <?= json_encode($tasa_tipo) ?>;
+            if (tasaDolar > 1) {
+                const totalLocal = totalPrice * tasaDolar;
+                const formattedLocal = tasaTipo === 'trm' 
+                    ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                    : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                
+                const cartTotalLocal = document.getElementById('cart-total-local');
+                const drawerTotalLocal = document.getElementById('drawer-total-local');
+                if (cartTotalLocal) cartTotalLocal.textContent = `${monedaNombre} ${formattedLocal}`;
+                if (drawerTotalLocal) drawerTotalLocal.textContent = `${monedaNombre} ${formattedLocal}`;
+            }
+
             // Limpiar de forma segura
             cartItemsContainer.replaceChildren();
 
@@ -557,12 +606,25 @@ if ($isLocalhost) {
                 itemsText += `${item.quantity}x ${item.nombre} ($${item.precio.toFixed(2)} c/u)\n`;
             });
 
+            const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
+            const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
+            const tasaTipo = <?= json_encode($tasa_tipo) ?>;
+            let localTotalText = "";
+            if (tasaDolar > 1) {
+                const totalLocal = totalPrice * tasaDolar;
+                const formattedLocal = tasaTipo === 'trm' 
+                    ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                    : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                localTotalText = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})\n`;
+            }
+
             // Formato exacto solicitado
             const message = `*Pedido de PronttoGo* 🛒\n` +
                             `--------------------------\n` +
                             `${itemsText}` +
                             `--------------------------\n` +
-                            `*Total a pagar: $${totalPrice.toFixed(2)}*`;
+                            `*Total a pagar: $${totalPrice.toFixed(2)}*\n` +
+                            localTotalText;
 
             const encodedText = encodeURIComponent(message);
             const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;

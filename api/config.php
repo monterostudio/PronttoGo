@@ -19,10 +19,11 @@ if (session_status() === PHP_SESSION_NONE) {
     ]);
 }
 
-// 2. Cargar variables de entorno (Supabase y Admin Password)
+// 2. Cargar variables de entorno (Supabase y Admin Credentials)
 // TODO(security): Se definen las credenciales por defecto directamente en el código por solicitud del usuario para simplificar la publicación en Vercel y evitar fricción de configuración.
 $supabaseUrl = getenv('SUPABASE_URL') ?: 'https://pusrebyszbtyefcjmvsh.supabase.co';
 $supabaseKey = getenv('SUPABASE_KEY') ?: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1c3JlYnlzemJ0eWVmY2ptdnNoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTIxNjgzOCwiZXhwIjoyMDk0NzkyODM4fQ.UUbI-8OuKFxE6lMja0s8SYNMkSpJD2V2lwv2rjEa0kk';
+$adminUser = getenv('ADMIN_USER') ?: 'admin'; // Usuario por defecto
 $adminPassword = getenv('ADMIN_PASSWORD') ?: 'admin123'; // Contraseña por defecto
 
 // Soporte opcional para desarrollo local
@@ -32,12 +33,14 @@ if (file_exists($localConfigPath)) {
     if (is_array($localConfig)) {
         $supabaseUrl = $localConfig['SUPABASE_URL'] ?? $supabaseUrl;
         $supabaseKey = $localConfig['SUPABASE_KEY'] ?? $supabaseKey;
+        $adminUser = $localConfig['ADMIN_USER'] ?? $adminUser;
         $adminPassword = $localConfig['ADMIN_PASSWORD'] ?? $adminPassword;
     }
 }
 
 define('SUPABASE_URL', rtrim($supabaseUrl ?: '', '/'));
 define('SUPABASE_KEY', $supabaseKey ?: '');
+define('ADMIN_USER', $adminUser);
 define('ADMIN_PASSWORD', $adminPassword);
 
 // Autodetectar entorno local para desactivar validación SSL de cURL en Windows/Laragon
@@ -179,4 +182,36 @@ function redirect(string $url): void {
 // 7. Verificar estado de Administrador
 function is_admin_logged_in(): bool {
     return !empty($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+}
+
+// 8. Obtener tasa de cambio del Banco Central de Venezuela (BCV) o TRM Colombia
+function fetch_automatic_rate(string $type): ?float {
+    if ($type === 'bcv') {
+        $url = 'https://open.er-api.com/v6/latest/USD';
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        if ($res) {
+            $data = json_decode($res, true);
+            $rate = floatval($data['rates']['VES'] ?? null);
+            return $rate > 0 ? $rate : null;
+        }
+    } elseif ($type === 'trm') {
+        $url = 'https://open.er-api.com/v6/latest/USD';
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        if ($res) {
+            $data = json_decode($res, true);
+            $rate = floatval($data['rates']['COP'] ?? null);
+            return $rate > 0 ? $rate : null;
+        }
+    }
+    return null;
 }

@@ -10,14 +10,59 @@ $error = '';
 $success = '';
 
 // 1. PROCESAR ACCIÓN DE LOGIN (Sin requerir sesión iniciada)
+if (empty($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+}
+if (empty($_SESSION['login_lock_until'])) {
+    $_SESSION['login_lock_until'] = 0;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
-    $password = $_POST['password'] ?? '';
-    
-    if ($password === ADMIN_PASSWORD) {
-        $_SESSION['admin_logged_in'] = true;
-        redirect('/admin');
+    // A. Honeypot check
+    if (!empty($_POST['website_url'])) {
+        sleep(5);
+        die('Acceso denegado (Bot detectado).');
+    }
+
+    // B. Bloqueo temporal por fuerza bruta
+    if ($_SESSION['login_lock_until'] > time()) {
+        $error = 'Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos.';
     } else {
-        $error = 'Contraseña de administrador incorrecta.';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $captcha_ans = intval($_POST['captcha_answer'] ?? 0);
+        $expected_ans = ($_SESSION['login_captcha_a'] ?? 0) + ($_SESSION['login_captcha_b'] ?? 0);
+
+        // C. Validar Captcha
+        if ($captcha_ans !== $expected_ans) {
+            $error = 'Respuesta de verificación de seguridad incorrecta.';
+            $_SESSION['login_attempts']++;
+            if ($_SESSION['login_attempts'] >= 5) {
+                $_SESSION['login_lock_until'] = time() + 900;
+            }
+            $_SESSION['login_captcha_a'] = rand(1, 9);
+            $_SESSION['login_captcha_b'] = rand(1, 9);
+            sleep(1);
+        } else {
+            // D. Validar credenciales
+            if ($username === ADMIN_USER && $password === ADMIN_PASSWORD) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['login_attempts'] = 0;
+                $_SESSION['login_lock_until'] = 0;
+                unset($_SESSION['login_captcha_a']);
+                unset($_SESSION['login_captcha_b']);
+                redirect('/admin');
+            } else {
+                $error = 'Usuario o contraseña incorrectos.';
+                $_SESSION['login_attempts']++;
+                if ($_SESSION['login_attempts'] >= 5) {
+                    $_SESSION['login_lock_until'] = time() + 900;
+                }
+                $_SESSION['login_captcha_a'] = rand(1, 9);
+                $_SESSION['login_captcha_b'] = rand(1, 9);
+                sleep(2);
+            }
+        }
     }
 }
 
@@ -32,6 +77,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 $is_logged_in = is_admin_logged_in();
 
 if (!$is_logged_in):
+    if (empty($_SESSION['login_captcha_a']) || empty($_SESSION['login_captcha_b'])) {
+        $_SESSION['login_captcha_a'] = rand(1, 9);
+        $_SESSION['login_captcha_b'] = rand(1, 9);
+    }
     // RENDERIZAR PANTALLA DE ACCESO POR CONTRASEÑA
 ?>
 <!DOCTYPE html>
@@ -71,16 +120,42 @@ if (!$is_logged_in):
                 </div>
             <?php endif; ?>
 
+            <?php
+            $is_locked = isset($_SESSION['login_lock_until']) && $_SESSION['login_lock_until'] > time();
+            $lock_time_left = $is_locked ? ceil(($_SESSION['login_lock_until'] - time()) / 60) : 0;
+            ?>
+
             <form action="admin.php" method="POST" class="space-y-4">
                 <input type="hidden" name="action" value="login">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Contraseña del Administrador</label>
-                    <input type="password" name="password" required placeholder="••••••••" 
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                    <p class="text-[10px] text-slate-400 mt-1">Por defecto es <code>admin123</code> (puedes cambiarla en las variables de entorno de Vercel).</p>
+                
+                <!-- Honeypot (campo invisible para bots) -->
+                <div style="display:none;">
+                    <label>No rellenar</label>
+                    <input type="text" name="website_url" autocomplete="off" tabindex="-1">
                 </div>
-                <button type="submit" class="w-full py-3 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-md transition-all">
-                    Ingresar al Panel
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario</label>
+                    <input type="text" name="username" required placeholder="ej: admin" <?= $is_locked ? 'disabled' : '' ?>
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Contraseña</label>
+                    <input type="password" name="password" required placeholder="••••••••" <?= $is_locked ? 'disabled' : '' ?>
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                    <p class="text-[10px] text-slate-400 mt-1">Por defecto: usuario <code>admin</code> y clave <code>admin123</code>.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Pregunta de seguridad: ¿Cuánto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?</label>
+                    <input type="number" name="captcha_answer" required placeholder="Escribe tu respuesta" <?= $is_locked ? 'disabled' : '' ?>
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                </div>
+
+                <button type="submit" <?= $is_locked ? 'disabled' : '' ?>
+                        class="w-full py-3 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 disabled:from-slate-300 disabled:to-slate-400 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+                    <?= $is_locked ? "Bloqueado por $lock_time_left min" : "Ingresar al Panel" ?>
                 </button>
             </form>
         </div>
@@ -108,15 +183,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $telefono_local = preg_replace('/[^0-9]/', '', $_POST['telefono_local'] ?? '');
             $whatsapp = $codigo_pais . $telefono_local;
             
+            $logo_url = trim($_POST['logo_url'] ?? '');
+            $tasa_tipo = trim($_POST['tasa_tipo'] ?? 'manual');
+            $tasa_dolar = floatval($_POST['tasa_dolar'] ?? 1.00);
+
+            // Tasa automática inteligente si no es manual
+            if ($tasa_tipo !== 'manual') {
+                $fetched_rate = fetch_automatic_rate($tasa_tipo);
+                if ($fetched_rate !== null) {
+                    $tasa_dolar = $fetched_rate;
+                } else {
+                    $error = 'No se pudo consultar la tasa automática de internet. Se conservó el valor anterior.';
+                }
+            }
+
             if (empty($nombre) || empty($whatsapp)) {
                 $error = 'El nombre del comercio y el teléfono de WhatsApp son obligatorios.';
             } else {
                 $response = supabase_request('PATCH', 'configuracion?id=eq.1', [
                     'nombre' => $nombre,
-                    'telefono_whatsapp' => $whatsapp
+                    'telefono_whatsapp' => $whatsapp,
+                    'logo_url' => !empty($logo_url) ? $logo_url : null,
+                    'tasa_dolar' => $tasa_dolar,
+                    'tasa_tipo' => $tasa_tipo
                 ]);
                 if ($response['success']) {
                     $success = 'Perfil comercial actualizado con éxito.';
+                    // Actualizar el estado local
+                    $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
+                    if ($resConfig['success'] && !empty($resConfig['data'])) {
+                        $config = $resConfig['data'][0];
+                    }
                 } else {
                     $error = 'Error al actualizar el perfil en la base de datos.';
                 }
@@ -245,6 +342,19 @@ $config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
 $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
 
+// Calcular siguiente orden de categoría inteligente
+$next_cat_order = 1;
+if (!empty($categorias)) {
+    $max_order = 0;
+    foreach ($categorias as $cat) {
+        if ($cat['orden_visual'] > $max_order) {
+            $max_order = $cat['orden_visual'];
+        }
+    }
+    $next_cat_order = $max_order + 1;
+}
+$categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
+
 // Cargar todos los productos
 $resProductos = supabase_request('GET', 'productos?order=id.asc');
 $productos = $resProductos['success'] ? $resProductos['data'] : [];
@@ -346,6 +456,13 @@ foreach ($categorias as $cat) {
                     <input type="text" name="nombre" value="<?= h($config['nombre']) ?>" required
                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
                 </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL del Logo del Comercio</label>
+                    <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png"
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                    <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacío, se mostrará el nombre en texto.</p>
+                </div>
                 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
@@ -373,6 +490,25 @@ foreach ($categorias as $cat) {
                     <p class="text-[11px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número telefónico local sin el signo + ni ceros al inicio.</p>
                 </div>
 
+                <!-- Tasa de Cambio Inteligente -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Gestión de Tasa de Cambio (Dólar del Día)</label>
+                        <select name="tasa_tipo" id="tasa_tipo" onchange="toggleTasaInput()" required
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                            <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Manual / Personalizada</option>
+                            <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
+                            <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
+                        <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                        <p id="tasa_note" class="text-[11px] text-slate-400 mt-1">Al elegir una tasa automática, este valor se consultará y actualizará al guardar.</p>
+                    </div>
+                </div>
+
                 <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
                     Guardar Cambios
                 </button>
@@ -398,7 +534,7 @@ foreach ($categorias as $cat) {
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orden de Visualización</label>
-                            <input type="number" name="orden_visual" value="0" required 
+                            <input type="number" name="orden_visual" value="<?= $next_cat_order ?>" required 
                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
                         </div>
                         <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
@@ -749,6 +885,23 @@ foreach ($categorias as $cat) {
             document.getElementById('prod-btn-cancel').classList.add('hidden');
         }
 
+        // Lógica de toggle para entrada de tasa de cambio según el tipo
+        function toggleTasaInput() {
+            const type = document.getElementById('tasa_tipo').value;
+            const input = document.getElementById('tasa_dolar_input');
+            const note = document.getElementById('tasa_note');
+            
+            if (type === 'manual') {
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-slate-50', 'text-slate-400');
+                note.textContent = 'Introduce el valor de cambio manualmente.';
+            } else {
+                input.setAttribute('readonly', 'true');
+                input.classList.add('bg-slate-50', 'text-slate-400');
+                note.textContent = 'Tasa automática. Se obtendrá del servidor al guardar el formulario.';
+            }
+        }
+
         // Inicialización
         window.addEventListener('DOMContentLoaded', () => {
             let defaultTab = '<?= $active_tab ?? '#profile' ?>';
@@ -756,6 +909,10 @@ foreach ($categorias as $cat) {
                 defaultTab = window.location.hash;
             }
             switchTab(defaultTab);
+            
+            if (document.getElementById('tasa_tipo')) {
+                toggleTasaInput();
+            }
         });
     </script>
 </body>
