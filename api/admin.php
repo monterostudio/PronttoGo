@@ -430,7 +430,11 @@ foreach ($categorias as $cat) {
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
             <div>
-                <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent">PronttoGo</span>
+                <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
+                    <img src="/api/logo.svg" alt="PronttoGo" class="h-8 w-auto object-contain">
+                <?php else: ?>
+                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
+                <?php endif; ?>
             </div>
             
             <div class="flex items-center gap-1.5 sm:gap-3">
@@ -527,10 +531,10 @@ foreach ($categorias as $cat) {
 
                 <!-- Tasa de Cambio Inteligente -->
                 <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 font-semibold">Tasa de Cambio a Moneda Local</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Tasa de Cambio a Moneda Local</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Tipo de Tasa</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de Tasa</label>
                             <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
                                     class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
                                 <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Fija / Personalizada</option>
@@ -539,7 +543,7 @@ foreach ($categorias as $cat) {
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
                             <div class="relative">
                                 <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
                                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
@@ -557,17 +561,18 @@ foreach ($categorias as $cat) {
 
                 <!-- Credenciales Administrativas -->
                 <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 font-semibold">Credenciales de Acceso</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Credenciales de Acceso</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Usuario Administrativo</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario Administrativo</label>
                             <input type="text" name="admin_user" value="<?= h($dbAdminUser) ?>" required placeholder="ej: admin"
                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Nueva Contraseña (Dejar vacío para no cambiar)</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva Contraseña</label>
                             <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                            <p class="text-[10px] text-slate-400 mt-1">Dejar vacío para conservar la contraseña actual.</p>
                         </div>
                     </div>
                 </div>
@@ -894,8 +899,10 @@ foreach ($categorias as $cat) {
 
     </main>
 
-    <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 font-medium mt-auto">
-        &copy; 2026 PronttoGo. Desarrollado por Montero Studio.
+    <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 font-medium mt-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+        <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>. Desarrollado por Montero Studio.</span>
+        <span class="hidden sm:inline text-slate-200">|</span>
+        <a href="/legal" class="text-slate-400 hover:text-emerald-600 transition-colors">Términos y Privacidad</a>
     </footer>
 
     <!-- Scripts -->

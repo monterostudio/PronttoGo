@@ -51,7 +51,7 @@ if ($isLocalhost) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,7 +94,7 @@ if ($isLocalhost) {
         }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col overflow-x-hidden">
 
     <?php if ($dbError): ?>
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
@@ -109,8 +109,14 @@ if ($isLocalhost) {
             <div class="flex items-center space-x-2.5">
                 <?php if (!empty($config['logo_url'])): ?>
                     <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg">
+                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
+                <?php else: ?>
+                    <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
+                        <img src="/api/logo.svg" alt="PronttoGo" class="h-8 w-auto object-contain">
+                    <?php else: ?>
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
+                    <?php endif; ?>
                 <?php endif; ?>
-                <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
             </div>
             <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
                 Iniciar Sesión
@@ -128,6 +134,8 @@ if ($isLocalhost) {
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-4 relative z-10">
             <?php if (!empty($config['logo_url'])): ?>
                 <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white/10 p-2.5 mb-2">
+            <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
+                <img src="/api/logo.svg" alt="PronttoGo" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white p-3.5 mb-2">
             <?php endif; ?>
             <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
                 ⚡ Pedidos por WhatsApp
@@ -226,8 +234,8 @@ if ($isLocalhost) {
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-                                        <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-20 md:w-24">
-                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
+                                        <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
                                             <button onclick='addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
@@ -273,8 +281,11 @@ if ($isLocalhost) {
 
     <!-- Footer Bar -->
     <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
-        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-semibold text-slate-500">
-            <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
+            <div class="flex items-center gap-4">
+                <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+                <a href="/legal" class="text-slate-400 hover:text-emerald-600 transition-colors">Términos y Privacidad</a>
+            </div>
             <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-655 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
                 <span class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent font-extrabold">Montero Studio</span>

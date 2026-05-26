@@ -14,6 +14,14 @@
       "destination": "/api/admin.php"
     },
     {
+      "source": "/legal",
+      "destination": "/api/legal.php"
+    },
+    {
+      "source": "/legal.php",
+      "destination": "/api/legal.php"
+    },
+    {
       "source": "/",
       "destination": "/api/index.php"
     }
