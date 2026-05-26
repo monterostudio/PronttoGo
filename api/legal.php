@@ -41,20 +41,20 @@ $nombre_tienda = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' 
 
     <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
-        <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
+        <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between min-w-0">
+            <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
-                    <img src="<?= h($config['logo_url']) ?>" alt="<?= h($nombre_tienda) ?>" class="h-8 w-auto object-contain rounded-lg">
-                    <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($nombre_tienda) ?></a>
+                    <img src="<?= h($config['logo_url']) ?>" alt="<?= h($nombre_tienda) ?>" class="h-8 w-auto object-contain rounded-lg shrink-0">
+                    <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($nombre_tienda) ?></a>
                 <?php else: ?>
                     <?php if (strtolower($nombre_tienda) === 'pronttogo' || $nombre_tienda === 'Mi Tienda'): ?>
-                        <a href="/"><?= get_logo_svg('h-8 w-auto') ?></a>
+                        <a href="/" class="shrink-0"><?= get_logo_svg('h-8 w-auto') ?></a>
                     <?php else: ?>
-                        <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($nombre_tienda) ?></a>
+                        <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($nombre_tienda) ?></a>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
-            <a href="/" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
+            <a href="/" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
                 Volver al Menú
             </a>
         </div>

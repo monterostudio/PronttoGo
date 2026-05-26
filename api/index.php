@@ -111,19 +111,19 @@ if ($isLocalhost) {
     <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
+            <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
-                    <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg">
-                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
+                    <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg shrink-0">
+                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                 <?php else: ?>
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                        <?= get_logo_svg('h-8 w-auto') ?>
+                        <?= get_logo_svg('h-8 w-auto shrink-0') ?>
                     <?php else: ?>
-                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
-            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
+            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
                 Iniciar Sesión
             </a>
         </div>
@@ -449,8 +449,18 @@ if ($isLocalhost) {
                 if (pill.getAttribute('href') === `#${id}`) {
                     pill.classList.add('active');
                     
-                    // Centrar el elemento en el scroll del swiper móvil
-                    pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    // Centrar el elemento en el scroll del swiper móvil de forma horizontal sin alterar el scroll vertical de la ventana
+                    const container = pill.parentElement;
+                    if (container) {
+                        const containerRect = container.getBoundingClientRect();
+                        const pillRect = pill.getBoundingClientRect();
+                        const scrollLeft = container.scrollLeft;
+                        const targetScrollLeft = scrollLeft + (pillRect.left - containerRect.left) - (containerRect.width / 2) + (pillRect.width / 2);
+                        container.scrollTo({
+                            left: targetScrollLeft,
+                            behavior: 'smooth'
+                        });
+                    }
                 } else {
                     pill.classList.remove('active');
                 }

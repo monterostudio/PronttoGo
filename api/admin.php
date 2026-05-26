@@ -553,16 +553,16 @@ foreach ($categorias as $cat) {
 
     <!-- Header -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
-            <div>
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2 min-w-0">
+            <div class="min-w-0 flex items-center">
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                        <?= get_logo_svg('h-8 w-auto') ?>
+                        <?= get_logo_svg('h-8 w-auto shrink-0') ?>
                     <?php else: ?>
-                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
+                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
                 <?php endif; ?>
             </div>
             
-            <div class="flex items-center gap-1.5 sm:gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-emerald-600 hover:text-white border border-emerald-200 hover:bg-[#10B981] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1 whitespace-nowrap">
                     Ver Tienda ↗
                 </a>
@@ -632,7 +632,7 @@ foreach ($categorias as $cat) {
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
                     <div class="flex gap-2 w-full">
                         <select name="codigo_pais" required
-                                class="w-[155px] shrink-0 pl-3.5 pr-8 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
                             <?php
                             $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
                             $selected_code = $phone_split['code'];
@@ -737,7 +737,7 @@ foreach ($categorias as $cat) {
                 </div>
 
                 <!-- Lista de Categorías -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-4 min-w-0">
                     <div class="border-b border-slate-50 pb-2">
                         <h2 class="text-lg font-extrabold">Categorías Registradas</h2>
                         <p class="text-[11px] text-slate-400">Categorías y su orden en el menú.</p>
@@ -747,7 +747,7 @@ foreach ($categorias as $cat) {
                         <p class="text-sm text-slate-400 py-6 text-center">No has registrado categorías aún.</p>
                     <?php else: ?>
                         <!-- Vista de Tarjetas para Móvil -->
-                        <div class="space-y-3 sm:hidden">
+                        <div class="space-y-3 lg:hidden">
                             <?php foreach ($categorias as $cat): ?>
                                 <div class="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
                                     <div>
@@ -769,7 +769,7 @@ foreach ($categorias as $cat) {
                         </div>
 
                         <!-- Vista de Tabla para Escritorio -->
-                        <div class="hidden sm:block overflow-x-auto">
+                        <div class="hidden lg:block overflow-x-auto">
                             <table class="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">
@@ -871,7 +871,7 @@ foreach ($categorias as $cat) {
                 </div>
 
                 <!-- Lista de Productos -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-4 min-w-0">
                     <div class="border-b border-slate-50 pb-2">
                         <h2 class="text-lg font-extrabold">Productos Registrados</h2>
                         <p class="text-[11px] text-slate-400">Administra disponibilidad y detalles.</p>
@@ -881,7 +881,7 @@ foreach ($categorias as $cat) {
                         <p class="text-sm text-slate-400 py-6 text-center">No has registrado productos aún.</p>
                     <?php else: ?>
                         <!-- Vista de Tarjetas para Móvil -->
-                        <div class="space-y-3 sm:hidden">
+                        <div class="space-y-3 lg:hidden">
                             <?php foreach ($productos as $prod): ?>
                                 <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3 shadow-sm">
                                     <div class="flex items-center space-x-3">
@@ -903,8 +903,8 @@ foreach ($categorias as $cat) {
                                         <p class="text-[11px] text-slate-550 leading-relaxed bg-slate-55/50 p-2 rounded-lg"><?= h($prod['descripcion']) ?></p>
                                     <?php endif; ?>
                                     
-                                    <div class="flex items-center justify-between pt-2.5 border-t border-slate-100">
-                                        <div class="flex items-center space-x-2">
+                                    <div class="flex flex-wrap items-center justify-between gap-y-2 pt-2.5 border-t border-slate-100">
+                                        <div class="flex items-center space-x-2 shrink-0">
                                             <span class="text-xs font-semibold text-slate-500">Disponible:</span>
                                             <form action="admin.php" method="POST" class="inline-block">
                                                 <?= csrf_input() ?>
@@ -916,7 +916,7 @@ foreach ($categorias as $cat) {
                                                 </button>
                                             </form>
                                         </div>
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center space-x-2 shrink-0">
                                             <button type="button" onclick='loadProductForEdit(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
@@ -943,7 +943,7 @@ foreach ($categorias as $cat) {
                         </div>
 
                         <!-- Vista de Tabla para Escritorio -->
-                        <div class="hidden sm:block overflow-x-auto">
+                        <div class="hidden lg:block overflow-x-auto">
                             <table class="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">
