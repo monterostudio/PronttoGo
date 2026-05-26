@@ -174,16 +174,6 @@ if ($isLocalhost) {
                     Explora nuestras especialidades, arma tu pedido y envíalo directo por WhatsApp en segundos.
                 </p>
             </div>
-
-            <!-- Badges de características — al pie, más discretos -->
-            <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#00CFBD]/10 border border-[#00CFBD]/20 text-[#00CFBD] rounded-full text-[10px] font-bold tracking-wide">
-                    ⚡ Pedidos por WhatsApp
-                </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#2A3543]/5 border border-[#2A3543]/10 text-slate-655 rounded-full text-[10px] font-bold tracking-wide">
-                    🛒 Carrito Digital
-                </span>
-            </div>
         </div>
     </div>
 
