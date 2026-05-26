@@ -68,6 +68,20 @@ if ($isLocalhost) {
             if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
             _warn(...args);
         };
+
+        // Configuración de Tailwind para soportar dark mode por clase
+        window.tailwind = {
+            config: {
+                darkMode: 'class'
+            }
+        };
+
+        // Cargar tema guardado antes de renderizar la página para evitar parpadeo (FOUC)
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,9 +111,31 @@ if ($isLocalhost) {
             color: #FFFFFF !important;             /* Keep text white when active is hovered */
             border-color: #1E293B !important;
         }
+
+        /* Estilos de Modo Oscuro para pills de categorías móviles */
+        .dark .mobile-category-pill {
+            background-color: #1e293b !important; /* bg-slate-800 */
+            color: #94a3b8 !important;            /* text-slate-400 */
+            border-color: #334155 !important;      /* border-slate-700 */
+        }
+        .dark .mobile-category-pill:hover {
+            background-color: #334155 !important; /* bg-slate-700 */
+            color: #f8fafc !important;            /* text-slate-50 */
+            border-color: #475569 !important;      /* border-slate-600 */
+        }
+        .dark .mobile-category-pill.active {
+            background-color: #00CFBD !important;  /* bg-cyan-brand */
+            color: #0B1120 !important;             /* text-dark */
+            border-color: #00CFBD !important;
+        }
+        .dark .mobile-category-pill.active:hover {
+            background-color: #00Bfae !important;
+            color: #0B1120 !important;
+            border-color: #00Bfae !important;
+        }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-[#F8FAFC] text-[#0F172A] dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
 
     <?php if ($dbError): ?>
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
@@ -109,7 +145,7 @@ if ($isLocalhost) {
     <?php endif; ?>
 
     <!-- Header -->
-    <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
+    <header class="h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
             <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
@@ -123,9 +159,19 @@ if ($isLocalhost) {
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
-            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
-                Iniciar Sesión
-            </a>
+            
+            <div class="flex items-center space-x-3 shrink-0">
+                <!-- Toggle Dark Mode -->
+                <button id="theme-toggle" class="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm hover:shadow transition-all" title="Cambiar tema">
+                    <!-- Sun Icon (visible en dark mode) -->
+                    <svg id="theme-toggle-light-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <!-- Moon Icon (visible en light mode) -->
+                    <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+                <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 rounded-xl px-4 py-2 transition-all bg-white dark:bg-slate-900 shadow-sm">
+                    Iniciar Sesión
+                </a>
+            </div>
         </div>
     </header>
 
@@ -199,9 +245,20 @@ if ($isLocalhost) {
 
         <!-- Columna de Contenido principal -->
         <div class="flex-1 space-y-8 min-w-0">
+            <!-- Buscador de Productos -->
+            <div class="relative w-full shadow-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-[#00CFBD]/30 focus-within:border-[#00CFBD] dark:focus-within:border-[#00CFBD]">
+                <div class="pl-3.5 text-slate-400 dark:text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" id="search-input" placeholder="Buscar especialidades..." class="w-full bg-transparent border-0 outline-none text-slate-800 dark:text-slate-100 text-sm placeholder-slate-400 dark:placeholder-slate-500 pr-4 py-1.5" autocomplete="off" />
+                <button id="search-clear-btn" class="hidden pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-350 font-bold text-sm">✕</button>
+            </div>
+
             <!-- Categorías Deslizables (Sticky) - Solo Visible en Móvil -->
             <?php if (!empty($categorias)): ?>
-                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
+                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-16 z-20 shadow-sm">
                     <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
                         <?php foreach ($categorias as $cat): 
                             if (empty($productosPorCategoria[$cat['id']])) continue;
@@ -232,13 +289,24 @@ if ($isLocalhost) {
                     </div>
                 </div>
             <?php else: ?>
+                <!-- Mensaje de Búsqueda sin Resultados -->
+                <div id="search-no-results" class="hidden text-center py-16 space-y-3">
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                        🔍
+                    </div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-sm">No se encontraron productos</h3>
+                    <p class="text-slate-400 dark:text-slate-550 text-xs max-w-xs mx-auto leading-relaxed">
+                        Intenta con otra palabra clave o explora las categorías del menú.
+                    </p>
+                </div>
+
                 <?php foreach ($categorias as $cat): 
                     $items = $productosPorCategoria[$cat['id']] ?? [];
                     if (empty($items)) continue;
                 ?>
                     <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
                         <div class="flex items-center space-x-3">
-                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850"><?= h($cat['nombre_categoria']) ?></h2>
+                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850 dark:text-slate-100"><?= h($cat['nombre_categoria']) ?></h2>
                             <div class="h-0.5 flex-1 bg-gradient-to-r from-[#10B981] to-[#06B6D4] opacity-20 rounded"></div>
                         </div>
 
@@ -247,24 +315,24 @@ if ($isLocalhost) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
+                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
-                                                <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                                <h3 class="font-extrabold text-slate-900 dark:text-white text-sm md:text-base leading-snug group-hover:text-[#10B981] dark:group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
                                                 <?php if (!empty($prod['descripcion'])): ?>
-                                                    <p class="text-xs text-slate-455 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                                 <?php endif; ?>
                                             </div>
                                             <div>
-                                                <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <span class="block font-black text-sm md:text-base text-slate-900 dark:text-white mt-2">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="block text-xs font-bold text-slate-500 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="block text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
                                         <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
-                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
-                                            <button onclick='addToCart(<?= json_encode([
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
+                                            <button onclick='event.stopPropagation(); addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
@@ -275,21 +343,21 @@ if ($isLocalhost) {
                                     </div>
                                 <?php else: ?>
                                     <!-- Tarjeta sin Imagen -->
-                                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
+                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
-                                            <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#10B981] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm md:text-base leading-snug group-hover:text-[#10B981] dark:group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
-                                                <p class="text-xs text-slate-455 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50">
+                                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50 dark:border-slate-800">
                                             <div>
-                                                <span class="font-black text-sm md:text-base text-slate-900 block">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <span class="font-black text-sm md:text-base text-slate-900 dark:text-white block">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="text-xs font-bold text-slate-500 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
                                                 <?php endif; ?>
                                             </div>
-                                            <button onclick='addToCart(<?= json_encode([
+                                            <button onclick='event.stopPropagation(); addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
@@ -308,7 +376,7 @@ if ($isLocalhost) {
     </main>
 
     <!-- Footer Bar -->
-    <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-5 mt-auto">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
             <div class="flex items-center gap-4">
                 <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
@@ -339,43 +407,95 @@ if ($isLocalhost) {
 
     <!-- Drawer del Carrito -->
     <div id="cart-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
-        <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
+        <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/60 backdrop-blur-md"></div>
         
         <!-- Panel Desplizable -->
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-100 flex flex-col max-w-md mx-auto overflow-hidden">
-            <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
+        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl border-t border-slate-100 dark:border-slate-800 flex flex-col max-w-md mx-auto overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-50 dark:border-slate-800/60 flex items-center justify-between">
                 <div>
-                    <h3 class="font-extrabold text-lg text-slate-800">Mi Pedido</h3>
-                    <p class="text-xs text-slate-400">Verifica los artículos seleccionados</p>
+                    <h3 class="font-extrabold text-lg text-slate-800 dark:text-white">Mi Pedido</h3>
+                    <p class="text-xs text-slate-400 dark:text-slate-550">Verifica los artículos seleccionados</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-750 transition-colors">
                         Vaciar
                     </button>
-                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400">
                         ✕
                     </button>
                 </div>
             </div>
 
-            <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 flex-1">
+            <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 dark:divide-slate-800 flex-1">
                 <!-- Se rellena por JS de forma segura -->
             </div>
 
-            <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
-                <div class="flex justify-between items-center font-extrabold text-slate-955">
+            <div class="p-6 border-t border-slate-50 dark:border-slate-800 space-y-4 bg-slate-50/50 dark:bg-slate-850/30">
+                <div class="flex justify-between items-center font-extrabold text-slate-955 dark:text-slate-100">
                     <span>Total a pagar</span>
                     <div class="text-right">
-                        <span id="drawer-total" class="text-xl block">$0.00</span>
+                        <span id="drawer-total" class="text-xl block dark:text-white">$0.00</span>
                         <?php if ($tasa_dolar > 1): ?>
-                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 block mt-0.5 font-mono"></span>
+                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 dark:text-slate-400 block mt-0.5 font-mono"></span>
                         <?php endif; ?>
                     </div>
                 </div>
                 
-                <button onclick="checkoutOrder()" class="w-full py-4 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-lg transition-all flex justify-center items-center space-x-2 active:scale-98">
-                    <span>Enviar Pedido por WhatsApp</span>
-                    <span>💬</span>
+    <!-- Modal de Detalle de Producto -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div onclick="closeProductModal()" class="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md"></div>
+        
+        <!-- Contenedor del Modal -->
+        <div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-lg bg-white dark:bg-slate-900 rounded-t-3xl md:rounded-3xl shadow-2xl border-t md:border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden max-h-[90vh] transition-all duration-300">
+            <!-- Header Modal -->
+            <div class="px-6 py-4 border-b border-slate-50 dark:border-slate-800/60 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-10">
+                <h3 class="font-extrabold text-base text-slate-800 dark:text-white">Detalle del Producto</h3>
+                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Cuerpo Modal (Scrollable) -->
+            <div class="p-6 overflow-y-auto space-y-5">
+                <!-- Imagen -->
+                <div id="modal-img-container" class="w-full h-48 md:h-56 rounded-2xl bg-slate-50 dark:bg-slate-850 overflow-hidden hidden border border-slate-100 dark:border-slate-800">
+                    <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                </div>
+
+                <div class="space-y-1">
+                    <h2 id="modal-title" class="font-black text-slate-900 dark:text-white text-lg md:text-xl leading-snug"></h2>
+                    <p id="modal-desc" class="text-xs md:text-sm text-slate-500 dark:text-slate-450 leading-relaxed"></p>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-y border-slate-50 dark:border-slate-800/60">
+                    <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Precio</span>
+                    <div class="text-right">
+                        <span id="modal-price" class="text-lg md:text-xl font-black text-slate-900 dark:text-white"></span>
+                        <span id="modal-price-local" class="block text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5"></span>
+                    </div>
+                </div>
+
+                <!-- Campo de notas personalizadas -->
+                <div class="space-y-2">
+                    <label for="modal-notes" class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Notas / Instrucciones adicionales</label>
+                    <textarea id="modal-notes" placeholder="Ej. sin cebolla, salsa aparte, bien cocido..." class="w-full p-3.5 bg-slate-50 dark:bg-slate-850 border border-slate-150 dark:border-slate-800 rounded-xl text-xs md:text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#00CFBD]/30 focus:border-[#00CFBD] dark:focus:border-[#00CFBD] resize-none h-20" maxlength="150"></textarea>
+                </div>
+            </div>
+
+            <!-- Footer Modal (Controles y Botón de compra) -->
+            <div class="p-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-850/20 flex flex-col sm:flex-row gap-4 sticky bottom-0 z-10">
+                <!-- Selector de Cantidad -->
+                <div class="flex items-center justify-center sm:justify-start space-x-3.5 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 rounded-xl shrink-0">
+                    <button onclick="updateModalQuantity(-1)" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-black text-base transition-colors w-6 h-6 flex items-center justify-center">−</button>
+                    <span id="modal-qty" class="font-black text-sm w-6 text-center text-slate-800 dark:text-white">1</span>
+                    <button onclick="updateModalQuantity(1)" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-black text-base transition-colors w-6 h-6 flex items-center justify-center">+</button>
+                </div>
+
+                <!-- Botón de compra -->
+                <button id="modal-add-btn" class="flex-1 py-3 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-black text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
+                    <span>Agregar al pedido</span>
+                    <span id="modal-subtotal" class="font-black"></span>
                 </button>
             </div>
         </div>
@@ -388,6 +508,149 @@ if ($isLocalhost) {
 
         let isScrolling = false;
         let scrollTimeout;
+
+        // Variables del Modal de Detalle
+        let currentModalProduct = null;
+        let currentModalQuantity = 1;
+
+        // Abrir Modal de Producto
+        function openProductModal(product) {
+            currentModalProduct = product;
+            currentModalQuantity = 1;
+            
+            const modal = document.getElementById('product-modal');
+            const modalImgContainer = document.getElementById('modal-img-container');
+            const modalImg = document.getElementById('modal-img');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDesc = document.getElementById('modal-desc');
+            const modalPrice = document.getElementById('modal-price');
+            const modalPriceLocal = document.getElementById('modal-price-local');
+            const modalNotes = document.getElementById('modal-notes');
+            
+            // Limpiar notas previas
+            modalNotes.value = '';
+            
+            // Llenar datos básicos
+            modalTitle.textContent = product.nombre;
+            modalDesc.textContent = product.descripcion || 'Sin descripción disponible.';
+            modalPrice.textContent = `$${parseFloat(product.precio).toFixed(2)}`;
+            
+            // Cálculo de moneda local
+            const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
+            const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
+            const tasaTipo = <?= json_encode($tasa_tipo) ?>;
+            if (tasaDolar > 1) {
+                const priceLocal = parseFloat(product.precio) * tasaDolar;
+                const formattedLocal = tasaTipo === 'trm' 
+                    ? priceLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                    : priceLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                modalPriceLocal.textContent = `${monedaNombre} ${formattedLocal}`;
+                modalPriceLocal.classList.remove('hidden');
+            } else {
+                modalPriceLocal.classList.add('hidden');
+            }
+
+            // Imagen
+            if (product.imagen_url) {
+                modalImg.src = product.imagen_url;
+                modalImg.alt = product.nombre;
+                modalImgContainer.classList.remove('hidden');
+            } else {
+                modalImgContainer.classList.add('hidden');
+            }
+
+            updateModalUI();
+
+            // Mostrar modal
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 10);
+        }
+
+        // Cerrar Modal de Producto
+        function closeProductModal() {
+            const modal = document.getElementById('product-modal');
+            modal.classList.remove('opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Modificar cantidad en modal
+        function updateModalQuantity(change) {
+            currentModalQuantity += change;
+            if (currentModalQuantity < 1) {
+                currentModalQuantity = 1;
+            }
+            updateModalUI();
+        }
+
+        // Actualizar UI del modal (Subtotal)
+        function updateModalUI() {
+            document.getElementById('modal-qty').textContent = currentModalQuantity;
+            const price = parseFloat(currentModalProduct.precio);
+            const subtotal = price * currentModalQuantity;
+            document.getElementById('modal-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        }
+
+        // Animación volar al carrito
+        function triggerFlyAnimation(startElement) {
+            const floatingCart = document.getElementById('floating-cart');
+            if (!floatingCart) return;
+
+            // Asegurarnos de que el carrito no esté oculto para obtener su posición
+            const wasHidden = floatingCart.classList.contains('hidden');
+            if (wasHidden) {
+                floatingCart.classList.remove('hidden');
+            }
+
+            const rect = startElement.getBoundingClientRect();
+            const cartRect = floatingCart.getBoundingClientRect();
+
+            if (wasHidden) {
+                floatingCart.classList.add('hidden');
+            }
+
+            // Crear la partícula
+            const particle = document.createElement('div');
+            particle.className = 'fixed z-50 w-6 h-6 bg-[#00CFBD] rounded-full pointer-events-none transition-all duration-750 ease-in-out flex items-center justify-center text-white text-[10px] font-black shadow-lg';
+            particle.textContent = '+1';
+            particle.style.left = `${rect.left + rect.width / 2 - 12}px`;
+            particle.style.top = `${rect.top + rect.height / 2 - 12}px`;
+            document.body.appendChild(particle);
+
+            // Animar hacia el carrito flotante
+            setTimeout(() => {
+                particle.style.transform = 'scale(0.3)';
+                particle.style.opacity = '0.5';
+                particle.style.left = `${cartRect.left + cartRect.width / 2 - 12}px`;
+                particle.style.top = `${cartRect.top + cartRect.height / 2 - 12}px`;
+            }, 30);
+
+            // Eliminar y aplicar bounce
+            setTimeout(() => {
+                particle.remove();
+                floatingCart.classList.add('scale-105', 'rotate-3');
+                setTimeout(() => {
+                    floatingCart.classList.remove('scale-105', 'rotate-3');
+                }, 150);
+            }, 720);
+        }
+
+        // Asociar evento del botón de agregar en modal
+        window.addEventListener('DOMContentLoaded', () => {
+            const modalAddBtn = document.getElementById('modal-add-btn');
+            if (modalAddBtn) {
+                modalAddBtn.addEventListener('click', function(e) {
+                    if (!currentModalProduct) return;
+                    const notes = document.getElementById('modal-notes').value.trim();
+                    addToCartWithDetails(currentModalProduct, currentModalQuantity, notes);
+                    triggerFlyAnimation(e.target);
+                    closeProductModal();
+                });
+            }
+        });
 
         function handleCategoryLinkClick(e) {
             isScrolling = true;
@@ -486,18 +749,28 @@ if ($isLocalhost) {
             }
         }
 
-        function addToCart(product) {
+        function addToCart(product, event) {
+            const evt = event || window.event;
+            addToCartWithDetails(product, 1, '');
+            if (evt && evt.target) {
+                triggerFlyAnimation(evt.target);
+            }
+        }
+
+        // Agregar al carrito con detalles (notas y cantidad)
+        function addToCartWithDetails(product, quantity, notes) {
             let cart = getCart();
-            const existingItem = cart.find(item => item.id === product.id);
+            const existingItem = cart.find(item => item.id === product.id && (item.notes || '') === (notes || ''));
             
             if (existingItem) {
-                existingItem.quantity += 1;
+                existingItem.quantity += quantity;
             } else {
                 cart.push({
                     id: product.id,
                     nombre: product.nombre,
                     precio: parseFloat(product.precio),
-                    quantity: 1
+                    quantity: quantity,
+                    notes: notes || ''
                 });
             }
             saveCart(cart);
@@ -507,14 +780,14 @@ if ($isLocalhost) {
             setTimeout(() => bar.classList.remove('scale-105'), 150);
         }
 
-        function updateQuantity(productId, change) {
+        function updateQuantity(productId, change, notes = '') {
             let cart = getCart();
-            const item = cart.find(item => item.id === productId);
+            const item = cart.find(item => item.id === productId && (item.notes || '') === (notes || ''));
             if (!item) return;
 
             item.quantity += change;
             if (item.quantity <= 0) {
-                cart = cart.filter(item => item.id !== productId);
+                cart = cart.filter(item => !(item.id === productId && (item.notes || '') === (notes || '')));
             }
             saveCart(cart);
             
@@ -587,43 +860,52 @@ if ($isLocalhost) {
             // Construir DOM seguro
             cart.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 first:pt-2 last:border-b-0";
+                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 dark:border-slate-800 first:pt-2 last:border-b-0";
 
                 const infoEl = document.createElement('div');
                 
                 const nameEl = document.createElement('h4');
-                nameEl.className = "font-bold text-sm text-slate-800";
+                nameEl.className = "font-bold text-sm text-slate-800 dark:text-white";
                 nameEl.textContent = item.nombre;
+
+                infoEl.appendChild(nameEl);
+
+                // Notas / Instrucciones del producto
+                if (item.notes) {
+                    const notesEl = document.createElement('p');
+                    notesEl.className = "text-[10px] font-semibold text-[#00CFBD] dark:text-[#00CFBD] italic mt-0.5 max-w-[180px] truncate";
+                    notesEl.textContent = `Nota: ${item.notes}`;
+                    notesEl.title = item.notes;
+                    infoEl.appendChild(notesEl);
+                }
 
                 const priceEl = document.createElement('p');
                 priceEl.className = "text-xs font-semibold text-slate-400 mt-0.5";
                 priceEl.textContent = `$${item.precio.toFixed(2)} c/u`;
-
-                infoEl.appendChild(nameEl);
                 infoEl.appendChild(priceEl);
 
                 const controlsEl = document.createElement('div');
                 controlsEl.className = "flex items-center space-x-2.5";
 
                 const btnMinus = document.createElement('button');
-                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-655 transition-colors";
+                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-655 dark:text-slate-350 transition-colors";
                 btnMinus.textContent = "−";
-                btnMinus.onclick = () => updateQuantity(item.id, -1);
+                btnMinus.onclick = () => updateQuantity(item.id, -1, item.notes);
 
                 const qtyEl = document.createElement('span');
-                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-800";
+                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-800 dark:text-white";
                 qtyEl.textContent = item.quantity;
 
                 const btnPlus = document.createElement('button');
-                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-655 transition-colors";
+                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-655 dark:text-slate-350 transition-colors";
                 btnPlus.textContent = "+";
-                btnPlus.onclick = () => updateQuantity(item.id, 1);
+                btnPlus.onclick = () => updateQuantity(item.id, 1, item.notes);
 
                 const btnRemove = document.createElement('button');
-                btnRemove.className = "w-7 h-7 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-700 transition-colors ml-1.5 font-bold text-xs";
+                btnRemove.className = "w-7 h-7 rounded-xl bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 flex items-center justify-center text-red-500 hover:text-red-700 transition-colors ml-1.5 font-bold text-xs";
                 btnRemove.textContent = "✕";
                 btnRemove.onclick = () => {
-                    let cart = getCart().filter(i => i.id !== item.id);
+                    let cart = getCart().filter(i => !(i.id === item.id && (i.notes || '') === (item.notes || '')));
                     saveCart(cart);
                     if (cart.length === 0) {
                         toggleCartDrawer(false);
@@ -652,7 +934,8 @@ if ($isLocalhost) {
 
             cart.forEach(item => {
                 totalPrice += item.precio * item.quantity;
-                itemsText += `${item.quantity}x ${item.nombre} ($${item.precio.toFixed(2)} c/u)\n`;
+                const notesStr = item.notes ? ` (${item.notes})` : '';
+                itemsText += `${item.quantity}x ${item.nombre}${notesStr} ($${item.precio.toFixed(2)} c/u)\n`;
             });
 
             const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
@@ -679,6 +962,35 @@ if ($isLocalhost) {
             const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
             window.open(waUrl, '_blank');
+        }
+
+        // Lógica del switch de Modo Oscuro
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (themeToggleBtn && themeToggleDarkIcon && themeToggleLightIcon) {
+            // Mostrar el icono correcto basado en el estado inicial
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleLightIcon.classList.remove('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+            }
+
+            themeToggleBtn.addEventListener('click', function() {
+                // Alternar iconos
+                themeToggleDarkIcon.classList.toggle('hidden');
+                themeToggleLightIcon.classList.toggle('hidden');
+
+                // Alternar clase dark en html y guardar en localStorage
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
         }
 
         window.addEventListener('DOMContentLoaded', () => {

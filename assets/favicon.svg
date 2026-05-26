@@ -1,29 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#06B6D4"/>
-    </linearGradient>
-  </defs>
-
-  <!-- Fondo con esquinas redondeadas (estilo app icon) -->
-  <rect width="100" height="100" rx="22" fill="url(#bg-grad)"/>
-
-  <!-- Carrito: cuerpo (blanco) -->
-  <path d="M 18 36 H 31 L 41 64 H 79 L 89 36 H 37 Z" fill="white"/>
-
-  <!-- Carrito: asa (blanco) -->
-  <line x1="31" y1="36" x2="20" y2="20" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
-
-  <!-- Carrito: ruedas (blanco) -->
-  <circle cx="49" cy="74" r="7" fill="white"/>
-  <circle cx="71" cy="74" r="7" fill="white"/>
-
-  <!-- Líneas de velocidad + flecha dentro del carrito (color oscuro del fondo para contraste) -->
-  <g stroke="#0f766e" stroke-linecap="round" fill="none">
-    <line x1="50" y1="44" x2="62" y2="44" stroke-width="3"/>
-    <line x1="46" y1="51" x2="66" y2="51" stroke-width="4"/>
-    <line x1="50" y1="58" x2="62" y2="58" stroke-width="3"/>
-  </g>
-  <path d="M 67 44 L 76 51 L 67 58 Z" fill="#0f766e"/>
+    <!-- Contenedor del carrito centrado y con el mismo skew de -11 grados del logo -->
+    <g transform="translate(3.665, 11) skewX(-11)">
+        <!-- Cuerpo de la cesta (Cian sólido) -->
+        <path d="M 16 24 H 28 L 38 52 H 76 L 86 24 H 32 Z" fill="#00CFBD" />
+        
+        <!-- Asa de la cesta (Cian) -->
+        <line x1="28" y1="24" x2="18" y2="10" stroke="#00CFBD" stroke-width="5.5" stroke-linecap="round" />
+        
+        <!-- Ruedas (Cian) -->
+        <circle cx="46" cy="62" r="6" fill="#00CFBD" />
+        <circle cx="68" cy="62" r="6" fill="#00CFBD" />
+        
+        <!-- Flecha y líneas de velocidad internas (Blanco) -->
+        <g stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <!-- Línea superior de velocidad -->
+            <line x1="48" y1="32" x2="60" y2="32" stroke-width="3" />
+            <!-- Línea central de velocidad -->
+            <line x1="44" y1="38" x2="64" y2="38" stroke-width="4" />
+            <!-- Línea inferior de velocidad -->
+            <line x1="48" y1="44" x2="60" y2="44" stroke-width="3" />
+            <!-- Punta de la flecha (Blanco sólido) -->
+            <path d="M 65 32 L 73 38 L 65 44 Z" fill="#FFFFFF" stroke="none" />
+        </g>
+    </g>
 </svg>
