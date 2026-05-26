@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * PronttoGo - Panel de Administración Dedicado (Single-Store)
  * Administra la configuración, categorías y productos de una única tienda.

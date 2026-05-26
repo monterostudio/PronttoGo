@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * PronttoGo - Página Legal (Términos, Condiciones y Política de Privacidad)
  */
