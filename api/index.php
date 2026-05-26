@@ -69,13 +69,6 @@ if ($isLocalhost) {
             _warn(...args);
         };
 
-        // Configuración de Tailwind para soportar dark mode por clase
-        window.tailwind = {
-            config: {
-                darkMode: 'class'
-            }
-        };
-
         // Cargar tema guardado antes de renderizar la página para evitar parpadeo (FOUC)
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -84,6 +77,12 @@ if ($isLocalhost) {
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configurar Tailwind CSS para soportar Modo Oscuro basado en clases
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -190,7 +189,7 @@ if ($isLocalhost) {
                 <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-2xl bg-white/10 p-2.5 ring-1 ring-white/10">
             <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                 <!-- Mostrar solo el logo SVG sin repetir el nombre en texto -->
-                <div class="rounded-2xl shadow-2xl bg-white px-6 py-4 inline-flex items-center justify-center ring-1 ring-slate-200/20 hover:scale-[1.02] transition-transform duration-300">
+                <div class="rounded-2xl shadow-2xl bg-white dark:bg-slate-900 px-6 py-4 inline-flex items-center justify-center ring-1 ring-slate-200/20 dark:ring-slate-800/50 hover:scale-[1.02] transition-transform duration-300">
                     <?= get_logo_svg('h-12 w-auto') ?>
                 </div>
             <?php else: ?>

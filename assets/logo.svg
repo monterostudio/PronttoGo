@@ -22,7 +22,7 @@
         
         <!-- Text: PronttoGo -->
         <text x="58" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="-1.5">
-            <tspan fill="#2A3543">Prontto</tspan><tspan fill="#00CFBD">Go</tspan>
+            <tspan fill="currentColor" class="text-[#2A3543] dark:text-white">Prontto</tspan><tspan fill="#00CFBD">Go</tspan>
         </text>
 
         <!-- Right Shopping Cart with Arrow -->
