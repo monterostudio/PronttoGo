@@ -88,24 +88,24 @@ if ($isLocalhost) {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Estilos personalizados para los pills de categorías móviles */
+        /* Estilos personalizados para los pills de categorías */
         .mobile-category-pill {
             transition: all 0.2s ease-in-out;
         }
         .mobile-category-pill:hover {
-            background-color: #E2E8F0 !important; /* bg-slate-200 */
-            color: #0F172A !important;            /* text-slate-900 */
-            border-color: #CBD5E1 !important;      /* border-slate-300 */
+            background-color: #F1F5F9 !important; /* bg-slate-100 */
+            color: #1E293B !important;            /* text-slate-800 */
+            border-color: #E2E8F0 !important;      /* border-slate-200 */
         }
         .mobile-category-pill.active {
-            background-color: #00CFBD !important;  /* bg-cyan-brand */
-            color: #FFFFFF !important;             /* text-white */
-            border-color: #00CFBD !important;      /* border-cyan-brand */
+            background-color: #E6FBF9 !important;  /* soft cyan bg */
+            color: #00CFBD !important;             /* cyan text */
+            border-color: #B2EFE9 !important;      /* soft cyan border */
         }
         .mobile-category-pill.active:hover {
-            background-color: #00B5A5 !important;  /* hover brand */
-            color: #FFFFFF !important;             /* Keep text white when active is hovered */
-            border-color: #00B5A5 !important;
+            background-color: #D2F7F2 !important;  /* slightly darker soft cyan bg */
+            color: #00B5A5 !important;             /* slightly darker cyan text */
+            border-color: #9EEAE0 !important;
         }
     </style>
 </head>
@@ -140,9 +140,9 @@ if ($isLocalhost) {
     </header>
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
-    <div class="relative w-full bg-gradient-to-br from-white via-[#F8FAFC] to-[#F1F5F9] text-slate-800 overflow-hidden border-b border-slate-100">
+    <div class="relative w-full bg-gradient-to-br from-[#F0FDFB] via-[#E2F8F5] to-[#F0FDFB] text-slate-800 overflow-hidden border-b border-[#00CFBD]/15">
         <!-- Luces decorativas de fondo -->
-        <div class="absolute -right-10 top-0 w-96 h-96 bg-[#00CFBD]/4 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 top-0 w-96 h-96 bg-[#00CFBD]/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-[#00CFBD]/3 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -187,28 +187,9 @@ if ($isLocalhost) {
         </div>
     </div>
 
-    <!-- Contenedor del Catálogo y Sidebar (Grid Responsivo) -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col md:flex-row gap-8 flex-1 pb-24 md:pb-12">
-        
-        <!-- Sidebar de Categorías (Solo Visible en Escritorio) -->
-        <?php if (!empty($categorias)): ?>
-            <aside class="hidden md:block w-56 flex-shrink-0 sticky top-24 h-fit space-y-2 pr-4">
-                <h3 class="font-bold text-[10px] uppercase tracking-wider text-slate-400 mb-3 px-2">Categorías</h3>
-                <nav class="space-y-1">
-                    <?php foreach ($categorias as $cat): 
-                        if (empty($productosPorCategoria[$cat['id']])) continue;
-                    ?>
-                        <a href="#cat-<?= h($cat['id']) ?>" 
-                           class="block px-3.5 py-2.5 text-slate-600 hover:text-[#00CFBD] hover:bg-cyan-50/20 rounded-xl font-bold text-xs transition-all border border-transparent hover:border-cyan-50">
-                            <?= h($cat['nombre_categoria']) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </nav>
-            </aside>
-        <?php endif; ?>
-
-        <!-- Columna de Contenido principal -->
-        <div class="flex-1 space-y-8 min-w-0">
+    <!-- Contenedor del Catálogo (Sin Sidebar, Ancho Completo) -->
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
+        <div class="w-full space-y-6">
             <!-- Buscador de Productos -->
             <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-[#00CFBD]/30 focus-within:border-[#00CFBD]">
                 <div class="pl-3.5 text-slate-400">
@@ -220,15 +201,15 @@ if ($isLocalhost) {
                 <button id="search-clear-btn" class="hidden pr-3 text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
             </div>
 
-            <!-- Categorías Deslizables (Sticky) - Solo Visible en Móvil -->
+            <!-- Categorías Deslizables (Sticky) - Unificado para Escritorio y Móvil -->
             <?php if (!empty($categorias)): ?>
-                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
-                    <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
+                <div class="-mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
+                    <nav class="flex space-x-2.5 overflow-x-auto no-scrollbar scroll-smooth">
                         <?php foreach ($categorias as $cat): 
                             if (empty($productosPorCategoria[$cat['id']])) continue;
                         ?>
                             <a href="#cat-<?= h($cat['id']) ?>" 
-                               class="mobile-category-pill px-4 py-1.5 bg-slate-50 border border-slate-100 text-slate-600 rounded-full font-bold text-xs whitespace-nowrap">
+                               class="mobile-category-pill px-4 py-2 bg-slate-50 border border-slate-100 text-slate-600 rounded-xl font-bold text-xs whitespace-nowrap">
                                 <?= h($cat['nombre_categoria']) ?>
                             </a>
                         <?php endforeach; ?>
@@ -274,8 +255,8 @@ if ($isLocalhost) {
                             <div class="h-0.5 flex-1 bg-gradient-to-r from-[#00CFBD] to-[#2A3543] opacity-20 rounded"></div>
                         </div>
 
-                        <!-- Grid de Productos (1 en móvil/tablet, 2 en pantallas más grandes) -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Grid de Productos (1 en móvil, 2 en tablet, 3 en pantallas grandes) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
@@ -665,29 +646,18 @@ if ($isLocalhost) {
             });
 
             // Registrar eventos de clic para detener temporalmente el ScrollSpy y fijar el activo inmediatamente
-            document.querySelectorAll('aside nav a, .mobile-category-pill').forEach(link => {
+            document.querySelectorAll('.mobile-category-pill').forEach(link => {
                 link.addEventListener('click', handleCategoryLinkClick);
             });
         });
 
         function setActiveCategory(id) {
-            // 1. Sidebar en Escritorio
-            document.querySelectorAll('aside nav a').forEach(link => {
-                if (link.getAttribute('href') === `#${id}`) {
-                    link.classList.add('bg-[#00CFBD]/10', 'text-[#00CFBD]', 'font-bold');
-                    link.classList.remove('text-slate-600');
-                } else {
-                    link.classList.remove('bg-[#00CFBD]/10', 'text-[#00CFBD]', 'font-bold');
-                    link.classList.add('text-slate-600');
-                }
-            });
-
-            // 2. Swiper en Móvil
+            // Activar pill correspondiente en la barra de categorías unificada
             document.querySelectorAll('.mobile-category-pill').forEach(pill => {
                 if (pill.getAttribute('href') === `#${id}`) {
                     pill.classList.add('active');
                     
-                    // Centrar el elemento en el scroll del swiper móvil de forma horizontal sin alterar el scroll vertical de la ventana
+                    // Centrar el elemento en el scroll horizontal de forma suave
                     const container = pill.parentElement;
                     if (container) {
                         const containerRect = container.getBoundingClientRect();

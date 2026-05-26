@@ -109,7 +109,7 @@ if (!$is_logged_in):
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.svg">
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
-    <meta name="theme-color" content="#10B981">
+    <meta name="theme-color" content="#00CFBD">
     <title>Acceso — Panel PronttoGo</title>
     <script>
         const _warn = console.warn;
@@ -125,9 +125,9 @@ if (!$is_logged_in):
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* Fondo animado */
+        /* Fondo claro */
         .login-bg {
-            background: linear-gradient(135deg, #0B1120 0%, #0d1a2e 50%, #0a1628 100%);
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
             position: relative;
             overflow: hidden;
         }
@@ -138,7 +138,7 @@ if (!$is_logged_in):
             right: -10%;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,207,189,0.06) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulse-glow 6s ease-in-out infinite alternate;
         }
@@ -149,7 +149,7 @@ if (!$is_logged_in):
             left: -10%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(6,182,212,0.10) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(42,53,67,0.04) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulse-glow 8s ease-in-out infinite alternate-reverse;
         }
@@ -172,14 +172,14 @@ if (!$is_logged_in):
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .input-field:focus {
-            border-color: #10B981;
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+            border-color: #00CFBD;
+            box-shadow: 0 0 0 3px rgba(0,207,189,0.12);
             outline: none;
         }
 
         /* Botón con efecto shine */
         .btn-primary {
-            background: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+            background: linear-gradient(135deg, #00CFBD 0%, #00B5A5 100%);
             position: relative;
             overflow: hidden;
             transition: opacity 0.2s, transform 0.15s;
@@ -203,15 +203,15 @@ if (!$is_logged_in):
 
     <div class="login-card w-full max-w-md relative z-10">
         <!-- Tarjeta principal -->
-        <div class="bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+        <div class="bg-white border border-slate-100 rounded-3xl shadow-2xl overflow-hidden">
 
             <!-- Encabezado -->
-            <div class="bg-gradient-to-br from-[#10B981] via-[#0ea572] to-[#06B6D4] p-8 text-center relative overflow-hidden">
+            <div class="bg-gradient-to-br from-[#00CFBD] to-[#2A3543] p-8 text-center relative overflow-hidden">
                 <!-- Shimmer decorativo -->
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12"></div>
                 <div class="relative z-10">
                     <!-- Logo en cuadro blanco -->
-                    <div class="inline-flex items-center justify-center bg-white rounded-2xl px-5 py-3 mb-4 shadow-lg ring-2 ring-white/20">
+                    <div class="inline-flex items-center justify-center bg-white rounded-2xl px-5 py-3 mb-4 shadow-lg ring-2 ring-white/10">
                         <?= get_logo_svg('h-9 w-auto') ?>
                     </div>
                     <p class="text-white/80 text-sm font-semibold tracking-wide">Panel de Control del Comercio</p>
@@ -286,7 +286,7 @@ if (!$is_logged_in):
 
                 <!-- Link volver al menú -->
                 <div class="text-center pt-1">
-                    <a href="/" class="text-xs text-slate-400 hover:text-emerald-600 transition-colors font-medium">
+                    <a href="/" class="text-xs text-slate-400 hover:text-[#00CFBD] transition-colors font-medium">
                         &larr; Volver al menú digital
                     </a>
                 </div>
@@ -294,8 +294,8 @@ if (!$is_logged_in):
         </div>
 
         <!-- Powered by -->
-        <p class="text-center text-[10px] text-white/25 mt-5 font-medium">
-            Powered by <span class="text-emerald-400/60 font-bold">Montero Studio</span>
+        <p class="text-center text-[10px] text-slate-400 mt-5 font-medium">
+            Powered by <span class="text-[#00CFBD] font-bold">Montero Studio</span>
         </p>
     </div>
 </body>
@@ -517,11 +517,7 @@ $productos = $resProductos['success'] ? $resProductos['data'] : [];
 
 // Agrupar categorías en un array asociativo por ID
 $categoriasMap = [];
-foreach ($categorias as $cat) {
-    $categoriasMap[$cat['id']] = $cat['nombre_categoria'];
-}
-?>
-<!DOCTYPE html>
+foreach ($categorias as $cat)<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -530,7 +526,7 @@ foreach ($categorias as $cat) {
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.svg">
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
-    <meta name="theme-color" content="#10B981">
+    <meta name="theme-color" content="#00CFBD">
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
         const _warn = console.warn;
@@ -558,12 +554,12 @@ foreach ($categorias as $cat) {
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                         <?= get_logo_svg('h-8 w-auto shrink-0') ?>
                     <?php else: ?>
-                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
+                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
                 <?php endif; ?>
             </div>
             
             <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-emerald-600 hover:text-white border border-emerald-200 hover:bg-[#10B981] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1 whitespace-nowrap">
+                <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-[#00CFBD] hover:text-white border border-[#00CFBD]/20 hover:bg-[#00CFBD] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1 whitespace-nowrap">
                     Ver Tienda ↗
                 </a>
                 <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap">
@@ -585,9 +581,9 @@ foreach ($categorias as $cat) {
         <?php endif; ?>
 
         <?php if (!empty($success)): ?>
-            <div id="alert-success" class="p-4 bg-emerald-50 border-l-4 border-[#10B981] text-emerald-800 text-sm rounded-r-xl flex justify-between items-center shadow-sm">
+            <div id="alert-success" class="p-4 bg-cyan-50 border-l-4 border-[#00CFBD] text-cyan-800 text-sm rounded-r-xl flex justify-between items-center shadow-sm">
                 <span><?= h($success) ?></span>
-                <button onclick="document.getElementById('alert-success').remove()" class="text-emerald-500 hover:text-emerald-850 font-bold">×</button>
+                <button onclick="document.getElementById('alert-success').remove()" class="text-cyan-500 hover:text-cyan-850 font-bold">×</button>
             </div>
         <?php endif; ?>
 
@@ -618,13 +614,13 @@ foreach ($categorias as $cat) {
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del Comercio</label>
                     <input type="text" name="nombre" value="<?= h($config['nombre']) ?>" required
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL del Logo del Comercio</label>
                     <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png"
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                     <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacío, se mostrará el nombre en texto.</p>
                 </div>
                 
@@ -632,7 +628,7 @@ foreach ($categorias as $cat) {
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
                     <div class="flex gap-2 w-full">
                         <select name="codigo_pais" required
-                                class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                             <?php
                             $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
                             $selected_code = $phone_split['code'];
@@ -649,7 +645,7 @@ foreach ($categorias as $cat) {
                             <?php endforeach; ?>
                         </select>
                         <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
-                               class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                               class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número telefónico local sin el signo + ni ceros al inicio.</p>
                 </div>
@@ -661,7 +657,7 @@ foreach ($categorias as $cat) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de Tasa</label>
                             <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
-                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Fija / Personalizada</option>
                                 <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
                                 <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
@@ -671,9 +667,9 @@ foreach ($categorias as $cat) {
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
                             <div class="relative">
                                 <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
-                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                                 <div id="tasa_loading" class="absolute right-3 top-3.5 hidden">
-                                    <svg class="animate-spin h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24">
+                                    <svg class="animate-spin h-4 w-4 text-[#00CFBD]" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -691,18 +687,18 @@ foreach ($categorias as $cat) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario Administrativo</label>
                             <input type="text" name="admin_user" value="<?= h($dbAdminUser) ?>" required placeholder="ej: admin"
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva Contraseña</label>
                             <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                             <p class="text-[10px] text-slate-400 mt-1">Dejar vacío para conservar la contraseña actual.</p>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
                     Guardar Cambios
                 </button>
             </form>
@@ -723,14 +719,14 @@ foreach ($categorias as $cat) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de la Categoría</label>
                             <input type="text" name="nombre_categoria" required placeholder="ej: Comidas, Bebidas, Dulces" 
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orden de Visualización</label>
                             <input type="number" name="orden_visual" value="<?= $next_cat_order ?>" required 
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
-                        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
                             Crear Categoría
                         </button>
                     </form>
@@ -751,7 +747,7 @@ foreach ($categorias as $cat) {
                             <?php foreach ($categorias as $cat): ?>
                                 <div class="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
                                     <div>
-                                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">Orden #<?= h($cat['orden_visual']) ?></span>
+                                        <span class="text-xs font-bold text-[#00CFBD] bg-cyan-50 px-2.5 py-1 rounded-lg">Orden #<?= h($cat['orden_visual']) ?></span>
                                         <h4 class="font-bold text-slate-800 mt-2"><?= h($cat['nombre_categoria']) ?></h4>
                                     </div>
                                     <div>
@@ -781,14 +777,14 @@ foreach ($categorias as $cat) {
                                 <tbody>
                                     <?php foreach ($categorias as $cat): ?>
                                         <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                            <td class="py-3.5 px-2 font-bold text-[#10B981]">#<?= h($cat['orden_visual']) ?></td>
+                                            <td class="py-3.5 px-2 font-bold text-[#00CFBD]">#<?= h($cat['orden_visual']) ?></td>
                                             <td class="py-3.5 px-2 font-semibold"><?= h($cat['nombre_categoria']) ?></td>
                                             <td class="py-3.5 px-2 text-right">
                                                 <form action="admin.php" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría? Se eliminarán todos los productos asociados.')" class="inline">
                                                     <?= csrf_input() ?>
                                                     <input type="hidden" name="action" value="delete_category">
                                                     <input type="hidden" name="categoria_id" value="<?= h($cat['id']) ?>">
-                                                    <button type="submit" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
+                                                    <button type="submit" class="text-xs font-bold text-red-500 hover:text-red-750 transition-colors">
                                                         Eliminar
                                                     </button>
                                                 </form>
@@ -796,6 +792,8 @@ foreach ($categorias as $cat) {
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
+                            </table>
+                        </div>                               </tbody>
                             </table>
                         </div>
                     <?php endif; ?>
@@ -820,13 +818,13 @@ foreach ($categorias as $cat) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre</label>
                             <input type="text" name="nombre" id="prod-nombre" required placeholder="ej: Hamburguesa Doble" 
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Categoría</label>
                             <select name="categoria_id" id="prod-cat" required 
-                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent bg-white transition-all">
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 <option value="">Selecciona una categoría</option>
                                 <?php foreach ($categorias as $cat): ?>
                                     <option value="<?= h($cat['id']) ?>"><?= h($cat['nombre_categoria']) ?></option>
@@ -837,24 +835,24 @@ foreach ($categorias as $cat) {
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Descripción</label>
                             <textarea name="descripcion" id="prod-desc" rows="2" placeholder="Detalles, ingredientes, tamaño..." 
-                                      class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all"></textarea>
+                                      class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all"></textarea>
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Precio ($)</label>
                             <input type="number" step="0.01" name="precio" id="prod-precio" required placeholder="0.00" 
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL de la Imagen</label>
                             <input type="url" name="imagen_url" id="prod-img" placeholder="https://ejemplo.com/imagen.jpg" 
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
+                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
 
                         <div>
                             <label class="flex items-center space-x-2 text-sm font-semibold cursor-pointer">
-                                <input type="checkbox" name="disponible" id="prod-disp" value="1" checked class="rounded text-[#10B981] focus:ring-[#10B981] w-4 h-4">
+                                <input type="checkbox" name="disponible" id="prod-disp" value="1" checked class="rounded text-[#00CFBD] focus:ring-[#00CFBD] w-4 h-4">
                                 <span>Disponible para la venta</span>
                             </label>
                         </div>
@@ -863,7 +861,7 @@ foreach ($categorias as $cat) {
                             <button type="button" onclick="resetProductForm()" id="prod-btn-cancel" class="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs rounded-xl transition-all hidden">
                                 Cancelar
                             </button>
-                            <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                            <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
                                 Guardar
                             </button>
                         </div>
@@ -911,7 +909,7 @@ foreach ($categorias as $cat) {
                                                 <input type="hidden" name="action" value="toggle_disponible">
                                                 <input type="hidden" name="producto_id" value="<?= h($prod['id']) ?>">
                                                 <input type="hidden" name="disponible" value="<?= $prod['disponible'] ? '0' : '1' ?>">
-                                                <button type="submit" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none <?= $prod['disponible'] ? 'bg-[#10B981]' : 'bg-slate-200' ?>">
+                                                <button type="submit" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none <?= $prod['disponible'] ? 'bg-[#00CFBD]' : 'bg-slate-200' ?>">
                                                     <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform <?= $prod['disponible'] ? 'translate-x-6' : 'translate-x-1' ?>"></span>
                                                 </button>
                                             </form>
@@ -925,7 +923,7 @@ foreach ($categorias as $cat) {
                                                 'precio' => $prod['precio'],
                                                 'imagen_url' => $prod['imagen_url'] ?? '',
                                                 'disponible' => $prod['disponible'] ? 1 : 0
-                                            ]) ?>)' class="text-xs font-bold text-[#06B6D4] bg-cyan-50 hover:bg-cyan-100 px-3.5 py-2 rounded-xl transition-colors">
+                                            ]) ?>)' class="text-xs font-bold text-[#00CFBD] bg-cyan-50 hover:bg-cyan-100 px-3.5 py-2 rounded-xl transition-colors">
                                                 Editar
                                             </button>
                                             <form action="admin.php" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?')" class="inline">
@@ -981,7 +979,7 @@ foreach ($categorias as $cat) {
                                                     <input type="hidden" name="action" value="toggle_disponible">
                                                     <input type="hidden" name="producto_id" value="<?= h($prod['id']) ?>">
                                                     <input type="hidden" name="disponible" value="<?= $prod['disponible'] ? '0' : '1' ?>">
-                                                    <button type="submit" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none <?= $prod['disponible'] ? 'bg-[#10B981]' : 'bg-slate-200' ?>">
+                                                    <button type="submit" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none <?= $prod['disponible'] ? 'bg-[#00CFBD]' : 'bg-slate-200' ?>">
                                                         <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform <?= $prod['disponible'] ? 'translate-x-6' : 'translate-x-1' ?>"></span>
                                                     </button>
                                                 </form>
@@ -997,7 +995,7 @@ foreach ($categorias as $cat) {
                                                         'precio' => $prod['precio'],
                                                         'imagen_url' => $prod['imagen_url'] ?? '',
                                                         'disponible' => $prod['disponible'] ? 1 : 0
-                                                    ]) ?>)' class="text-xs font-bold text-[#06B6D4] hover:text-[#0891b2] transition-colors">
+                                                    ]) ?>)' class="text-xs font-bold text-[#00CFBD] hover:text-[#00B5A5] transition-colors">
                                                         Editar
                                                     </button>
                                                     
@@ -1027,7 +1025,7 @@ foreach ($categorias as $cat) {
     <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 font-medium mt-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
         <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>. Desarrollado por Montero Studio.</span>
         <span class="hidden sm:inline text-slate-200">|</span>
-        <a href="/legal" class="text-slate-400 hover:text-emerald-600 transition-colors">Términos y Privacidad</a>
+        <a href="/legal" class="text-slate-400 hover:text-[#00CFBD] transition-colors">Términos y Privacidad</a>
     </footer>
 
     <!-- Scripts -->
@@ -1041,7 +1039,7 @@ foreach ($categorias as $cat) {
             });
             
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl text-slate-400 hover:text-slate-650 transition-all";
+                btn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl text-slate-400 hover:text-slate-655 transition-all";
             });
             
             const targetTab = document.querySelector(hash);
@@ -1052,7 +1050,7 @@ foreach ($categorias as $cat) {
             const btnId = 'tab-btn-' + hash.replace('#', '');
             const targetBtn = document.getElementById(btnId);
             if (targetBtn) {
-                targetBtn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl bg-gradient-to-r from-[#10B981] to-[#06B6D4] text-white shadow-md transition-all";
+                targetBtn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] text-white shadow-md transition-all";
             }
         }
 
