@@ -69,20 +69,11 @@ if ($isLocalhost) {
             _warn(...args);
         };
 
-        // Cargar tema guardado antes de renderizar la página para evitar parpadeo (FOUC)
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        // Forzar tema claro eliminando cualquier rastro de configuración oscura
+        localStorage.removeItem('theme');
+        document.documentElement.classList.remove('dark');
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Configurar Tailwind CSS para soportar Modo Oscuro basado en clases
-        tailwind.config = {
-            darkMode: 'class'
-        };
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -110,31 +101,9 @@ if ($isLocalhost) {
             color: #FFFFFF !important;             /* Keep text white when active is hovered */
             border-color: #1E293B !important;
         }
-
-        /* Estilos de Modo Oscuro para pills de categorías móviles */
-        .dark .mobile-category-pill {
-            background-color: #1e293b !important; /* bg-slate-800 */
-            color: #94a3b8 !important;            /* text-slate-400 */
-            border-color: #334155 !important;      /* border-slate-700 */
-        }
-        .dark .mobile-category-pill:hover {
-            background-color: #334155 !important; /* bg-slate-700 */
-            color: #f8fafc !important;            /* text-slate-50 */
-            border-color: #475569 !important;      /* border-slate-600 */
-        }
-        .dark .mobile-category-pill.active {
-            background-color: #00CFBD !important;  /* bg-cyan-brand */
-            color: #0B1120 !important;             /* text-dark */
-            border-color: #00CFBD !important;
-        }
-        .dark .mobile-category-pill.active:hover {
-            background-color: #00Bfae !important;
-            color: #0B1120 !important;
-            border-color: #00Bfae !important;
-        }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col overflow-x-hidden">
 
     <?php if ($dbError): ?>
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
@@ -144,7 +113,7 @@ if ($isLocalhost) {
     <?php endif; ?>
 
     <!-- Header -->
-    <header class="h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm flex items-center">
+    <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
             <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
@@ -158,19 +127,9 @@ if ($isLocalhost) {
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
-            
-            <div class="flex items-center space-x-3 shrink-0">
-                <!-- Toggle Dark Mode -->
-                <button id="theme-toggle" class="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm hover:shadow transition-all" title="Cambiar tema">
-                    <!-- Sun Icon (visible en dark mode) -->
-                    <svg id="theme-toggle-light-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                    <!-- Moon Icon (visible en light mode) -->
-                    <svg id="theme-toggle-dark-icon" class="hidden w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                </button>
-                <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 rounded-xl px-4 py-2 transition-all bg-white dark:bg-slate-900 shadow-sm">
-                    Iniciar Sesión
-                </a>
-            </div>
+            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
+                Iniciar Sesión
+            </a>
         </div>
     </header>
 
@@ -189,7 +148,7 @@ if ($isLocalhost) {
                 <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-2xl bg-white/10 p-2.5 ring-1 ring-white/10">
             <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                 <!-- Mostrar solo el logo SVG sin repetir el nombre en texto -->
-                <div class="rounded-2xl shadow-2xl bg-white dark:bg-slate-900 px-6 py-4 inline-flex items-center justify-center ring-1 ring-slate-200/20 dark:ring-slate-800/50 hover:scale-[1.02] transition-transform duration-300">
+                <div class="rounded-2xl shadow-2xl bg-white px-6 py-4 inline-flex items-center justify-center ring-1 ring-slate-200/20 hover:scale-[1.02] transition-transform duration-300">
                     <?= get_logo_svg('h-12 w-auto') ?>
                 </div>
             <?php else: ?>
@@ -961,35 +920,6 @@ if ($isLocalhost) {
             const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
             window.open(waUrl, '_blank');
-        }
-
-        // Lógica del switch de Modo Oscuro
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-
-        if (themeToggleBtn && themeToggleDarkIcon && themeToggleLightIcon) {
-            // Mostrar el icono correcto basado en el estado inicial
-            if (document.documentElement.classList.contains('dark')) {
-                themeToggleLightIcon.classList.remove('hidden');
-            } else {
-                themeToggleDarkIcon.classList.remove('hidden');
-            }
-
-            themeToggleBtn.addEventListener('click', function() {
-                // Alternar iconos
-                themeToggleDarkIcon.classList.toggle('hidden');
-                themeToggleLightIcon.classList.toggle('hidden');
-
-                // Alternar clase dark en html y guardar en localStorage
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
