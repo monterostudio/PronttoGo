@@ -56,10 +56,11 @@ if ($isLocalhost) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/api/favicon.svg">
     <link rel="shortcut icon" href="/api/favicon.svg">
     <link rel="apple-touch-icon" href="/api/favicon.svg">
     <meta name="theme-color" content="#10B981">
-    <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?> - Menú Digital</title>
+    <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></title>
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
         const _warn = console.warn;
@@ -129,29 +130,55 @@ if ($isLocalhost) {
     </header>
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium) -->
-    <div class="relative w-full bg-gradient-to-r from-slate-900 via-slate-955 to-slate-900 text-white overflow-hidden border-b border-slate-800">
+    <div class="relative w-full bg-gradient-to-br from-[#0B1120] via-[#0d1a2e] to-[#0B1120] text-white overflow-hidden border-b border-slate-800/60">
         <!-- Luces decorativas de fondo -->
-        <div class="absolute right-1/4 top-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute left-1/4 bottom-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -right-10 top-0 w-96 h-96 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-10 bottom-0 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none"></div>
         
-        <!-- Contenido centrado y alíneado a la grilla principal -->
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-4 relative z-10">
+        <!-- Contenido centrado -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20 flex flex-col items-center text-center space-y-5 relative z-10">
+
+            <!-- Logo o imagen personalizada -->
             <?php if (!empty($config['logo_url'])): ?>
-                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white/10 p-2.5 mb-2">
+                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-2xl bg-white/10 p-2.5 mb-1 ring-1 ring-white/10">
             <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                <div class="rounded-2xl shadow-lg bg-white p-3.5 mb-2 inline-flex items-center justify-center">
-                    <?= get_logo_svg('h-14 w-auto') ?>
+                <!-- Mostrar solo el logo SVG sin repetir el nombre en texto -->
+                <div class="rounded-2xl shadow-2xl bg-white px-6 py-4 mb-1 inline-flex items-center justify-center ring-1 ring-slate-200/20 hover:scale-[1.02] transition-transform duration-300">
+                    <?= get_logo_svg('h-12 w-auto') ?>
+                </div>
+            <?php else: ?>
+                <!-- Nombre del comercio personalizado -->
+                <div class="mb-1">
+                    <span class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                        <?= h($config['nombre']) ?>
+                    </span>
                 </div>
             <?php endif; ?>
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
-                ⚡ Pedidos por WhatsApp
-            </span>
-            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white max-w-2xl leading-tight">
-                <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
-            </h1>
-            <p class="text-xs md:text-base text-slate-400 max-w-xl leading-relaxed font-medium">
-                Menú digital de especialidades. Agrega productos al carrito y envía tu pedido por WhatsApp de forma directa y rápida.
-            </p>
+
+            <!-- Badge de feature principal -->
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 rounded-full text-[11px] font-bold tracking-wide">
+                    ⚡ Pedidos por WhatsApp
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 border border-white/10 text-slate-400 rounded-full text-[11px] font-bold tracking-wide">
+                    🛒 Carrito Digital
+                </span>
+            </div>
+
+            <!-- Tagline principal (sin repetir el nombre del logo) -->
+            <div class="space-y-2 max-w-xl">
+                <p class="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-snug">
+                    Tu menú digital,
+                    <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">siempre disponible</span>
+                </p>
+                <p class="text-sm md:text-base text-slate-400 leading-relaxed font-medium">
+                    Explora nuestras especialidades, arma tu pedido y envíalo directo por WhatsApp en segundos.
+                </p>
+            </div>
+
+            <!-- Divider decorativo -->
+            <div class="w-16 h-0.5 bg-gradient-to-r from-emerald-500/50 to-cyan-500/50 rounded-full"></div>
         </div>
     </div>
 

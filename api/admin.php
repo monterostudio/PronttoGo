@@ -106,11 +106,12 @@ if (!$is_logged_in):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/api/favicon.svg">
     <link rel="shortcut icon" href="/api/favicon.svg">
     <link rel="apple-touch-icon" href="/api/favicon.svg">
     <meta name="theme-color" content="#10B981">
+    <title>Acceso — Panel PronttoGo</title>
     <script>
-        // Evitar advertencia del CDN de Tailwind en la consola
         const _warn = console.warn;
         console.warn = (...args) => {
             if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
@@ -123,64 +124,179 @@ if (!$is_logged_in):
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Fondo animado */
+        .login-bg {
+            background: linear-gradient(135deg, #0B1120 0%, #0d1a2e 50%, #0a1628 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-bg::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 6s ease-in-out infinite alternate;
+        }
+        .login-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(6,182,212,0.10) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 8s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes pulse-glow {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.08); }
+        }
+
+        /* Tarjeta con entrada animada */
+        .login-card {
+            animation: card-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Input con foco mejorado */
+        .input-field {
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus {
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+            outline: none;
+        }
+
+        /* Botón con efecto shine */
+        .btn-primary {
+            background: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.5s;
+        }
+        .btn-primary:hover::after { left: 150%; }
+        .btn-primary:hover { opacity: 0.92; }
+        .btn-primary:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#0F172A] min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-        <!-- Encabezado con degradado Emerald a Cyan -->
-        <div class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] p-8 text-white text-center">
-            <div class="inline-flex items-center justify-center bg-white rounded-2xl px-5 py-3 mb-3 shadow-md">
-                <?= get_logo_svg('h-9 w-auto') ?>
+<body class="login-bg min-h-screen flex items-center justify-center p-4">
+
+    <div class="login-card w-full max-w-md relative z-10">
+        <!-- Tarjeta principal -->
+        <div class="bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+
+            <!-- Encabezado -->
+            <div class="bg-gradient-to-br from-[#10B981] via-[#0ea572] to-[#06B6D4] p-8 text-center relative overflow-hidden">
+                <!-- Shimmer decorativo -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12"></div>
+                <div class="relative z-10">
+                    <!-- Logo en cuadro blanco -->
+                    <div class="inline-flex items-center justify-center bg-white rounded-2xl px-5 py-3 mb-4 shadow-lg ring-2 ring-white/20">
+                        <?= get_logo_svg('h-9 w-auto') ?>
+                    </div>
+                    <p class="text-white/80 text-sm font-semibold tracking-wide">Panel de Control del Comercio</p>
+                    <p class="text-white/50 text-xs mt-0.5">Ingresa tus credenciales para continuar</p>
+                </div>
             </div>
-            <p class="text-emerald-50 mt-1 font-medium">Panel de Control del Comercio</p>
+
+            <!-- Cuerpo del formulario -->
+            <div class="p-7 space-y-5 bg-white">
+                <?php if (!empty($error)): ?>
+                    <div class="flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
+                        <span class="text-base mt-0.5">&#9888;</span>
+                        <span><?= h($error) ?></span>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                $is_locked = isset($_SESSION['login_lock_until']) && $_SESSION['login_lock_until'] > time();
+                $lock_time_left = $is_locked ? ceil(($_SESSION['login_lock_until'] - time()) / 60) : 0;
+                ?>
+
+                <form action="admin.php" method="POST" class="space-y-4">
+                    <input type="hidden" name="action" value="login">
+                    
+                    <!-- Honeypot (campo invisible para bots) -->
+                    <div style="display:none;">
+                        <label>No rellenar</label>
+                        <input type="text" name="website_url" autocomplete="off" tabindex="-1">
+                    </div>
+
+                    <!-- Usuario -->
+                    <div>
+                        <label for="login-user" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Usuario</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
+                            <input id="login-user" type="text" name="username" required placeholder="ej: admin" <?= $is_locked ? 'disabled' : '' ?>
+                                   class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 placeholder-slate-400">
+                        </div>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div>
+                        <label for="login-pass" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Contraseña</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                            <input id="login-pass" type="password" name="password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" <?= $is_locked ? 'disabled' : '' ?>
+                                   class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1.5">Por defecto: usuario <code class="bg-slate-100 px-1 rounded">admin</code> y clave <code class="bg-slate-100 px-1 rounded">admin123</code>.</p>
+                    </div>
+
+                    <!-- Captcha -->
+                    <div>
+                        <label for="login-captcha" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                            Verificación: ¿Cuánto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🧩</span>
+                            <input id="login-captcha" type="number" name="captcha_answer" required placeholder="Tu respuesta" <?= $is_locked ? 'disabled' : '' ?>
+                                   class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
+                        </div>
+                    </div>
+
+                    <!-- Botón de acceso -->
+                    <button type="submit" <?= $is_locked ? 'disabled' : '' ?>
+                            class="btn-primary w-full py-3.5 text-white font-bold text-sm rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <?= $is_locked
+                            ? "🔒 Bloqueado por {$lock_time_left} min"
+                            : "⚡ Ingresar al Panel" ?>
+                    </button>
+                </form>
+
+                <!-- Link volver al menú -->
+                <div class="text-center pt-1">
+                    <a href="/" class="text-xs text-slate-400 hover:text-emerald-600 transition-colors font-medium">
+                        &larr; Volver al menú digital
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="p-6 space-y-6">
-            <?php if (!empty($error)): ?>
-                <div class="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r-md">
-                    <?= h($error) ?>
-                </div>
-            <?php endif; ?>
-
-            <?php
-            $is_locked = isset($_SESSION['login_lock_until']) && $_SESSION['login_lock_until'] > time();
-            $lock_time_left = $is_locked ? ceil(($_SESSION['login_lock_until'] - time()) / 60) : 0;
-            ?>
-
-            <form action="admin.php" method="POST" class="space-y-4">
-                <input type="hidden" name="action" value="login">
-                
-                <!-- Honeypot (campo invisible para bots) -->
-                <div style="display:none;">
-                    <label>No rellenar</label>
-                    <input type="text" name="website_url" autocomplete="off" tabindex="-1">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario</label>
-                    <input type="text" name="username" required placeholder="ej: admin" <?= $is_locked ? 'disabled' : '' ?>
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Contraseña</label>
-                    <input type="password" name="password" required placeholder="••••••••" <?= $is_locked ? 'disabled' : '' ?>
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                    <p class="text-[10px] text-slate-400 mt-1">Por defecto: usuario <code>admin</code> y clave <code>admin123</code>.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Pregunta de seguridad: ¿Cuánto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?</label>
-                    <input type="number" name="captcha_answer" required placeholder="Escribe tu respuesta" <?= $is_locked ? 'disabled' : '' ?>
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition-all">
-                </div>
-
-                <button type="submit" <?= $is_locked ? 'disabled' : '' ?>
-                        class="w-full py-3 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-90 disabled:from-slate-300 disabled:to-slate-400 text-white font-bold text-sm rounded-xl shadow-md transition-all">
-                    <?= $is_locked ? "Bloqueado por $lock_time_left min" : "Ingresar al Panel" ?>
-                </button>
-            </form>
-        </div>
+        <!-- Powered by -->
+        <p class="text-center text-[10px] text-white/25 mt-5 font-medium">
+            Powered by <span class="text-emerald-400/60 font-bold">Montero Studio</span>
+        </p>
     </div>
 </body>
 </html>
