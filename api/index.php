@@ -250,7 +250,11 @@ if ($isLocalhost) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
+                                    <div onclick='addToCart(<?= json_encode([
+                                        'id' => $prod['id'],
+                                        'nombre' => $prod['nombre'],
+                                        'precio' => floatval($prod['precio'])
+                                    ]) ?>, event)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
                                                 <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
@@ -278,7 +282,11 @@ if ($isLocalhost) {
                                     </div>
                                 <?php else: ?>
                                     <!-- Tarjeta sin Imagen -->
-                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
+                                    <div onclick='addToCart(<?= json_encode([
+                                        'id' => $prod['id'],
+                                        'nombre' => $prod['nombre'],
+                                        'precio' => floatval($prod['precio'])
+                                    ]) ?>, event)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
                                             <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
@@ -383,69 +391,7 @@ if ($isLocalhost) {
         </div>
     </div>
 
-    <!-- Modal de Detalle de Producto -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
-        <!-- Backdrop -->
-        <div onclick="closeProductModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-        
-        <!-- Contenedor del Modal -->
-        <div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-lg bg-white rounded-t-3xl md:rounded-3xl shadow-2xl border-t md:border border-slate-100 flex flex-col overflow-hidden max-h-[90vh] transition-all duration-300">
-            <!-- Header Modal -->
-            <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
-                <h3 class="font-extrabold text-base text-slate-800">Detalle del Producto</h3>
-                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
-                    ✕
-                </button>
-            </div>
 
-            <!-- Cuerpo Modal (Scrollable) -->
-            <div class="p-6 overflow-y-auto space-y-5">
-                <!-- Imagen -->
-                <div id="modal-img-container" class="w-full h-48 md:h-56 rounded-2xl bg-slate-50 overflow-hidden hidden border border-slate-100">
-                    <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
-                </div>
-
-                <div class="space-y-1">
-                    <h2 id="modal-title" class="font-black text-slate-900 text-lg md:text-xl leading-snug"></h2>
-                    <p id="modal-desc" class="text-xs md:text-sm text-slate-500 leading-relaxed"></p>
-                </div>
-
-                <div class="flex items-center justify-between py-3 border-y border-slate-50">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Precio</span>
-                    <div class="text-right">
-                        <span id="modal-price" class="text-lg md:text-xl font-black text-slate-900"></span>
-                        <span id="modal-price-local" class="block text-xs font-bold text-slate-500 mt-0.5"></span>
-                    </div>
-                </div>
-
-                <!-- Campo de notas personalizadas -->
-                <div class="space-y-2">
-                    <label for="modal-notes" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Notas / Instrucciones adicionales</label>
-                    <textarea id="modal-notes" placeholder="Ej. sin cebolla, salsa aparte, bien cocido..." class="w-full p-3.5 bg-slate-50 border border-slate-150 rounded-xl text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00CFBD]/30 focus:border-[#00CFBD] resize-none h-20" maxlength="150"></textarea>
-                </div>
-            </div>
-
-            <!-- Footer Modal (Controles y Botón de compra) -->
-            <div class="p-6 border-t border-slate-50 bg-slate-50/50 flex flex-col sm:flex-row gap-4 sticky bottom-0 z-10">
-                <!-- Selector de Cantidad -->
-                <div class="flex items-center justify-center sm:justify-start space-x-3.5 bg-slate-100 px-4 py-2.5 rounded-xl shrink-0">
-                    <button onclick="updateModalQuantity(-1)" class="text-slate-600 hover:text-slate-900 font-black text-base transition-colors w-6 h-6 flex items-center justify-center">−</button>
-                    <span id="modal-qty" class="font-black text-sm w-6 text-center text-slate-800">1</span>
-                    <button onclick="updateModalQuantity(1)" class="text-slate-600 hover:text-slate-900 font-black text-base transition-colors w-6 h-6 flex items-center justify-center">+</button>
-                </div>
-
-                <!-- Botón de compra -->
-                <button id="modal-add-btn" class="flex-1 py-3 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-black text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
-                    <span>Agregar al pedido</span>
-                    <span id="modal-subtotal" class="font-black"></span>
-                </button>
-            </div>
-        </div>
-    </div>></span>
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Script del Carrito (Vanilla JS) -->
     <script>
@@ -455,90 +401,7 @@ if ($isLocalhost) {
         let isScrolling = false;
         let scrollTimeout;
 
-        // Variables del Modal de Detalle
-        let currentModalProduct = null;
-        let currentModalQuantity = 1;
 
-        // Abrir Modal de Producto
-        function openProductModal(product) {
-            currentModalProduct = product;
-            currentModalQuantity = 1;
-            
-            const modal = document.getElementById('product-modal');
-            const modalImgContainer = document.getElementById('modal-img-container');
-            const modalImg = document.getElementById('modal-img');
-            const modalTitle = document.getElementById('modal-title');
-            const modalDesc = document.getElementById('modal-desc');
-            const modalPrice = document.getElementById('modal-price');
-            const modalPriceLocal = document.getElementById('modal-price-local');
-            const modalNotes = document.getElementById('modal-notes');
-            
-            // Limpiar notas previas
-            modalNotes.value = '';
-            
-            // Llenar datos básicos
-            modalTitle.textContent = product.nombre;
-            modalDesc.textContent = product.descripcion || 'Sin descripción disponible.';
-            modalPrice.textContent = `$${parseFloat(product.precio).toFixed(2)}`;
-            
-            // Cálculo de moneda local
-            const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
-            const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
-            const tasaTipo = <?= json_encode($tasa_tipo) ?>;
-            if (tasaDolar > 1) {
-                const priceLocal = parseFloat(product.precio) * tasaDolar;
-                const formattedLocal = tasaTipo === 'trm' 
-                    ? priceLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-                    : priceLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                modalPriceLocal.textContent = `${monedaNombre} ${formattedLocal}`;
-                modalPriceLocal.classList.remove('hidden');
-            } else {
-                modalPriceLocal.classList.add('hidden');
-            }
-
-            // Imagen
-            if (product.imagen_url) {
-                modalImg.src = product.imagen_url;
-                modalImg.alt = product.nombre;
-                modalImgContainer.classList.remove('hidden');
-            } else {
-                modalImgContainer.classList.add('hidden');
-            }
-
-            updateModalUI();
-
-            // Mostrar modal
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.add('opacity-100');
-            }, 10);
-        }
-
-        // Cerrar Modal de Producto
-        function closeProductModal() {
-            const modal = document.getElementById('product-modal');
-            modal.classList.remove('opacity-100');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-
-        // Modificar cantidad en modal
-        function updateModalQuantity(change) {
-            currentModalQuantity += change;
-            if (currentModalQuantity < 1) {
-                currentModalQuantity = 1;
-            }
-            updateModalUI();
-        }
-
-        // Actualizar UI del modal (Subtotal)
-        function updateModalUI() {
-            document.getElementById('modal-qty').textContent = currentModalQuantity;
-            const price = parseFloat(currentModalProduct.precio);
-            const subtotal = price * currentModalQuantity;
-            document.getElementById('modal-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-        }
 
         // Animación volar al carrito
         function triggerFlyAnimation(startElement) {
@@ -584,19 +447,7 @@ if ($isLocalhost) {
             }, 720);
         }
 
-        // Asociar evento del botón de agregar en modal
-        window.addEventListener('DOMContentLoaded', () => {
-            const modalAddBtn = document.getElementById('modal-add-btn');
-            if (modalAddBtn) {
-                modalAddBtn.addEventListener('click', function(e) {
-                    if (!currentModalProduct) return;
-                    const notes = document.getElementById('modal-notes').value.trim();
-                    addToCartWithDetails(currentModalProduct, currentModalQuantity, notes);
-                    triggerFlyAnimation(e.target);
-                    closeProductModal();
-                });
-            }
-        });
+
 
         function handleCategoryLinkClick(e) {
             isScrolling = true;
