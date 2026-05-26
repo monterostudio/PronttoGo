@@ -517,7 +517,11 @@ $productos = $resProductos['success'] ? $resProductos['data'] : [];
 
 // Agrupar categorías en un array asociativo por ID
 $categoriasMap = [];
-foreach ($categorias as $cat)<!DOCTYPE html>
+foreach ($categorias as $cat) {
+    $categoriasMap[$cat['id']] = $cat['nombre_categoria'];
+}
+?>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -792,8 +796,6 @@ foreach ($categorias as $cat)<!DOCTYPE html>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
-                            </table>
-                        </div>                               </tbody>
                             </table>
                         </div>
                     <?php endif; ?>
