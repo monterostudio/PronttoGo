@@ -59,7 +59,7 @@ if ($isLocalhost) {
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.svg">
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
-    <meta name="theme-color" content="#10B981">
+    <meta name="theme-color" content="#00CFBD">
     <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></title>
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
@@ -74,6 +74,12 @@ if ($isLocalhost) {
         document.documentElement.classList.remove('dark');
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Desactivar el modo oscuro a nivel de Tailwind CDN (forzar modo clase sin clase activa)
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -92,14 +98,14 @@ if ($isLocalhost) {
             border-color: #CBD5E1 !important;      /* border-slate-300 */
         }
         .mobile-category-pill.active {
-            background-color: #0F172A !important;  /* bg-slate-900 */
+            background-color: #00CFBD !important;  /* bg-cyan-brand */
             color: #FFFFFF !important;             /* text-white */
-            border-color: #0F172A !important;      /* border-slate-900 */
+            border-color: #00CFBD !important;      /* border-cyan-brand */
         }
         .mobile-category-pill.active:hover {
-            background-color: #1E293B !important;  /* bg-slate-800 */
+            background-color: #00B5A5 !important;  /* hover brand */
             color: #FFFFFF !important;             /* Keep text white when active is hovered */
-            border-color: #1E293B !important;
+            border-color: #00B5A5 !important;
         }
     </style>
 </head>
@@ -118,12 +124,12 @@ if ($isLocalhost) {
             <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
                     <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg shrink-0">
-                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
+                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                 <?php else: ?>
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                         <?= get_logo_svg('h-8 w-auto shrink-0') ?>
                     <?php else: ?>
-                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -133,48 +139,48 @@ if ($isLocalhost) {
         </div>
     </header>
 
-    <!-- Full Hero Section (Presentación de Ancho Completo Premium) -->
-    <div class="relative w-full bg-gradient-to-br from-[#0B1120] via-[#0d1a2e] to-[#0B1120] text-white overflow-hidden border-b border-slate-800/60">
+    <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
+    <div class="relative w-full bg-gradient-to-br from-white via-[#F8FAFC] to-[#F1F5F9] text-slate-800 overflow-hidden border-b border-slate-100">
         <!-- Luces decorativas de fondo -->
-        <div class="absolute -right-10 top-0 w-96 h-96 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-10 bottom-0 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 top-0 w-96 h-96 bg-[#00CFBD]/4 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-[#00CFBD]/3 rounded-full blur-3xl pointer-events-none"></div>
         
         <!-- Contenido centrado -->
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 md:pt-16 md:pb-12 flex flex-col items-center text-center space-y-4 relative z-10">
 
             <!-- Logo o imagen personalizada -->
             <?php if (!empty($config['logo_url'])): ?>
-                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-2xl bg-white/10 p-2.5 ring-1 ring-white/10">
+                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-md bg-white p-2.5 border border-slate-100">
             <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                 <!-- Mostrar solo el logo SVG sin repetir el nombre en texto -->
-                <div class="rounded-2xl shadow-2xl bg-white px-6 py-4 inline-flex items-center justify-center ring-1 ring-slate-200/20 hover:scale-[1.02] transition-transform duration-300">
+                <div class="rounded-2xl shadow-md bg-white px-6 py-4 inline-flex items-center justify-center border border-slate-100 hover:scale-[1.02] transition-transform duration-300">
                     <?= get_logo_svg('h-12 w-auto') ?>
                 </div>
             <?php else: ?>
                 <!-- Nombre del comercio personalizado -->
-                <span class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                <span class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent">
                     <?= h($config['nombre']) ?>
                 </span>
             <?php endif; ?>
 
             <!-- Tagline principal -->
             <div class="space-y-1.5 max-w-lg pt-1">
-                <p class="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-snug">
+                <p class="text-xl md:text-2xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
                     Tu menú digital,
-                    <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">siempre disponible</span>
+                    <span class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] bg-clip-text text-transparent">siempre disponible</span>
                 </p>
-                <p class="text-sm text-slate-400 leading-relaxed font-medium">
+                <p class="text-sm text-slate-500 leading-relaxed font-medium">
                     Explora nuestras especialidades, arma tu pedido y envíalo directo por WhatsApp en segundos.
                 </p>
             </div>
 
             <!-- Badges de características — al pie, más discretos -->
             <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-bold tracking-wide">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#00CFBD]/10 border border-[#00CFBD]/20 text-[#00CFBD] rounded-full text-[10px] font-bold tracking-wide">
                     ⚡ Pedidos por WhatsApp
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/8 text-slate-500 rounded-full text-[10px] font-bold tracking-wide">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#2A3543]/5 border border-[#2A3543]/10 text-slate-655 rounded-full text-[10px] font-bold tracking-wide">
                     🛒 Carrito Digital
                 </span>
             </div>
@@ -193,7 +199,7 @@ if ($isLocalhost) {
                         if (empty($productosPorCategoria[$cat['id']])) continue;
                     ?>
                         <a href="#cat-<?= h($cat['id']) ?>" 
-                           class="block px-3.5 py-2.5 text-slate-600 hover:text-[#10B981] hover:bg-emerald-50/20 rounded-xl font-bold text-xs transition-all border border-transparent hover:border-emerald-50">
+                           class="block px-3.5 py-2.5 text-slate-600 hover:text-[#00CFBD] hover:bg-cyan-50/20 rounded-xl font-bold text-xs transition-all border border-transparent hover:border-cyan-50">
                             <?= h($cat['nombre_categoria']) ?>
                         </a>
                     <?php endforeach; ?>
@@ -204,19 +210,19 @@ if ($isLocalhost) {
         <!-- Columna de Contenido principal -->
         <div class="flex-1 space-y-8 min-w-0">
             <!-- Buscador de Productos -->
-            <div class="relative w-full shadow-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-[#00CFBD]/30 focus-within:border-[#00CFBD] dark:focus-within:border-[#00CFBD]">
-                <div class="pl-3.5 text-slate-400 dark:text-slate-500">
+            <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-[#00CFBD]/30 focus-within:border-[#00CFBD]">
+                <div class="pl-3.5 text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input type="text" id="search-input" placeholder="Buscar especialidades..." class="w-full bg-transparent border-0 outline-none text-slate-800 dark:text-slate-100 text-sm placeholder-slate-400 dark:placeholder-slate-500 pr-4 py-1.5" autocomplete="off" />
-                <button id="search-clear-btn" class="hidden pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-350 font-bold text-sm">✕</button>
+                <input type="text" id="search-input" placeholder="Buscar especialidades..." class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5" autocomplete="off" />
+                <button id="search-clear-btn" class="hidden pr-3 text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
             </div>
 
             <!-- Categorías Deslizables (Sticky) - Solo Visible en Móvil -->
             <?php if (!empty($categorias)): ?>
-                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-16 z-20 shadow-sm">
+                <div class="md:hidden -mx-4 sm:-mx-6 px-4 sm:px-6 py-2.5 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
                     <nav class="flex space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
                         <?php foreach ($categorias as $cat): 
                             if (empty($productosPorCategoria[$cat['id']])) continue;
@@ -249,11 +255,11 @@ if ($isLocalhost) {
             <?php else: ?>
                 <!-- Mensaje de Búsqueda sin Resultados -->
                 <div id="search-no-results" class="hidden text-center py-16 space-y-3">
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
                         🔍
                     </div>
-                    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-sm">No se encontraron productos</h3>
-                    <p class="text-slate-400 dark:text-slate-550 text-xs max-w-xs mx-auto leading-relaxed">
+                    <h3 class="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
+                    <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
                         Intenta con otra palabra clave o explora las categorías del menú.
                     </p>
                 </div>
@@ -264,8 +270,8 @@ if ($isLocalhost) {
                 ?>
                     <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
                         <div class="flex items-center space-x-3">
-                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850 dark:text-slate-100"><?= h($cat['nombre_categoria']) ?></h2>
-                            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#10B981] to-[#06B6D4] opacity-20 rounded"></div>
+                            <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850"><?= h($cat['nombre_categoria']) ?></h2>
+                            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#00CFBD] to-[#2A3543] opacity-20 rounded"></div>
                         </div>
 
                         <!-- Grid de Productos (1 en móvil/tablet, 2 en pantallas más grandes) -->
@@ -273,53 +279,53 @@ if ($isLocalhost) {
                             <?php foreach ($items as $prod): ?>
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <!-- Tarjeta con Imagen -->
-                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
+                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
-                                                <h3 class="font-extrabold text-slate-900 dark:text-white text-sm md:text-base leading-snug group-hover:text-[#10B981] dark:group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                                <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
                                                 <?php if (!empty($prod['descripcion'])): ?>
-                                                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                    <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                                 <?php endif; ?>
                                             </div>
                                             <div>
-                                                <span class="block font-black text-sm md:text-base text-slate-900 dark:text-white mt-2">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="block text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="block text-xs font-bold text-slate-500 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
                                         <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
-                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="<?= h($prod['nombre']) ?>" class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300">
                                             <button onclick='event.stopPropagation(); addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
+                                            ]) ?>)' class="w-full bg-[#00CFBD] hover:bg-[#00B5A5] text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>
                                     </div>
                                 <?php else: ?>
                                     <!-- Tarjeta sin Imagen -->
-                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
+                                    <div onclick='openProductModal(<?= json_encode($prod) ?>)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
-                                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm md:text-base leading-snug group-hover:text-[#10B981] dark:group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                            <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
-                                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
+                                                <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50 dark:border-slate-800">
+                                        <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-50">
                                             <div>
-                                                <span class="font-black text-sm md:text-base text-slate-900 dark:text-white block">$<?= number_format($prod['precio'], 2) ?></span>
+                                                <span class="font-black text-sm md:text-base text-slate-900 block">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="text-xs font-bold text-slate-500 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <button onclick='event.stopPropagation(); addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] md:text-xs py-1.5 px-4.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
+                                            ]) ?>)' class="bg-[#00CFBD] hover:bg-[#00B5A5] text-white font-bold text-[10px] md:text-xs py-1.5 px-4.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>
@@ -334,22 +340,22 @@ if ($isLocalhost) {
     </main>
 
     <!-- Footer Bar -->
-    <footer class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-5 mt-auto">
+    <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
             <div class="flex items-center gap-4">
                 <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-                <a href="/legal" class="text-slate-400 hover:text-emerald-600 transition-colors">Términos y Privacidad</a>
+                <a href="/legal" class="text-slate-400 hover:text-[#00CFBD] transition-colors">Términos y Privacidad</a>
             </div>
-            <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-655 transition-colors flex items-center gap-1">
+            <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
-                <span class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent font-extrabold">Montero Studio</span>
+                <span class="text-[#00CFBD] font-extrabold">Montero Studio</span>
             </a>
         </div>
     </footer>
 
     <!-- Carrito Flotante (JS) -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-40 hidden">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
                 <span>🛒</span>
                 <span id="cart-count">0 artículos</span>
@@ -365,51 +371,58 @@ if ($isLocalhost) {
 
     <!-- Drawer del Carrito -->
     <div id="cart-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
-        <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/60 backdrop-blur-md"></div>
+        <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-955/40 backdrop-blur-sm"></div>
         
         <!-- Panel Desplizable -->
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl border-t border-slate-100 dark:border-slate-800 flex flex-col max-w-md mx-auto overflow-hidden">
-            <div class="px-6 py-5 border-b border-slate-50 dark:border-slate-800/60 flex items-center justify-between">
+        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-100 flex flex-col max-w-md mx-auto overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
                 <div>
-                    <h3 class="font-extrabold text-lg text-slate-800 dark:text-white">Mi Pedido</h3>
-                    <p class="text-xs text-slate-400 dark:text-slate-550">Verifica los artículos seleccionados</p>
+                    <h3 class="font-extrabold text-lg text-slate-800">Mi Pedido</h3>
+                    <p class="text-xs text-slate-400">Verifica los artículos seleccionados</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-750 transition-colors">
                         Vaciar
                     </button>
-                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400">
+                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
                         ✕
                     </button>
                 </div>
             </div>
 
-            <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 dark:divide-slate-800 flex-1">
+            <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 flex-1">
                 <!-- Se rellena por JS de forma segura -->
             </div>
 
-            <div class="p-6 border-t border-slate-50 dark:border-slate-800 space-y-4 bg-slate-50/50 dark:bg-slate-850/30">
-                <div class="flex justify-between items-center font-extrabold text-slate-955 dark:text-slate-100">
+            <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
+                <div class="flex justify-between items-center font-extrabold text-slate-800">
                     <span>Total a pagar</span>
                     <div class="text-right">
-                        <span id="drawer-total" class="text-xl block dark:text-white">$0.00</span>
+                        <span id="drawer-total" class="text-xl block text-slate-800">$0.00</span>
                         <?php if ($tasa_dolar > 1): ?>
-                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 dark:text-slate-400 block mt-0.5 font-mono"></span>
+                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 block mt-0.5 font-mono"></span>
                         <?php endif; ?>
                     </div>
                 </div>
-                
+                <button onclick="checkoutOrder()" class="w-full py-4 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
+                    <span>Enviar Pedido por WhatsApp</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Detalle de Producto -->
     <div id="product-modal" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
         <!-- Backdrop -->
-        <div onclick="closeProductModal()" class="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md"></div>
+        <div onclick="closeProductModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
         
         <!-- Contenedor del Modal -->
-        <div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-lg bg-white dark:bg-slate-900 rounded-t-3xl md:rounded-3xl shadow-2xl border-t md:border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden max-h-[90vh] transition-all duration-300">
+        <div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-lg bg-white rounded-t-3xl md:rounded-3xl shadow-2xl border-t md:border border-slate-100 flex flex-col overflow-hidden max-h-[90vh] transition-all duration-300">
             <!-- Header Modal -->
-            <div class="px-6 py-4 border-b border-slate-50 dark:border-slate-800/60 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-10">
-                <h3 class="font-extrabold text-base text-slate-800 dark:text-white">Detalle del Producto</h3>
-                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400">
+            <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                <h3 class="font-extrabold text-base text-slate-800">Detalle del Producto</h3>
+                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
                     ✕
                 </button>
             </div>
@@ -417,43 +430,47 @@ if ($isLocalhost) {
             <!-- Cuerpo Modal (Scrollable) -->
             <div class="p-6 overflow-y-auto space-y-5">
                 <!-- Imagen -->
-                <div id="modal-img-container" class="w-full h-48 md:h-56 rounded-2xl bg-slate-50 dark:bg-slate-850 overflow-hidden hidden border border-slate-100 dark:border-slate-800">
+                <div id="modal-img-container" class="w-full h-48 md:h-56 rounded-2xl bg-slate-50 overflow-hidden hidden border border-slate-100">
                     <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
                 </div>
 
                 <div class="space-y-1">
-                    <h2 id="modal-title" class="font-black text-slate-900 dark:text-white text-lg md:text-xl leading-snug"></h2>
-                    <p id="modal-desc" class="text-xs md:text-sm text-slate-500 dark:text-slate-450 leading-relaxed"></p>
+                    <h2 id="modal-title" class="font-black text-slate-900 text-lg md:text-xl leading-snug"></h2>
+                    <p id="modal-desc" class="text-xs md:text-sm text-slate-500 leading-relaxed"></p>
                 </div>
 
-                <div class="flex items-center justify-between py-3 border-y border-slate-50 dark:border-slate-800/60">
-                    <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Precio</span>
+                <div class="flex items-center justify-between py-3 border-y border-slate-50">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Precio</span>
                     <div class="text-right">
-                        <span id="modal-price" class="text-lg md:text-xl font-black text-slate-900 dark:text-white"></span>
-                        <span id="modal-price-local" class="block text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5"></span>
+                        <span id="modal-price" class="text-lg md:text-xl font-black text-slate-900"></span>
+                        <span id="modal-price-local" class="block text-xs font-bold text-slate-500 mt-0.5"></span>
                     </div>
                 </div>
 
                 <!-- Campo de notas personalizadas -->
                 <div class="space-y-2">
-                    <label for="modal-notes" class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Notas / Instrucciones adicionales</label>
-                    <textarea id="modal-notes" placeholder="Ej. sin cebolla, salsa aparte, bien cocido..." class="w-full p-3.5 bg-slate-50 dark:bg-slate-850 border border-slate-150 dark:border-slate-800 rounded-xl text-xs md:text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#00CFBD]/30 focus:border-[#00CFBD] dark:focus:border-[#00CFBD] resize-none h-20" maxlength="150"></textarea>
+                    <label for="modal-notes" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Notas / Instrucciones adicionales</label>
+                    <textarea id="modal-notes" placeholder="Ej. sin cebolla, salsa aparte, bien cocido..." class="w-full p-3.5 bg-slate-50 border border-slate-150 rounded-xl text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00CFBD]/30 focus:border-[#00CFBD] resize-none h-20" maxlength="150"></textarea>
                 </div>
             </div>
 
             <!-- Footer Modal (Controles y Botón de compra) -->
-            <div class="p-6 border-t border-slate-50 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-850/20 flex flex-col sm:flex-row gap-4 sticky bottom-0 z-10">
+            <div class="p-6 border-t border-slate-50 bg-slate-50/50 flex flex-col sm:flex-row gap-4 sticky bottom-0 z-10">
                 <!-- Selector de Cantidad -->
-                <div class="flex items-center justify-center sm:justify-start space-x-3.5 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 rounded-xl shrink-0">
-                    <button onclick="updateModalQuantity(-1)" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-black text-base transition-colors w-6 h-6 flex items-center justify-center">−</button>
-                    <span id="modal-qty" class="font-black text-sm w-6 text-center text-slate-800 dark:text-white">1</span>
-                    <button onclick="updateModalQuantity(1)" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-black text-base transition-colors w-6 h-6 flex items-center justify-center">+</button>
+                <div class="flex items-center justify-center sm:justify-start space-x-3.5 bg-slate-100 px-4 py-2.5 rounded-xl shrink-0">
+                    <button onclick="updateModalQuantity(-1)" class="text-slate-600 hover:text-slate-900 font-black text-base transition-colors w-6 h-6 flex items-center justify-center">−</button>
+                    <span id="modal-qty" class="font-black text-sm w-6 text-center text-slate-800">1</span>
+                    <button onclick="updateModalQuantity(1)" class="text-slate-600 hover:text-slate-900 font-black text-base transition-colors w-6 h-6 flex items-center justify-center">+</button>
                 </div>
 
                 <!-- Botón de compra -->
-                <button id="modal-add-btn" class="flex-1 py-3 px-6 bg-gradient-to-r from-[#10B981] to-[#06B6D4] hover:opacity-95 text-white font-black text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
+                <button id="modal-add-btn" class="flex-1 py-3 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-black text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
                     <span>Agregar al pedido</span>
                     <span id="modal-subtotal" class="font-black"></span>
+                </button>
+            </div>
+        </div>
+    </div>></span>
                 </button>
             </div>
         </div>
@@ -657,10 +674,10 @@ if ($isLocalhost) {
             // 1. Sidebar en Escritorio
             document.querySelectorAll('aside nav a').forEach(link => {
                 if (link.getAttribute('href') === `#${id}`) {
-                    link.classList.add('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
+                    link.classList.add('bg-[#00CFBD]/10', 'text-[#00CFBD]', 'font-bold');
                     link.classList.remove('text-slate-600');
                 } else {
-                    link.classList.remove('bg-emerald-50/70', 'text-[#10B981]', 'font-bold');
+                    link.classList.remove('bg-[#00CFBD]/10', 'text-[#00CFBD]', 'font-bold');
                     link.classList.add('text-slate-600');
                 }
             });
@@ -818,12 +835,12 @@ if ($isLocalhost) {
             // Construir DOM seguro
             cart.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 dark:border-slate-800 first:pt-2 last:border-b-0";
+                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 first:pt-2 last:border-b-0";
 
                 const infoEl = document.createElement('div');
                 
                 const nameEl = document.createElement('h4');
-                nameEl.className = "font-bold text-sm text-slate-800 dark:text-white";
+                nameEl.className = "font-bold text-sm text-slate-800";
                 nameEl.textContent = item.nombre;
 
                 infoEl.appendChild(nameEl);
@@ -831,7 +848,7 @@ if ($isLocalhost) {
                 // Notas / Instrucciones del producto
                 if (item.notes) {
                     const notesEl = document.createElement('p');
-                    notesEl.className = "text-[10px] font-semibold text-[#00CFBD] dark:text-[#00CFBD] italic mt-0.5 max-w-[180px] truncate";
+                    notesEl.className = "text-[10px] font-semibold text-[#00CFBD] italic mt-0.5 max-w-[180px] truncate";
                     notesEl.textContent = `Nota: ${item.notes}`;
                     notesEl.title = item.notes;
                     infoEl.appendChild(notesEl);
@@ -846,21 +863,21 @@ if ($isLocalhost) {
                 controlsEl.className = "flex items-center space-x-2.5";
 
                 const btnMinus = document.createElement('button');
-                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-655 dark:text-slate-350 transition-colors";
+                btnMinus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-600 transition-colors";
                 btnMinus.textContent = "−";
                 btnMinus.onclick = () => updateQuantity(item.id, -1, item.notes);
 
                 const qtyEl = document.createElement('span');
-                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-800 dark:text-white";
+                qtyEl.className = "text-sm font-extrabold w-4 text-center text-slate-800";
                 qtyEl.textContent = item.quantity;
 
                 const btnPlus = document.createElement('button');
-                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-655 dark:text-slate-350 transition-colors";
+                btnPlus.className = "w-7 h-7 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-600 transition-colors";
                 btnPlus.textContent = "+";
                 btnPlus.onclick = () => updateQuantity(item.id, 1, item.notes);
 
                 const btnRemove = document.createElement('button');
-                btnRemove.className = "w-7 h-7 rounded-xl bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 flex items-center justify-center text-red-500 hover:text-red-700 transition-colors ml-1.5 font-bold text-xs";
+                btnRemove.className = "w-7 h-7 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-750 transition-colors ml-1.5 font-bold text-xs";
                 btnRemove.textContent = "✕";
                 btnRemove.onclick = () => {
                     let cart = getCart().filter(i => !(i.id === item.id && (i.notes || '') === (item.notes || '')));
