@@ -101,7 +101,7 @@ if (!$is_logged_in):
     // RENDERIZAR PANTALLA DE ACCESO POR CONTRASEÑA
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -199,7 +199,7 @@ if (!$is_logged_in):
         .btn-primary:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="login-bg min-h-screen flex items-center justify-center p-4">
+<body class="login-bg min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
 
     <div class="login-card w-full max-w-md relative z-10">
         <!-- Tarjeta principal -->
@@ -220,7 +220,7 @@ if (!$is_logged_in):
             </div>
 
             <!-- Cuerpo del formulario -->
-            <div class="p-7 space-y-5 bg-white">
+            <div class="p-5 sm:p-7 space-y-5 bg-white">
                 <?php if (!empty($error)): ?>
                     <div class="flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
                         <span class="text-base mt-0.5">&#9888;</span>
