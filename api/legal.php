@@ -15,6 +15,10 @@ $nombre_tienda = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="shortcut icon" href="/api/favicon.svg">
+    <link rel="apple-touch-icon" href="/api/favicon.svg">
+    <meta name="theme-color" content="#10B981">
     <title>Legal - <?= h($nombre_tienda) ?></title>
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
@@ -43,7 +47,7 @@ $nombre_tienda = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' 
                     <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($nombre_tienda) ?></a>
                 <?php else: ?>
                     <?php if (strtolower($nombre_tienda) === 'pronttogo' || $nombre_tienda === 'Mi Tienda'): ?>
-                        <a href="/"><img src="/api/logo.svg" alt="PronttoGo" class="h-8 w-auto object-contain"></a>
+                        <a href="/"><?= get_logo_svg('h-8 w-auto') ?></a>
                     <?php else: ?>
                         <a href="/" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($nombre_tienda) ?></a>
                     <?php endif; ?>

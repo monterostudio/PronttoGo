@@ -55,6 +55,10 @@ if ($isLocalhost) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="shortcut icon" href="/api/favicon.svg">
+    <link rel="apple-touch-icon" href="/api/favicon.svg">
+    <meta name="theme-color" content="#10B981">
     <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?> - Menú Digital</title>
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
@@ -112,7 +116,7 @@ if ($isLocalhost) {
                     <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
                 <?php else: ?>
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                        <img src="/api/logo.svg" alt="PronttoGo" class="h-8 w-auto object-contain">
+                        <?= get_logo_svg('h-8 w-auto') ?>
                     <?php else: ?>
                         <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
@@ -135,7 +139,9 @@ if ($isLocalhost) {
             <?php if (!empty($config['logo_url'])): ?>
                 <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white/10 p-2.5 mb-2">
             <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                <img src="/api/logo.svg" alt="PronttoGo" class="h-20 w-auto object-contain rounded-2xl shadow-lg bg-white p-3.5 mb-2">
+                <div class="rounded-2xl shadow-lg bg-white p-3.5 mb-2 inline-flex items-center justify-center">
+                    <?= get_logo_svg('h-14 w-auto') ?>
+                </div>
             <?php endif; ?>
             <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] md:text-xs font-bold tracking-wide uppercase">
                 ⚡ Pedidos por WhatsApp

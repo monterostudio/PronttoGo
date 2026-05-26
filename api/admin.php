@@ -105,7 +105,10 @@ if (!$is_logged_in):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Administrativo - PronttoGo</title>
+    <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="shortcut icon" href="/api/favicon.svg">
+    <link rel="apple-touch-icon" href="/api/favicon.svg">
+    <meta name="theme-color" content="#10B981">
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
         const _warn = console.warn;
@@ -126,8 +129,10 @@ if (!$is_logged_in):
     <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
         <!-- Encabezado con degradado Emerald a Cyan -->
         <div class="bg-gradient-to-r from-[#10B981] to-[#06B6D4] p-8 text-white text-center">
-            <h1 class="text-3xl font-extrabold tracking-tight">PronttoGo</h1>
-            <p class="text-emerald-50 mt-2 font-medium">Panel de Control del Comercio</p>
+            <div class="inline-flex items-center justify-center bg-white rounded-2xl px-5 py-3 mb-3 shadow-md">
+                <?= get_logo_svg('h-9 w-auto') ?>
+            </div>
+            <p class="text-emerald-50 mt-1 font-medium">Panel de Control del Comercio</p>
         </div>
 
         <div class="p-6 space-y-6">
@@ -405,7 +410,10 @@ foreach ($categorias as $cat) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <?= h($config['nombre']) ?></title>
+    <link rel="icon" type="image/svg+xml" href="/api/favicon.svg">
+    <link rel="shortcut icon" href="/api/favicon.svg">
+    <link rel="apple-touch-icon" href="/api/favicon.svg">
+    <meta name="theme-color" content="#10B981">
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
         const _warn = console.warn;
@@ -430,9 +438,9 @@ foreach ($categorias as $cat) {
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
             <div>
-                <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                    <img src="/api/logo.svg" alt="PronttoGo" class="h-8 w-auto object-contain">
-                <?php else: ?>
+                    <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
+                        <?= get_logo_svg('h-8 w-auto') ?>
+                    <?php else: ?>
                     <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#10B981] to-[#06B6D4] bg-clip-text text-transparent"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
                 <?php endif; ?>
             </div>

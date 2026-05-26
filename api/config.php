@@ -215,3 +215,21 @@ function fetch_automatic_rate(string $type): ?float {
     }
     return null;
 }
+
+// 9. Logo SVG inline — resuelve la ruta del logo sin depender de URLs absolutas.
+//    Funciona en Laragon local y en Vercel sin cambios.
+function get_logo_svg(string $class = 'h-8 w-auto'): string {
+    $path = __DIR__ . '/logo.svg';
+    if (!file_exists($path)) {
+        // Fallback: texto en gradiente si no existe el archivo SVG
+        return '<span style="font-weight:900;font-size:1.25rem;background:linear-gradient(to right,#10B981,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PronttoGo</span>';
+    }
+    $svg = file_get_contents($path);
+    // Reemplazar width/height inline con clase CSS para que se pueda controlar por Tailwind
+    $svg = str_replace(
+        'width="100%" height="100%"',
+        'class="' . htmlspecialchars($class, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"',
+        $svg
+    );
+    return $svg;
+}
