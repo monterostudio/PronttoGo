@@ -167,11 +167,11 @@ if ($isLocalhost) {
             <!-- Tagline principal -->
             <div class="space-y-1.5 max-w-lg pt-1">
                 <p class="text-xl md:text-2xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
-                    Tu menú digital,
+                    Tu catálogo digital,
                     <span class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] bg-clip-text text-transparent">siempre disponible</span>
                 </p>
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                    Explora nuestras especialidades, arma tu pedido y envíalo directo por WhatsApp en segundos.
+                    Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.
                 </p>
             </div>
         </div>
@@ -187,7 +187,7 @@ if ($isLocalhost) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input type="text" id="search-input" placeholder="Buscar especialidades..." class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5" autocomplete="off" />
+                <input type="text" id="search-input" placeholder="Buscar productos..." class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5" autocomplete="off" />
                 <button id="search-clear-btn" class="hidden pr-3 text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
             </div>
 
@@ -231,7 +231,7 @@ if ($isLocalhost) {
                     </div>
                     <h3 class="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
                     <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                        Intenta con otra palabra clave o explora las categorías del menú.
+                        Intenta con otra palabra clave o explora las categorías del catálogo.
                     </p>
                 </div>
 
@@ -379,8 +379,8 @@ if ($isLocalhost) {
                 <!-- Formulario de Datos del Cliente -->
                 <div id="customer-data-form" class="border-t border-slate-100 pt-5 space-y-4">
                     <div class="border-b border-slate-50 pb-2">
-                        <h4 class="font-extrabold text-sm text-slate-800">Datos de Entrega</h4>
-                        <p class="text-[10px] text-slate-400">Completa esta información para procesar tu orden.</p>
+                        <h4 class="font-extrabold text-sm text-slate-800">Datos del Cliente</h4>
+                        <p class="text-[10px] text-slate-400">Completa esta información para procesar tu pedido.</p>
                     </div>
 
                     <!-- Nombre -->
@@ -390,28 +390,6 @@ if ($isLocalhost) {
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">👤</span>
                             <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Tipo de entrega -->
-                    <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
-                        <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
-                                class="py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm">
-                            🛵 Delivery
-                        </button>
-                        <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
-                                class="py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-600 hover:text-slate-900">
-                            🛍️ Retiro
-                        </button>
-                    </div>
-
-                    <!-- Dirección -->
-                    <div id="delivery-address-container" class="space-y-1.5 transition-all duration-300">
-                        <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-2.5 text-xs">📍</span>
-                            <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
-                                      class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all resize-none"></textarea>
                         </div>
                     </div>
 
@@ -767,7 +745,7 @@ if ($isLocalhost) {
 
                 const notesInput = document.createElement('input');
                 notesInput.type = "text";
-                notesInput.placeholder = "✍️ ¿Alguna indicación? (ej: sin cebolla...)";
+                notesInput.placeholder = "✍️ Especificaciones adicionales (ej: talla, color, etc...)";
                 notesInput.value = item.notes || '';
                 notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD]/40 focus:border-[#00CFBD] transition-all";
                 notesInput.onchange = (e) => {
@@ -783,45 +761,16 @@ if ($isLocalhost) {
             floatingCart.classList.remove('hidden');
         }
 
-        let currentDeliveryType = 'delivery';
-
-        function setDeliveryType(type) {
-            currentDeliveryType = type;
-            const btnDelivery = document.getElementById('delivery-type-delivery');
-            const btnPickup = document.getElementById('delivery-type-pickup');
-            const addressContainer = document.getElementById('delivery-address-container');
-            const addressInput = document.getElementById('cust-address');
-            
-            if (type === 'delivery') {
-                btnDelivery.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100";
-                btnPickup.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
-                addressContainer.classList.remove('hidden');
-                addressInput.setAttribute('required', 'true');
-            } else {
-                btnDelivery.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
-                btnPickup.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100";
-                addressContainer.classList.add('hidden');
-                addressInput.removeAttribute('required');
-            }
-            saveCustomerData();
-        }
-
         function loadCustomerData() {
             try {
                 const name = localStorage.getItem('cust_name') || '';
-                const address = localStorage.getItem('cust_address') || '';
                 const payment = localStorage.getItem('cust_payment') || 'Pago Móvil';
-                const deliveryType = localStorage.getItem('cust_delivery_type') || 'delivery';
 
                 const nameInput = document.getElementById('cust-name');
-                const addressInput = document.getElementById('cust-address');
                 const paymentInput = document.getElementById('cust-payment');
 
                 if (nameInput) nameInput.value = name;
-                if (addressInput) addressInput.value = address;
                 if (paymentInput) paymentInput.value = payment;
-                
-                setDeliveryType(deliveryType);
             } catch (e) {
                 console.error(e);
             }
@@ -830,17 +779,13 @@ if ($isLocalhost) {
         function saveCustomerData() {
             try {
                 const nameInput = document.getElementById('cust-name');
-                const addressInput = document.getElementById('cust-address');
                 const paymentInput = document.getElementById('cust-payment');
 
                 const name = nameInput ? nameInput.value.trim() : '';
-                const address = addressInput ? addressInput.value.trim() : '';
                 const payment = paymentInput ? paymentInput.value : 'Pago Móvil';
                 
                 localStorage.setItem('cust_name', name);
-                localStorage.setItem('cust_address', address);
                 localStorage.setItem('cust_payment', payment);
-                localStorage.setItem('cust_delivery_type', currentDeliveryType);
             } catch (e) {
                 console.error(e);
             }
@@ -867,13 +812,6 @@ if ($isLocalhost) {
                 return;
             }
 
-            const clientAddress = document.getElementById('cust-address').value.trim();
-            if (currentDeliveryType === 'delivery' && !clientAddress) {
-                alert('Por favor, ingresa tu dirección para el delivery.');
-                document.getElementById('cust-address').focus();
-                return;
-            }
-
             const clientPayment = document.getElementById('cust-payment').value;
 
             let totalPrice = 0;
@@ -897,15 +835,10 @@ if ($isLocalhost) {
                 localTotalText = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})\n`;
             }
 
-            let deliveryText = currentDeliveryType === 'delivery' 
-                ? `🛵 *Despacho:* Delivery\n📍 *Dirección:* ${clientAddress}`
-                : `🛍️ *Despacho:* Retiro en local`;
-
             // Formato exacto solicitado con datos del cliente
             const message = `*Pedido de PronttoGo* 🛒\n` +
                             `--------------------------\n` +
                             `👤 *Cliente:* ${clientName}\n` +
-                            `${deliveryText}\n` +
                             `💳 *Pago:* ${clientPayment}\n` +
                             `--------------------------\n` +
                             `${itemsText}` +
@@ -925,7 +858,6 @@ if ($isLocalhost) {
 
             // Guardar datos del cliente mientras escribe
             document.getElementById('cust-name').addEventListener('input', saveCustomerData);
-            document.getElementById('cust-address').addEventListener('input', saveCustomerData);
             document.getElementById('cust-payment').addEventListener('change', saveCustomerData);
         });
     </script>

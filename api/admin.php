@@ -287,7 +287,7 @@ if (!$is_logged_in):
                 <!-- Link volver al menú -->
                 <div class="text-center pt-1">
                     <a href="/" class="text-xs text-slate-400 hover:text-[#00CFBD] transition-colors font-medium">
-                        &larr; Volver al menú digital
+                        &larr; Volver al catálogo digital
                     </a>
                 </div>
             </div>
@@ -722,7 +722,7 @@ foreach ($categorias as $cat) {
                         <input type="hidden" name="action" value="add_category">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de la Categoría</label>
-                            <input type="text" name="nombre_categoria" required placeholder="ej: Comidas, Bebidas, Dulces" 
+                             <input type="text" name="nombre_categoria" required placeholder="ej: Repuestos, Joyas, Tortas, Helados" 
                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
                         <div>
@@ -740,7 +740,7 @@ foreach ($categorias as $cat) {
                 <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-4 min-w-0">
                     <div class="border-b border-slate-50 pb-2">
                         <h2 class="text-lg font-extrabold">Categorías Registradas</h2>
-                        <p class="text-[11px] text-slate-400">Categorías y su orden en el menú.</p>
+                        <p class="text-[11px] text-slate-400">Categorías y su orden en el catálogo.</p>
                     </div>
 
                     <?php if (empty($categorias)): ?>
@@ -819,7 +819,7 @@ foreach ($categorias as $cat) {
                         
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre</label>
-                            <input type="text" name="nombre" id="prod-nombre" required placeholder="ej: Hamburguesa Doble" 
+                             <input type="text" name="nombre" id="prod-nombre" required placeholder="ej: Alternador Toyota, Anillo de Plata" 
                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                         </div>
 
@@ -836,7 +836,7 @@ foreach ($categorias as $cat) {
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Descripción</label>
-                            <textarea name="descripcion" id="prod-desc" rows="2" placeholder="Detalles, ingredientes, tamaño..." 
+                             <textarea name="descripcion" id="prod-desc" rows="2" placeholder="Detalles, especificaciones, modelo, talla, materiales..." 
                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all"></textarea>
                         </div>
 
