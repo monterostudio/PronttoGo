@@ -369,8 +369,68 @@ if ($isLocalhost) {
                 </div>
             </div>
 
-            <div id="cart-items" class="p-6 overflow-y-auto space-y-1 divide-y divide-slate-50 flex-1">
-                <!-- Se rellena por JS de forma segura -->
+            <!-- Contenedor scrollable principal -->
+            <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+                <!-- Listado de Productos -->
+                <div id="cart-items" class="space-y-1 divide-y divide-slate-100">
+                    <!-- Se rellena por JS de forma segura -->
+                </div>
+
+                <!-- Formulario de Datos del Cliente -->
+                <div id="customer-data-form" class="border-t border-slate-100 pt-5 space-y-4">
+                    <div class="border-b border-slate-50 pb-2">
+                        <h4 class="font-extrabold text-sm text-slate-800">Datos de Entrega</h4>
+                        <p class="text-[10px] text-slate-400">Completa esta información para procesar tu orden.</p>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="space-y-1.5">
+                        <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">👤</span>
+                            <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
+                                   class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Tipo de entrega -->
+                    <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
+                        <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
+                                class="py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm">
+                            🛵 Delivery
+                        </button>
+                        <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
+                                class="py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-600 hover:text-slate-900">
+                            🛍️ Retiro
+                        </button>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div id="delivery-address-container" class="space-y-1.5 transition-all duration-300">
+                        <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-xs">📍</span>
+                            <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
+                                      class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Método de pago -->
+                    <div class="space-y-1.5">
+                        <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Método de Pago</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">💳</span>
+                            <select id="cust-payment" 
+                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8">
+                                <option value="Pago Móvil">💸 Pago Móvil</option>
+                                <option value="Efectivo Divisas">💵 Efectivo Divisas</option>
+                                <option value="Zelle">🇺🇸 Zelle</option>
+                                <option value="Efectivo Bs.">🇻🇪 Efectivo Bs.</option>
+                                <option value="Punto de Venta / Tarjeta">💳 Tarjeta / Punto de Venta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
@@ -646,24 +706,18 @@ if ($isLocalhost) {
             // Construir DOM seguro
             cart.forEach(item => {
                 const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center py-4 border-b border-slate-100 first:pt-2 last:border-b-0";
+                itemEl.className = "flex flex-col py-4 border-b border-slate-100 first:pt-2 last:border-b-0 gap-2";
+
+                // Fila principal (Info y Controles)
+                const mainRow = document.createElement('div');
+                mainRow.className = "flex justify-between items-center w-full";
 
                 const infoEl = document.createElement('div');
                 
                 const nameEl = document.createElement('h4');
                 nameEl.className = "font-bold text-sm text-slate-800";
                 nameEl.textContent = item.nombre;
-
                 infoEl.appendChild(nameEl);
-
-                // Notas / Instrucciones del producto
-                if (item.notes) {
-                    const notesEl = document.createElement('p');
-                    notesEl.className = "text-[10px] font-semibold text-[#00CFBD] italic mt-0.5 max-w-[180px] truncate";
-                    notesEl.textContent = `Nota: ${item.notes}`;
-                    notesEl.title = item.notes;
-                    infoEl.appendChild(notesEl);
-                }
 
                 const priceEl = document.createElement('p');
                 priceEl.className = "text-xs font-semibold text-slate-400 mt-0.5";
@@ -703,17 +757,124 @@ if ($isLocalhost) {
                 controlsEl.appendChild(btnPlus);
                 controlsEl.appendChild(btnRemove);
 
-                itemEl.appendChild(infoEl);
-                itemEl.appendChild(controlsEl);
+                mainRow.appendChild(infoEl);
+                mainRow.appendChild(controlsEl);
+                itemEl.appendChild(mainRow);
+
+                // Fila de notas del producto
+                const notesRow = document.createElement('div');
+                notesRow.className = "w-full";
+
+                const notesInput = document.createElement('input');
+                notesInput.type = "text";
+                notesInput.placeholder = "✍️ ¿Alguna indicación? (ej: sin cebolla...)";
+                notesInput.value = item.notes || '';
+                notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD]/40 focus:border-[#00CFBD] transition-all";
+                notesInput.onchange = (e) => {
+                    updateItemNotes(item.id, e.target.value.trim());
+                };
+
+                notesRow.appendChild(notesInput);
+                itemEl.appendChild(notesRow);
+
                 cartItemsContainer.appendChild(itemEl);
             });
 
             floatingCart.classList.remove('hidden');
         }
 
+        let currentDeliveryType = 'delivery';
+
+        function setDeliveryType(type) {
+            currentDeliveryType = type;
+            const btnDelivery = document.getElementById('delivery-type-delivery');
+            const btnPickup = document.getElementById('delivery-type-pickup');
+            const addressContainer = document.getElementById('delivery-address-container');
+            const addressInput = document.getElementById('cust-address');
+            
+            if (type === 'delivery') {
+                btnDelivery.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100";
+                btnPickup.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
+                addressContainer.classList.remove('hidden');
+                addressInput.setAttribute('required', 'true');
+            } else {
+                btnDelivery.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800";
+                btnPickup.className = "py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100";
+                addressContainer.classList.add('hidden');
+                addressInput.removeAttribute('required');
+            }
+            saveCustomerData();
+        }
+
+        function loadCustomerData() {
+            try {
+                const name = localStorage.getItem('cust_name') || '';
+                const address = localStorage.getItem('cust_address') || '';
+                const payment = localStorage.getItem('cust_payment') || 'Pago Móvil';
+                const deliveryType = localStorage.getItem('cust_delivery_type') || 'delivery';
+
+                const nameInput = document.getElementById('cust-name');
+                const addressInput = document.getElementById('cust-address');
+                const paymentInput = document.getElementById('cust-payment');
+
+                if (nameInput) nameInput.value = name;
+                if (addressInput) addressInput.value = address;
+                if (paymentInput) paymentInput.value = payment;
+                
+                setDeliveryType(deliveryType);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function saveCustomerData() {
+            try {
+                const nameInput = document.getElementById('cust-name');
+                const addressInput = document.getElementById('cust-address');
+                const paymentInput = document.getElementById('cust-payment');
+
+                const name = nameInput ? nameInput.value.trim() : '';
+                const address = addressInput ? addressInput.value.trim() : '';
+                const payment = paymentInput ? paymentInput.value : 'Pago Móvil';
+                
+                localStorage.setItem('cust_name', name);
+                localStorage.setItem('cust_address', address);
+                localStorage.setItem('cust_payment', payment);
+                localStorage.setItem('cust_delivery_type', currentDeliveryType);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function updateItemNotes(productId, newNotes) {
+            let cart = getCart();
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.notes = newNotes;
+                saveCart(cart);
+            }
+        }
+
         function checkoutOrder() {
             const cart = getCart();
             if (cart.length === 0) return;
+
+            // Validar campos de cliente
+            const clientName = document.getElementById('cust-name').value.trim();
+            if (!clientName) {
+                alert('Por favor, ingresa tu nombre para poder enviar el pedido.');
+                document.getElementById('cust-name').focus();
+                return;
+            }
+
+            const clientAddress = document.getElementById('cust-address').value.trim();
+            if (currentDeliveryType === 'delivery' && !clientAddress) {
+                alert('Por favor, ingresa tu dirección para el delivery.');
+                document.getElementById('cust-address').focus();
+                return;
+            }
+
+            const clientPayment = document.getElementById('cust-payment').value;
 
             let totalPrice = 0;
             let itemsText = "";
@@ -736,8 +897,16 @@ if ($isLocalhost) {
                 localTotalText = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})\n`;
             }
 
-            // Formato exacto solicitado
+            let deliveryText = currentDeliveryType === 'delivery' 
+                ? `🛵 *Despacho:* Delivery\n📍 *Dirección:* ${clientAddress}`
+                : `🛍️ *Despacho:* Retiro en local`;
+
+            // Formato exacto solicitado con datos del cliente
             const message = `*Pedido de PronttoGo* 🛒\n` +
+                            `--------------------------\n` +
+                            `👤 *Cliente:* ${clientName}\n` +
+                            `${deliveryText}\n` +
+                            `💳 *Pago:* ${clientPayment}\n` +
                             `--------------------------\n` +
                             `${itemsText}` +
                             `--------------------------\n` +
@@ -752,6 +921,12 @@ if ($isLocalhost) {
 
         window.addEventListener('DOMContentLoaded', () => {
             updateCartUI();
+            loadCustomerData();
+
+            // Guardar datos del cliente mientras escribe
+            document.getElementById('cust-name').addEventListener('input', saveCustomerData);
+            document.getElementById('cust-address').addEventListener('input', saveCustomerData);
+            document.getElementById('cust-payment').addEventListener('change', saveCustomerData);
         });
     </script>
 </body>
