@@ -18,10 +18,15 @@ if ($response['success'] && !empty($response['data'])) {
     ];
 }
 
-// Configuración de Tasa de Cambio y Moneda Local
+// Configuración de Tasa de Cambio y Moneda Local con soporte para rubros y monedas dinámicas
+$tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
 $tasa_dolar = floatval($config['tasa_dolar'] ?? 1.00);
 $tasa_tipo = $config['tasa_tipo'] ?? 'manual';
-$moneda_local_nombre = ($tasa_tipo === 'trm') ? 'COP' : 'Bs.';
+$moneda_local_nombre = !empty($config['moneda_nombre']) ? $config['moneda_nombre'] : (($tasa_tipo === 'trm') ? 'COP' : 'Bs.');
+$moneda_local_simbolo = !empty($config['moneda_simbolo']) ? $config['moneda_simbolo'] : (($tasa_tipo === 'trm') ? '$' : 'Bs.');
+$costo_delivery = floatval($config['costo_delivery'] ?? 0.00);
+$direccion_local = !empty($config['direccion']) ? $config['direccion'] : '';
+$horario_local = !empty($config['horario']) ? $config['horario'] : '';
 
 // 2. CONSULTAR CATEGORÍAS (Ordenadas)
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
@@ -59,7 +64,63 @@ if ($isLocalhost) {
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.svg">
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
-    <meta name="theme-color" content="#00CFBD">
+    <?php
+    // Mapeo de colores principales según el tipo de negocio
+    $color_niche = [
+        'gastronomia' => [
+            'primary' => '#00CFBD',
+            'primary-hover' => '#00B5A5',
+            'soft' => '#E6FBF9',
+            'border-soft' => '#B2EFE9',
+            'hero-bg-from' => '#F0FDFB',
+            'hero-bg-via' => '#E2F8F5',
+            'hero-bg-to' => '#F0FDFB',
+            'hero-glow' => 'rgba(0,207,189,0.05)'
+        ],
+        'boutique' => [
+            'primary' => '#8B5CF6',
+            'primary-hover' => '#7C3AED',
+            'soft' => '#F5F3FF',
+            'border-soft' => '#DDD6FE',
+            'hero-bg-from' => '#FAF5FF',
+            'hero-bg-via' => '#F3E8FF',
+            'hero-bg-to' => '#FAF5FF',
+            'hero-glow' => 'rgba(139,92,246,0.05)'
+        ],
+        'ferreteria_repuestos' => [
+            'primary' => '#F59E0B',
+            'primary-hover' => '#D97706',
+            'soft' => '#FFFBEB',
+            'border-soft' => '#FDE68A',
+            'hero-bg-from' => '#FFFDF5',
+            'hero-bg-via' => '#FEF3C7',
+            'hero-bg-to' => '#FFFDF5',
+            'hero-glow' => 'rgba(245,158,11,0.05)'
+        ],
+        'belleza_estetica' => [
+            'primary' => '#EC4899',
+            'primary-hover' => '#DB2777',
+            'soft' => '#FDF2F8',
+            'border-soft' => '#FBCFE8',
+            'hero-bg-from' => '#FDF2F8',
+            'hero-bg-via' => '#FCE7F3',
+            'hero-bg-to' => '#FDF2F8',
+            'hero-glow' => 'rgba(236,72,153,0.05)'
+        ],
+        'otros' => [
+            'primary' => '#4F46E5',
+            'primary-hover' => '#4338CA',
+            'soft' => '#EEF2FF',
+            'border-soft' => '#C7D2FE',
+            'hero-bg-from' => '#EEF2FF',
+            'hero-bg-via' => '#E0E7FF',
+            'hero-bg-to' => '#EEF2FF',
+            'hero-glow' => 'rgba(79,70,229,0.05)'
+        ]
+    ];
+    $colors = $color_niche[$tipo_negocio] ?? $color_niche['gastronomia'];
+    ?>
+    <meta name="theme-color" content="<?= h($colors['primary']) ?>">
     <title><?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></title>
     <script>
         // Evitar advertencia del CDN de Tailwind en la consola
@@ -75,15 +136,35 @@ if ($isLocalhost) {
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Desactivar el modo oscuro a nivel de Tailwind CDN (forzar modo clase sin clase activa)
+        // Configurar tema de Tailwind dinámico mediante variables CSS
         tailwind.config = {
-            darkMode: 'class'
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        'primary-hover': 'var(--color-primary-hover)',
+                        soft: 'var(--color-soft)',
+                        'border-soft': 'var(--color-border-soft)'
+                    }
+                }
+            }
         };
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-primary: <?= $colors['primary'] ?>;
+            --color-primary-hover: <?= $colors['primary-hover'] ?>;
+            --color-soft: <?= $colors['soft'] ?>;
+            --color-border-soft: <?= $colors['border-soft'] ?>;
+            --hero-bg-from: <?= $colors['hero-bg-from'] ?>;
+            --hero-bg-via: <?= $colors['hero-bg-via'] ?>;
+            --hero-bg-to: <?= $colors['hero-bg-to'] ?>;
+            --hero-glow: <?= $colors['hero-glow'] ?>;
+        }
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -98,14 +179,14 @@ if ($isLocalhost) {
             border-color: #E2E8F0 !important;      /* border-slate-200 */
         }
         .mobile-category-pill.active {
-            background-color: #E6FBF9 !important;  /* soft cyan bg */
-            color: #00CFBD !important;             /* cyan text */
-            border-color: #B2EFE9 !important;      /* soft cyan border */
+            background-color: var(--color-soft) !important;  /* soft bg */
+            color: var(--color-primary) !important;             /* primary text */
+            border-color: var(--color-border-soft) !important;      /* soft border */
         }
         .mobile-category-pill.active:hover {
-            background-color: #D2F7F2 !important;  /* slightly darker soft cyan bg */
-            color: #00B5A5 !important;             /* slightly darker cyan text */
-            border-color: #9EEAE0 !important;
+            background-color: var(--color-soft) !important;
+            color: var(--color-primary-hover) !important;             /* slightly darker text */
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -115,36 +196,33 @@ if ($isLocalhost) {
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
         <div class="bg-red-600 text-white text-xs font-bold px-4 py-3 text-center shadow-md relative z-50">
             ⚠️ <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
-        </div>
-    <?php endif; ?>
-
-    <!-- Header -->
+        </d    <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
             <div class="flex items-center space-x-2.5 min-w-0">
                 <?php if (!empty($config['logo_url'])): ?>
                     <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg shrink-0">
-                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
+                    <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                 <?php else: ?>
                     <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
                         <?= get_logo_svg('h-8 w-auto shrink-0') ?>
                     <?php else: ?>
-                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
-            <a href="admin.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
+            <a href="admin.php" class="text-xs font-bold text-slate-655 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
                 Iniciar Sesión
             </a>
         </div>
     </header>
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
-    <div class="relative w-full bg-gradient-to-br from-[#F0FDFB] via-[#E2F8F5] to-[#F0FDFB] text-slate-800 overflow-hidden border-b border-[#00CFBD]/15">
+    <div class="relative w-full bg-gradient-to-br from-[var(--hero-bg-from)] via-[var(--hero-bg-via)] to-[var(--hero-bg-to)] text-slate-800 overflow-hidden border-b border-primary/15">
         <!-- Luces decorativas de fondo -->
-        <div class="absolute -right-10 top-0 w-96 h-96 bg-[#00CFBD]/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-[#00CFBD]/3 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-primary/3 rounded-full blur-3xl pointer-events-none"></div>
         
         <!-- Contenido centrado -->
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 md:pt-16 md:pb-12 flex flex-col items-center text-center space-y-4 relative z-10">
@@ -159,20 +237,49 @@ if ($isLocalhost) {
                 </div>
             <?php else: ?>
                 <!-- Nombre del comercio personalizado -->
-                <span class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent">
+                <span class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-[#2A3543] bg-clip-text text-transparent">
                     <?= h($config['nombre']) ?>
                 </span>
             <?php endif; ?>
+
+            <!-- Tipo de Negocio Badge -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-bold uppercase tracking-wider mb-1 select-none">
+                <?php
+                if ($tipo_negocio === 'boutique') echo '👕 Boutique y Moda';
+                elseif ($tipo_negocio === 'ferreteria_repuestos') echo '🔧 Repuestos y Ferretería';
+                elseif ($tipo_negocio === 'belleza_estetica') echo '✂️ Belleza y Estética';
+                elseif ($tipo_negocio === 'otros') echo '🛍️ Comercio Local';
+                else echo '🍔 Gastronomía';
+                ?>
+            </span>
 
             <!-- Tagline principal -->
             <div class="space-y-1.5 max-w-lg pt-1">
                 <p class="text-xl md:text-2xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
                     Tu catálogo digital,
-                    <span class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] bg-clip-text text-transparent">siempre disponible</span>
+                    <span class="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">siempre disponible</span>
                 </p>
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
                     Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.
                 </p>
+
+                <!-- Datos del Local (Dirección y Horarios) -->
+                <?php if (!empty($direccion_local) || !empty($horario_local)): ?>
+                    <div class="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-slate-655 font-semibold max-w-lg mx-auto">
+                        <?php if (!empty($direccion_local)): ?>
+                            <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
+                                <span>📍</span>
+                                <span class="truncate max-w-[220px] sm:max-w-xs" title="<?= h($direccion_local) ?>"><?= h($direccion_local) ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($horario_local)): ?>
+                            <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
+                                <span>🕒</span>
+                                <span><?= h($horario_local) ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -181,7 +288,7 @@ if ($isLocalhost) {
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
         <div class="w-full space-y-6">
             <!-- Buscador de Productos -->
-            <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-[#00CFBD]/30 focus-within:border-[#00CFBD]">
+            <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
                 <div class="pl-3.5 text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -211,11 +318,19 @@ if ($isLocalhost) {
                 <!-- Catálogo Vacío (Simple y Minimalista) -->
                 <div class="text-center py-20 max-w-sm mx-auto space-y-3">
                     <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                        🍔
+                        <?php
+                        $placeholder_emoji = '🍔';
+                        if ($tipo_negocio === 'boutique') $placeholder_emoji = '👕';
+                        elseif ($tipo_negocio === 'ferreteria_repuestos') $placeholder_emoji = '🔧';
+                        elseif ($tipo_negocio === 'belleza_estetica') $placeholder_emoji = '✂️';
+                        elseif ($tipo_negocio === 'otros') $placeholder_emoji = '🛍️';
+                        echo $placeholder_emoji;
+                        ?>
                     </div>
                     <h3 class="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
                     <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
                         Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
+                    </p> cargar tu catálogo.
                     </p>
                     <div class="pt-2">
                         <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
@@ -242,7 +357,7 @@ if ($isLocalhost) {
                     <section id="cat-<?= h($cat['id']) ?>" class="scroll-mt-28 space-y-4">
                         <div class="flex items-center space-x-3">
                             <h2 class="text-base md:text-lg font-extrabold tracking-tight text-slate-850"><?= h($cat['nombre_categoria']) ?></h2>
-                            <div class="h-0.5 flex-1 bg-gradient-to-r from-[#00CFBD] to-[#2A3543] opacity-20 rounded"></div>
+                            <div class="h-0.5 flex-1 bg-gradient-to-r from-primary to-[#2A3543] opacity-20 rounded"></div>
                         </div>
 
                         <!-- Grid de Productos (1 en móvil, 2 en tablet, 3 en pantallas grandes) -->
@@ -257,7 +372,7 @@ if ($isLocalhost) {
                                     ]) ?>, event)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group">
                                         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                             <div class="space-y-1">
-                                                <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                                <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-primary transition-colors"><?= h($prod['nombre']) ?></h3>
                                                 <?php if (!empty($prod['descripcion'])): ?>
                                                     <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                                 <?php endif; ?>
@@ -265,7 +380,7 @@ if ($isLocalhost) {
                                             <div>
                                                 <span class="block font-black text-sm md:text-base text-slate-900 mt-2">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="block text-xs font-bold text-slate-500 mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="block text-xs font-bold text-slate-500 mt-0.5"><?= h($moneda_local_simbolo) ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?> <?= h($moneda_local_nombre) ?></span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -275,7 +390,7 @@ if ($isLocalhost) {
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="w-full bg-[#00CFBD] hover:bg-[#00B5A5] text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
+                                            ]) ?>)' class="w-full bg-primary hover:bg-primary-hover text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>
@@ -288,7 +403,7 @@ if ($isLocalhost) {
                                         'precio' => floatval($prod['precio'])
                                     ]) ?>, event)' class="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex flex-col justify-between min-h-[120px] group">
                                         <div class="space-y-1">
-                                            <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-[#00CFBD] transition-colors"><?= h($prod['nombre']) ?></h3>
+                                            <h3 class="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-primary transition-colors"><?= h($prod['nombre']) ?></h3>
                                             <?php if (!empty($prod['descripcion'])): ?>
                                                 <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed"><?= h($prod['descripcion']) ?></p>
                                             <?php endif; ?>
@@ -297,14 +412,14 @@ if ($isLocalhost) {
                                             <div>
                                                 <span class="font-black text-sm md:text-base text-slate-900 block">$<?= number_format($prod['precio'], 2) ?></span>
                                                 <?php if ($tasa_dolar > 1): ?>
-                                                    <span class="text-xs font-bold text-slate-500 block mt-0.5"><?= $moneda_local_nombre ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?></span>
+                                                    <span class="text-xs font-bold text-slate-500 block mt-0.5"><?= h($moneda_local_simbolo) ?> <?= number_format($prod['precio'] * $tasa_dolar, $tasa_tipo === 'trm' ? 0 : 2, ',', '.') ?> <?= h($moneda_local_nombre) ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <button onclick='event.stopPropagation(); addToCart(<?= json_encode([
                                                 'id' => $prod['id'],
                                                 'nombre' => $prod['nombre'],
                                                 'precio' => floatval($prod['precio'])
-                                            ]) ?>)' class="bg-[#00CFBD] hover:bg-[#00B5A5] text-white font-bold text-[10px] md:text-xs py-1.5 px-4.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
+                                            ]) ?>)' class="bg-primary hover:bg-primary-hover text-white font-bold text-[10px] md:text-xs py-1.5 px-4.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap">
                                                 + Agregar
                                             </button>
                                         </div>
@@ -323,18 +438,18 @@ if ($isLocalhost) {
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
             <div class="flex items-center gap-4">
                 <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-                <a href="/legal" class="text-slate-400 hover:text-[#00CFBD] transition-colors">Términos y Privacidad</a>
+                <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">Términos y Privacidad</a>
             </div>
             <a href="admin.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
-                <span class="text-[#00CFBD] font-extrabold">Montero Studio</span>
+                <span class="text-primary font-extrabold">Montero Studio</span>
             </a>
         </div>
     </footer>
 
     <!-- Carrito Flotante (JS) -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-40 hidden">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-primary-hover hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
                 <span>🛒</span>
                 <span id="cart-count">0 artículos</span>
@@ -389,7 +504,7 @@ if ($isLocalhost) {
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">👤</span>
                             <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
-                                   class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all">
+                                   class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all">
                         </div>
                     </div>
 
@@ -407,7 +522,11 @@ if ($isLocalhost) {
                             </button>
                         </div>
                         <p id="delivery-cost-note" class="text-[10px] text-amber-600 font-semibold flex items-center gap-1 mt-1 pl-1">
-                            ⚠️ El delivery tiene un costo adicional (a menos que se indique gratis para tu zona).
+                            <?php if ($costo_delivery > 0): ?>
+                                🛵 Costo de envío: $<?= number_format($costo_delivery, 2) ?>
+                            <?php else: ?>
+                                🛵 Envío gratis o a acordar con el vendedor.
+                            <?php endif; ?>
                         </p>
                     </div>
 
@@ -417,7 +536,7 @@ if ($isLocalhost) {
                         <div class="relative">
                             <span class="absolute left-3 top-2.5 text-xs">📍</span>
                             <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
-                                      class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all resize-none"></textarea>
+                                      class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"></textarea>
                         </div>
                     </div>
 
@@ -427,7 +546,7 @@ if ($isLocalhost) {
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">💳</span>
                             <select id="cust-payment" 
-                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#00CFBD] focus:border-[#00CFBD] transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8">
+                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8">
                                 <option value="Pago Móvil">💸 Pago Móvil (Bolívares - VES)</option>
                                 <option value="Efectivo Divisas">💵 Efectivo Divisas (Dólares - USD)</option>
                                 <option value="Zelle">🇺🇸 Zelle (Dólares - USD)</option>
@@ -440,16 +559,28 @@ if ($isLocalhost) {
             </div>
 
             <div class="p-6 border-t border-slate-50 space-y-4 bg-slate-50/50">
-                <div class="flex justify-between items-center font-extrabold text-slate-800">
+                <!-- Desglose de Pedido -->
+                <div class="space-y-1.5 text-xs text-slate-500 border-b border-slate-200/50 pb-3">
+                    <div class="flex justify-between">
+                        <span>Subtotal</span>
+                        <span id="drawer-subtotal" class="font-bold text-slate-700">$0.00</span>
+                    </div>
+                    <div id="drawer-delivery-row" class="flex justify-between">
+                        <span>Costo de Envío</span>
+                        <span id="drawer-delivery-cost" class="font-bold text-slate-700">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center font-extrabold text-slate-800 pt-1">
                     <span>Total a pagar</span>
                     <div class="text-right">
-                        <span id="drawer-total" class="text-xl block text-slate-800">$0.00</span>
+                        <span id="drawer-total" class="text-xl block text-slate-850">$0.00</span>
                         <?php if ($tasa_dolar > 1): ?>
-                            <span id="drawer-total-local" class="text-sm font-bold text-slate-500 block mt-0.5 font-mono"></span>
+                            <span id="drawer-total-local" class="text-xs font-bold text-slate-500 block mt-0.5 font-mono"></span>
                         <?php endif; ?>
                     </div>
                 </div>
-                <button onclick="checkoutOrder()" class="w-full py-4 px-6 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
+                <button onclick="checkoutOrder()" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-primary-hover hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
                     <span>Enviar Pedido por WhatsApp</span>
                     <span>→</span>
                 </button>
@@ -463,6 +594,7 @@ if ($isLocalhost) {
     <script>
         const whatsappNumber = <?= json_encode($config['telefono_whatsapp']) ?>;
         const cartKey = 'cart_pronttogo';
+        const costoDelivery = parseFloat(<?= json_encode($costo_delivery) ?>);
 
         let isScrolling = false;
         let scrollTimeout;
@@ -489,7 +621,7 @@ if ($isLocalhost) {
 
             // Crear la partícula
             const particle = document.createElement('div');
-            particle.className = 'fixed z-50 w-6 h-6 bg-[#00CFBD] rounded-full pointer-events-none transition-all duration-750 ease-in-out flex items-center justify-center text-white text-[10px] font-black shadow-lg';
+            particle.className = 'fixed z-50 w-6 h-6 bg-primary rounded-full pointer-events-none transition-all duration-750 ease-in-out flex items-center justify-center text-white text-[10px] font-black shadow-lg';
             particle.textContent = '+1';
             particle.style.left = `${rect.left + rect.width / 2 - 12}px`;
             particle.style.top = `${rect.top + rect.height / 2 - 12}px`;
@@ -686,16 +818,44 @@ if ($isLocalhost) {
                 totalPrice += item.precio * item.quantity;
             });
 
+            const subtotal = totalPrice;
+            let deliveryFee = 0;
+            if (currentDeliveryType === 'delivery') {
+                deliveryFee = costoDelivery;
+            }
+            const grandTotal = subtotal + deliveryFee;
+
             cartCount.textContent = `${totalItems} ${totalItems === 1 ? 'artículo' : 'artículos'}`;
-            cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
-            drawerTotal.textContent = `$${totalPrice.toFixed(2)}`;
+            cartTotal.textContent = `$${grandTotal.toFixed(2)}`;
+            
+            const subtotalEl = document.getElementById('drawer-subtotal');
+            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            
+            const deliveryCostEl = document.getElementById('drawer-delivery-cost');
+            const deliveryRowEl = document.getElementById('drawer-delivery-row');
+            if (deliveryCostEl) {
+                if (deliveryFee > 0) {
+                    deliveryCostEl.textContent = `$${deliveryFee.toFixed(2)}`;
+                    if (deliveryRowEl) deliveryRowEl.classList.remove('hidden');
+                } else {
+                    deliveryCostEl.textContent = 'Gratis / A acordar';
+                    if (costoDelivery > 0) {
+                        if (deliveryRowEl) deliveryRowEl.classList.add('hidden');
+                    } else {
+                        deliveryCostEl.textContent = 'Gratis';
+                        if (deliveryRowEl) deliveryRowEl.classList.remove('hidden');
+                    }
+                }
+            }
+            
+            drawerTotal.textContent = `$${grandTotal.toFixed(2)}`;
 
             // Tasa de cambio local dinámica
             const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
             const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
             const tasaTipo = <?= json_encode($tasa_tipo) ?>;
             if (tasaDolar > 1) {
-                const totalLocal = totalPrice * tasaDolar;
+                const totalLocal = grandTotal * tasaDolar;
                 const formattedLocal = tasaTipo === 'trm' 
                     ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                     : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -775,9 +935,9 @@ if ($isLocalhost) {
                 notesInput.type = "text";
                 notesInput.placeholder = "✍️ Indica aquí la talla, color, modelo o detalles...";
                 notesInput.value = item.notes || '';
-                notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#00CFBD]/40 focus:border-[#00CFBD] transition-all";
+                notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all";
                 notesInput.onchange = (e) => {
-                    updateItemNotes(item.id, e.target.value.trim());
+                    updateItemNotes(item.id, item.notes, e.target.value.trim());
                 };
 
                 notesRow.appendChild(notesInput);
@@ -813,6 +973,7 @@ if ($isLocalhost) {
                 if (costNote) costNote.classList.add('hidden');
             }
             saveCustomerData();
+            updateCartUI();
         }
 
         function loadCustomerData() {
@@ -855,9 +1016,9 @@ if ($isLocalhost) {
             }
         }
 
-        function updateItemNotes(productId, newNotes) {
+        function updateItemNotes(productId, oldNotes, newNotes) {
             let cart = getCart();
-            const item = cart.find(item => item.id === productId);
+            const item = cart.find(item => item.id === productId && (item.notes || '') === (oldNotes || ''));
             if (item) {
                 item.notes = newNotes;
                 saveCart(cart);
@@ -894,24 +1055,30 @@ if ($isLocalhost) {
                 itemsText += `${item.quantity}x ${item.nombre}${notesStr} ($${item.precio.toFixed(2)} c/u)\n`;
             });
 
+            const deliveryFee = currentDeliveryType === 'delivery' ? costoDelivery : 0;
+            const grandTotal = totalPrice + deliveryFee;
+
             const tasaDolar = parseFloat(<?= json_encode($tasa_dolar) ?>);
             const monedaNombre = <?= json_encode($moneda_local_nombre) ?>;
             const tasaTipo = <?= json_encode($tasa_tipo) ?>;
             let localTotalText = "";
             if (tasaDolar > 1) {
-                const totalLocal = totalPrice * tasaDolar;
+                const totalLocal = grandTotal * tasaDolar;
                 const formattedLocal = tasaTipo === 'trm' 
                     ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                     : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 localTotalText = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})\n`;
             }
 
-            let deliveryText = currentDeliveryType === 'delivery' 
-                ? `🛵 *Despacho:* Delivery (Costo adicional a acordar)\n📍 *Dirección:* ${clientAddress}`
-                : `🛍 *Despacho:* Retiro en local`;
+            let deliveryText = "";
+            if (currentDeliveryType === 'delivery') {
+                deliveryText = `🛵 *Despacho:* Delivery (${deliveryFee > 0 ? '$' + deliveryFee.toFixed(2) : 'Gratis / A acordar'})\n📍 *Dirección:* ${clientAddress}`;
+            } else {
+                deliveryText = `🛍 *Despacho:* Retiro en local`;
+            }
 
             // Formato exacto solicitado con datos del cliente
-            const message = `*Pedido de PronttoGo* 🛒\n` +
+            const message = `*Pedido de <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>* 🛒\n` +
                             `--------------------------\n` +
                             `👤 *Cliente:* ${clientName}\n` +
                             `${deliveryText}\n` +
@@ -919,7 +1086,9 @@ if ($isLocalhost) {
                             `--------------------------\n` +
                             `${itemsText}` +
                             `--------------------------\n` +
-                            `*Total a pagar: $${totalPrice.toFixed(2)}*\n` +
+                            `*Subtotal:* $${totalPrice.toFixed(2)}\n` +
+                            (deliveryFee > 0 ? `*Envío:* $${deliveryFee.toFixed(2)}\n` : '') +
+                            `*Total a pagar: $${grandTotal.toFixed(2)}*\n` +
                             localTotalText;
 
             const encodedText = encodeURIComponent(message);
