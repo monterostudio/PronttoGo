@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * PronttoGo - CatÃ¡logo PÃºblico Responsivo (Single-Store)
  * Renderiza el menÃº digital adaptado a pantallas mÃ³viles y de escritorio.
