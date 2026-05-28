@@ -596,21 +596,31 @@ foreach ($productos as $prod) {
 
     <!-- Header -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-2 min-w-0">
+        <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between gap-4 min-w-0">
             <div class="min-w-0 flex items-center">
-                    <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                        <?= get_logo_svg('h-8 w-auto shrink-0') ?>
-                    <?php else: ?>
-                    <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
+                <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
+                    <?= get_logo_svg('h-8 w-auto shrink-0') ?>
+                <?php else: ?>
+                    <span class="font-extrabold text-base sm:text-xl tracking-tight bg-gradient-to-r from-[#00CFBD] to-[#2A3543] bg-clip-text text-transparent truncate max-w-[130px] sm:max-w-none block"><?= h($config['nombre'] ?? 'PronttoGo') ?></span>
                 <?php endif; ?>
             </div>
             
-            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-[#00CFBD] hover:text-white border border-[#00CFBD]/20 hover:bg-[#00CFBD] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1 whitespace-nowrap">
-                    Ver Tienda ↗
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <a href="/" target="_blank" class="text-[10px] sm:text-xs font-bold text-[#00CFBD] hover:text-white border border-[#00CFBD]/20 hover:bg-[#00CFBD] hover:border-transparent rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all bg-white shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span class="hidden sm:inline">Ver Tienda</span>
+                    <span class="sm:hidden">Tienda</span>
+                    <span>↗</span>
                 </a>
-                <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap">
-                    Cerrar Sesión
+                <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span class="hidden sm:inline">Cerrar Sesión</span>
+                    <span class="sm:hidden">Salir</span>
                 </a>
             </div>
         </div>
@@ -635,18 +645,31 @@ foreach ($productos as $prod) {
         <?php endif; ?>
 
         <!-- Tabs de Navegación -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-100 flex shadow-sm">
-            <button onclick="switchTab('#dashboard')" id="tab-btn-dashboard" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                📊 Dashboard
+        <div class="bg-white p-1.5 rounded-2xl border border-slate-100 flex shadow-sm gap-1">
+            <button onclick="switchTab('#dashboard')" id="tab-btn-dashboard" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
+                <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                <span>Dashboard</span>
             </button>
-            <button onclick="switchTab('#products')" id="tab-btn-products" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                📦 Productos
+            <button onclick="switchTab('#products')" id="tab-btn-products" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
+                <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span>Productos</span>
             </button>
-            <button onclick="switchTab('#categories')" id="tab-btn-categories" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                📁 Categorías
+            <button onclick="switchTab('#categories')" id="tab-btn-categories" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
+                <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                <span>Categorías</span>
             </button>
-            <button onclick="switchTab('#profile')" id="tab-btn-profile" class="tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl transition-all">
-                ⚙️ Ajustes
+            <button onclick="switchTab('#profile')" id="tab-btn-profile" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
+                <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Ajustes</span>
             </button>
         </div>
 
@@ -794,15 +817,15 @@ foreach ($productos as $prod) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
                                 <div class="flex gap-2 w-full">
                                     <select name="codigo_pais" required
-                                            class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                            class="w-[85px] sm:w-[120px] shrink-0 pl-2 pr-6 sm:pl-3 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                         <?php
                                         $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
                                         $selected_code = $phone_split['code'];
                                         $local_number = $phone_split['local'];
                                         
                                         $prefixes = [
-                                            '58'  => 'Venezuela (+58)',
-                                            '57'  => 'Colombia (+57)'
+                                            '58'  => '🇻🇪 +58',
+                                            '57'  => '🇨🇴 +57'
                                         ];
                                         foreach ($prefixes as $code => $label):
                                             $selected = ($selected_code == $code) ? 'selected' : '';
@@ -1344,7 +1367,7 @@ foreach ($productos as $prod) {
             });
             
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl text-slate-400 hover:text-slate-600 transition-all";
+                btn.className = "tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl text-slate-400 hover:text-slate-600 transition-all";
             });
             
             const targetTab = document.querySelector(hash);
@@ -1355,7 +1378,7 @@ foreach ($productos as $prod) {
             const btnId = 'tab-btn-' + hash.replace('#', '');
             const targetBtn = document.getElementById(btnId);
             if (targetBtn) {
-                targetBtn.className = "tab-btn flex-1 py-2.5 text-center font-bold text-xs md:text-sm rounded-xl bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] text-white shadow-md transition-all";
+                targetBtn.className = "tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] text-white shadow-md transition-all";
             }
         }
 
