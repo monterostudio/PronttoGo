@@ -267,7 +267,7 @@ if ($isLocalhost) {
                         <?php endif; ?>
                         <?php if (!empty($horario_local)): ?>
                             <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span>???</span>
+                                <span>üïí</span>
                                 <span><?= h($horario_local) ?></span>
                             </div>
                         <?php endif; ?>
@@ -327,7 +327,7 @@ if ($isLocalhost) {
                     </p>
                     <div class="pt-2">
                         <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
-                            Ir al Panel ‚??
+                            Ir al Panel ‚öôÔ∏è
                         </a>
                     </div>
                 </div>
@@ -444,7 +444,7 @@ if ($isLocalhost) {
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-40 hidden">
         <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
-                <span>???</span>
+                <span>üïí</span>
                 <span id="cart-count">0 art√≠culos</span>
             </div>
             <div class="text-right">
@@ -472,7 +472,7 @@ if ($isLocalhost) {
                         Vaciar
                     </button>
                     <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-slate-500">
-                        ‚??
+                        ‚úñ
                     </button>
                 </div>
             </div>
@@ -495,7 +495,7 @@ if ($isLocalhost) {
                     <div class="space-y-1.5">
                         <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">??§</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">üë§</span>
                             <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all">
                         </div>
@@ -507,7 +507,7 @@ if ($isLocalhost) {
                         <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
                             <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
                                     class="py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100">
-                                ??µ Delivery
+                                üõµ Delivery
                             </button>
                             <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
                                     class="py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
@@ -537,7 +537,7 @@ if ($isLocalhost) {
                     <div class="space-y-1.5">
                         <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">M√©todo de Pago</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">??≥</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">üí≥</span>
                             <select id="cust-payment" 
                                     class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8">
                                 <option value="Pago M√≥vil">üì± Pago M√≥vil (Bol√≠vares - VES)</option>
@@ -575,7 +575,7 @@ if ($isLocalhost) {
                 </div>
                 <button onclick="checkoutOrder()" class="w-full py-4 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
                     <span>Enviar Pedido por WhatsApp</span>
-                    <span>‚??</span>
+                    <span>‚ö°</span>
                 </button>
             </div>
         </div>
@@ -1102,4 +1102,3 @@ if ($isLocalhost) {
     </script>
 </body>
 </html>
-

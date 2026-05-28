@@ -110,7 +110,7 @@ if (!$is_logged_in):
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
     <meta name="theme-color" content="#00CFBD">
-    <title>Acceso â?? Panel PronttoGo</title>
+    <title>Acceso âš¡ Panel PronttoGo</title>
     <script>
         const _warn = console.warn;
         console.warn = (...args) => {
@@ -246,7 +246,7 @@ if (!$is_logged_in):
                     <div>
                         <label for="login-user" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Usuario</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğ??¤</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğŸ‘¤</span>
                             <input id="login-user" type="text" name="username" required placeholder="ej: admin" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 placeholder-slate-400">
                         </div>
@@ -256,7 +256,7 @@ if (!$is_logged_in):
                     <div>
                         <label for="login-pass" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">ContraseÃ±a</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğ???</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğŸ”’</span>
                             <input id="login-pass" type="password" name="password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900">
                         </div>
@@ -269,7 +269,7 @@ if (!$is_logged_in):
                             VerificaciÃ³n: Â¿CuÃ¡nto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?
                         </label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğ?§©</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ğŸ§©</span>
                             <input id="login-captcha" type="number" name="captcha_answer" required placeholder="Tu respuesta" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
@@ -279,8 +279,8 @@ if (!$is_logged_in):
                     <button type="submit" <?= $is_locked ? 'disabled' : '' ?>
                             class="btn-primary w-full py-3.5 text-white font-bold text-sm rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                         <?= $is_locked
-                            ? "ğ??? Bloqueado por {$lock_time_left} min"
-                            : "â?¡ Ingresar al Panel" ?>
+                            ? "ğŸš« Bloqueado por {$lock_time_left} min"
+                            : "âš¡ Ingresar al Panel" ?>
                     </button>
                 </form>
 
@@ -824,8 +824,8 @@ foreach ($productos as $prod) {
                                         $local_number = $phone_split['local'];
                                         
                                         $prefixes = [
-                                            '58'  => 'ğ??»ğ??ª +58',
-                                            '57'  => 'ğ??¨ğ??´ +57'
+                                            '58'  => 'ğŸ‡»ğŸ‡ª +58',
+                                            '57'  => 'ğŸ‡¨ğŸ‡´ +57'
                                         ];
                                         foreach ($prefixes as $code => $label):
                                             $selected = ($selected_code == $code) ? 'selected' : '';
@@ -845,7 +845,7 @@ foreach ($productos as $prod) {
                                         class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                     <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>ğ?? GastronomÃ­a (Restaurantes, CafÃ©s, Comida)</option>
                                     <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>ğ??? Tienda de Ropa / Calzado / Boutique</option>
-                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>ğ??§ Repuestos / FerreterÃ­a / Herramientas</option>
+                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>ğŸ”§ Repuestos / Ferretería / FerreterÃ­a / Herramientas</option>
                                     <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>â??ï¸ EstÃ©tica / PeluquerÃ­a / Belleza</option>
                                     <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>ğ??ï¸ Otros Negocios Locales / Servicios</option>
                                 </select>
@@ -948,7 +948,7 @@ foreach ($productos as $prod) {
 
                 <div class="flex justify-end pt-4 border-t border-slate-100">
                     <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-md transition-all">
-                        ğ??¾ Guardar Ajustes
+                        ğŸ’¾ Guardar Ajustes
                     </button>
                 </div>
             </form>
@@ -1037,7 +1037,7 @@ foreach ($productos as $prod) {
                     </div>
                     <div>
                         <button onclick="openProductModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            â?? Nuevo Producto
+                            â• Nuevo Producto
                         </button>
                     </div>
                 </div>
@@ -1626,4 +1626,3 @@ foreach ($productos as $prod) {
     </script>
 </body>
 </html>
-
