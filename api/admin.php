@@ -1,12 +1,12 @@
 <?php
 /**
- * PronttoGo - Panel de AdministraciÃ³n Dedicado (Single-Store)
- * Administra la configuraciÃ³n, categorÃ­as y productos de una Ãºnica tienda.
+ * PronttoGo - Panel de Administración Dedicado (Single-Store)
+ * Administra la configuración, categorías y productos de una única tienda.
  */
 
 require_once __DIR__ . '/config.php';
 
-// Cargar configuraciÃ³n de la base de datos (se usa para autenticaciÃ³n y UI)
+// Cargar configuración de la base de datos (se usa para autenticación y UI)
 $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
 $config = $resConfig['success'] && !empty($resConfig['data']) ? $resConfig['data'][0] : [];
 
@@ -17,7 +17,7 @@ $dbAdminPassword = !empty($config['admin_password']) ? $config['admin_password']
 $error = '';
 $success = '';
 
-// 1. PROCESAR ACCIÃ“N DE LOGIN (Sin requerir sesiÃ³n iniciada)
+// 1. PROCESAR ACCI�?N DE LOGIN (Sin requerir sesión iniciada)
 if (empty($_SESSION['login_attempts'])) {
     $_SESSION['login_attempts'] = 0;
 }
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     // B. Bloqueo temporal por fuerza bruta
     if ($_SESSION['login_lock_until'] > time()) {
-        $error = 'Demasiados intentos fallidos. IntÃ©ntalo de nuevo en 15 minutos.';
+        $error = 'Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos.';
     } else {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         // C. Validar Captcha
         if ($captcha_ans !== $expected_ans) {
-            $error = 'Respuesta de verificaciÃ³n de seguridad incorrecta.';
+            $error = 'Respuesta de verificación de seguridad incorrecta.';
             $_SESSION['login_attempts']++;
             if ($_SESSION['login_attempts'] >= 5) {
                 $_SESSION['login_lock_until'] = time() + 900;
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['login_captcha_b'] = rand(1, 9);
             sleep(1);
         } else {
-            // D. Validar credenciales (con fallback texto plano para migraciÃ³n)
+            // D. Validar credenciales (con fallback texto plano para migración)
             $login_ok = false;
             if ($username === $dbAdminUser) {
                 if (password_verify($password, $dbAdminPassword)) {
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 unset($_SESSION['login_captcha_b']);
                 redirect('/admin');
             } else {
-                $error = 'Usuario o contraseÃ±a incorrectos.';
+                $error = 'Usuario o contraseña incorrectos.';
                 $_SESSION['login_attempts']++;
                 if ($_SESSION['login_attempts'] >= 5) {
                     $_SESSION['login_lock_until'] = time() + 900;
@@ -83,14 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Cerrar sesiÃ³n
+// Cerrar sesión
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     $_SESSION = [];
     session_destroy();
     redirect('/admin');
 }
 
-// --- VERIFICAR AUTENTICACIÃ“N ---
+// --- VERIFICAR AUTENTICACI�?N ---
 $is_logged_in = is_admin_logged_in();
 
 if (!$is_logged_in):
@@ -98,7 +98,7 @@ if (!$is_logged_in):
         $_SESSION['login_captcha_a'] = rand(1, 9);
         $_SESSION['login_captcha_b'] = rand(1, 9);
     }
-    // RENDERIZAR PANTALLA DE ACCESO POR CONTRASEÃ‘A
+    // RENDERIZAR PANTALLA DE ACCESO POR CONTRASE�?A
 ?>
 <!DOCTYPE html>
 <html lang="es" class="overflow-x-hidden">
@@ -110,7 +110,7 @@ if (!$is_logged_in):
     <link rel="shortcut icon" href="/assets/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
     <meta name="theme-color" content="#00CFBD">
-    <title>Acceso â€” Panel PronttoGo</title>
+    <title>Acceso �?? Panel PronttoGo</title>
     <script>
         const _warn = console.warn;
         console.warn = (...args) => {
@@ -177,7 +177,7 @@ if (!$is_logged_in):
             outline: none;
         }
 
-        /* BotÃ³n con efecto shine */
+        /* Botón con efecto shine */
         .btn-primary {
             background: linear-gradient(135deg, #00CFBD 0%, #00B5A5 100%);
             position: relative;
@@ -246,17 +246,17 @@ if (!$is_logged_in):
                     <div>
                         <label for="login-user" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Usuario</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ðŸ‘¤</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">�??�</span>
                             <input id="login-user" type="text" name="username" required placeholder="ej: admin" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 placeholder-slate-400">
                         </div>
                     </div>
 
-                    <!-- ContraseÃ±a -->
+                    <!-- Contraseña -->
                     <div>
-                        <label for="login-pass" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">ContraseÃ±a</label>
+                        <label for="login-pass" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Contraseña</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ðŸ”’</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">�???</span>
                             <input id="login-pass" type="password" name="password" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900">
                         </div>
@@ -266,28 +266,28 @@ if (!$is_logged_in):
                     <!-- Captcha -->
                     <div>
                         <label for="login-captcha" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                            VerificaciÃ³n: Â¿CuÃ¡nto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?
+                            Verificación: ¿Cuánto es <?= $_SESSION['login_captcha_a'] ?> + <?= $_SESSION['login_captcha_b'] ?>?
                         </label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">ðŸ§©</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">�?��</span>
                             <input id="login-captcha" type="number" name="captcha_answer" required placeholder="Tu respuesta" <?= $is_locked ? 'disabled' : '' ?>
                                    class="input-field w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50/50 text-slate-900 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
                     </div>
 
-                    <!-- BotÃ³n de acceso -->
+                    <!-- Botón de acceso -->
                     <button type="submit" <?= $is_locked ? 'disabled' : '' ?>
                             class="btn-primary w-full py-3.5 text-white font-bold text-sm rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                         <?= $is_locked
-                            ? "ðŸ”’ Bloqueado por {$lock_time_left} min"
-                            : "âš¡ Ingresar al Panel" ?>
+                            ? "�??? Bloqueado por {$lock_time_left} min"
+                            : "�?� Ingresar al Panel" ?>
                     </button>
                 </form>
 
-                <!-- Link volver al menÃº -->
+                <!-- Link volver al menú -->
                 <div class="text-center pt-1">
                     <a href="/" class="text-xs text-slate-400 hover:text-[#00CFBD] transition-colors font-medium">
-                        &larr; Volver al catÃ¡logo digital
+                        &larr; Volver al catálogo digital
                     </a>
                 </div>
             </div>
@@ -304,17 +304,17 @@ if (!$is_logged_in):
     exit;
 endif;
 
-// --- PROCESAMIENTO DE ACCIONES CON SESIÃ“N ACTIVA (CRUD) ---
+// --- PROCESAMIENTO DE ACCIONES CON SESI�?N ACTIVA (CRUD) ---
 $active_tab = '#dashboard';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     // Validar CSRF
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
-        $error = 'ValidaciÃ³n CSRF fallida. IntÃ©ntalo de nuevo.';
+        $error = 'Validación CSRF fallida. Inténtalo de nuevo.';
     } else {
         $action = $_POST['action'];
         
-        // 1. ACTUALIZAR CONFIGURACIÃ“N DE LA TIENDA
+        // 1. ACTUALIZAR CONFIGURACI�?N DE LA TIENDA
         if ($action === 'update_profile') {
             $nombre = trim($_POST['nombre'] ?? '');
             $codigo_pais = preg_replace('/[^0-9]/', '', $_POST['codigo_pais'] ?? '');
@@ -339,18 +339,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $direccion = trim($_POST['direccion'] ?? '');
             $horario = trim($_POST['horario'] ?? '');
 
-            // Tasa automÃ¡tica inteligente si no es manual y el valor enviado es por defecto
+            // Tasa automática inteligente si no es manual y el valor enviado es por defecto
             if ($tasa_tipo !== 'manual' && $tasa_dolar <= 1.00) {
                 $fetched_rate = fetch_automatic_rate($tasa_tipo);
                 if ($fetched_rate !== null) {
                     $tasa_dolar = $fetched_rate;
                 } else {
-                    $error = 'No se pudo consultar la tasa automÃ¡tica de internet. Se conservÃ³ el valor anterior.';
+                    $error = 'No se pudo consultar la tasa automática de internet. Se conservó el valor anterior.';
                 }
             }
 
             if (empty($nombre) || empty($whatsapp)) {
-                $error = 'El nombre del comercio y el telÃ©fono de WhatsApp son obligatorios.';
+                $error = 'El nombre del comercio y el teléfono de WhatsApp son obligatorios.';
             } else {
                 $updateData = [
                     'nombre' => $nombre,
@@ -377,12 +377,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $response = supabase_request('PATCH', 'configuracion?id=eq.1', $updateData);
                 
                 if ($response['success']) {
-                    $success = 'Perfil comercial actualizado con Ã©xito.';
+                    $success = 'Perfil comercial actualizado con éxito.';
                     // Actualizar el estado local
                     $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
                     if ($resConfig['success'] && !empty($resConfig['data'])) {
                         $config = $resConfig['data'][0];
-                        // Actualizar credenciales en la sesiÃ³n/variables de esta ejecuciÃ³n
+                        // Actualizar credenciales en la sesión/variables de esta ejecución
                         $dbAdminUser = !empty($config['admin_user']) ? $config['admin_user'] : ADMIN_USER;
                         $dbAdminPassword = !empty($config['admin_password']) ? $config['admin_password'] : ADMIN_PASSWORD;
                     }
@@ -393,14 +393,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $active_tab = '#profile';
         }
         
-        // 2. GUARDAR CATEGORÃA (CREAR / EDITAR)
+        // 2. GUARDAR CATEGORÍA (CREAR / EDITAR)
         if ($action === 'save_category') {
             $categoria_id = trim($_POST['categoria_id'] ?? '');
             $nombre_categoria = trim($_POST['nombre_categoria'] ?? '');
             $orden_visual = intval($_POST['orden_visual'] ?? 0);
             
             if (empty($nombre_categoria)) {
-                $error = 'El nombre de la categorÃ­a es obligatorio.';
+                $error = 'El nombre de la categoría es obligatorio.';
             } else {
                 $catData = [
                     'nombre_categoria' => $nombre_categoria,
@@ -411,32 +411,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     // Editar
                     $response = supabase_request('PATCH', 'categorias?id=eq.' . rawurlencode($categoria_id), $catData);
                     if ($response['success']) {
-                        $success = 'CategorÃ­a actualizada correctamente.';
+                        $success = 'Categoría actualizada correctamente.';
                     } else {
-                        $error = 'Error al actualizar la categorÃ­a.';
+                        $error = 'Error al actualizar la categoría.';
                     }
                 } else {
                     // Crear
                     $response = supabase_request('POST', 'categorias', $catData);
                     if ($response['success']) {
-                        $success = 'CategorÃ­a agregada correctamente.';
+                        $success = 'Categoría agregada correctamente.';
                     } else {
-                        $error = 'Error al guardar la categorÃ­a.';
+                        $error = 'Error al guardar la categoría.';
                     }
                 }
             }
             $active_tab = '#categories';
         }
         
-        // 3. ELIMINAR CATEGORÃA
+        // 3. ELIMINAR CATEGORÍA
         if ($action === 'delete_category') {
             $categoria_id = $_POST['categoria_id'] ?? '';
             if (!empty($categoria_id)) {
                 $response = supabase_request('DELETE', 'categorias?id=eq.' . rawurlencode($categoria_id));
                 if ($response['success']) {
-                    $success = 'CategorÃ­a eliminada con Ã©xito (junto con sus productos).';
+                    $success = 'Categoría eliminada con éxito (junto con sus productos).';
                 } else {
-                    $error = 'Error al eliminar la categorÃ­a.';
+                    $error = 'Error al eliminar la categoría.';
                 }
             }
             $active_tab = '#categories';
@@ -453,7 +453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $disponible = isset($_POST['disponible']) && $_POST['disponible'] == '1';
             
             if (empty($categoria_id) || empty($nombre) || $precio <= 0) {
-                $error = 'Nombre, CategorÃ­a y Precio (mayor a 0) son obligatorios.';
+                $error = 'Nombre, Categoría y Precio (mayor a 0) son obligatorios.';
             } else {
                 $productData = [
                     'categoria_id' => intval($categoria_id),
@@ -491,7 +491,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (!empty($producto_id)) {
                 $response = supabase_request('DELETE', 'productos?id=eq.' . rawurlencode($producto_id));
                 if ($response['success']) {
-                    $success = 'Producto eliminado con Ã©xito.';
+                    $success = 'Producto eliminado con éxito.';
                 } else {
                     $error = 'Error al eliminar el producto.';
                 }
@@ -499,7 +499,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $active_tab = '#products';
         }
         
-        // 6. TOGGLE DISPONIBILIDAD RÃPIDO
+        // 6. TOGGLE DISPONIBILIDAD RÁPIDO
         if ($action === 'toggle_disponible') {
             $producto_id = $_POST['producto_id'] ?? '';
             $disponible = isset($_POST['disponible']) && $_POST['disponible'] == '1';
@@ -519,17 +519,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// --- OBTENCIÃ“N DE DATOS GENERALES ---
-// Inicializar configuraciÃ³n por defecto si la base de datos fallÃ³ por completo
+// --- OBTENCI�?N DE DATOS GENERALES ---
+// Inicializar configuración por defecto si la base de datos falló por completo
 if (empty($config)) {
     $config = ['nombre' => 'PronttoGo', 'telefono_whatsapp' => ''];
 }
 
-// Cargar categorÃ­as ordenadas
+// Cargar categorías ordenadas
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
 $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
 
-// Calcular siguiente orden de categorÃ­a inteligente
+// Calcular siguiente orden de categoría inteligente
 $next_cat_order = 1;
 if (!empty($categorias)) {
     $max_order = 0;
@@ -546,7 +546,7 @@ $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
 $resProductos = supabase_request('GET', 'productos?order=id.asc');
 $productos = $resProductos['success'] ? $resProductos['data'] : [];
 
-// Agrupar categorÃ­as en un array asociativo por ID
+// Agrupar categorías en un array asociativo por ID
 $categoriasMap = [];
 foreach ($categorias as $cat) {
     $categoriasMap[$cat['id']] = $cat['nombre_categoria'];
@@ -613,13 +613,13 @@ foreach ($productos as $prod) {
                     </svg>
                     <span class="hidden sm:inline">Ver Tienda</span>
                     <span class="sm:hidden">Tienda</span>
-                    <span>â†—</span>
+                    <span>�??</span>
                 </a>
                 <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span class="hidden sm:inline">Cerrar SesiÃ³n</span>
+                    <span class="hidden sm:inline">Cerrar Sesión</span>
                     <span class="sm:hidden">Salir</span>
                 </a>
             </div>
@@ -633,18 +633,18 @@ foreach ($productos as $prod) {
         <?php if (!empty($error)): ?>
             <div id="alert-error" class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r-xl flex justify-between items-center shadow-sm">
                 <span><?= h($error) ?></span>
-                <button onclick="document.getElementById('alert-error').remove()" class="text-red-500 hover:text-red-800 font-bold">Ã—</button>
+                <button onclick="document.getElementById('alert-error').remove()" class="text-red-500 hover:text-red-800 font-bold">✖</button>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($success)): ?>
             <div id="alert-success" class="p-4 bg-cyan-50 border-l-4 border-[#00CFBD] text-cyan-800 text-sm rounded-r-xl flex justify-between items-center shadow-sm">
                 <span><?= h($success) ?></span>
-                <button onclick="document.getElementById('alert-success').remove()" class="text-cyan-500 hover:text-cyan-850 font-bold">Ã—</button>
+                <button onclick="document.getElementById('alert-success').remove()" class="text-cyan-500 hover:text-cyan-850 font-bold">✖</button>
             </div>
         <?php endif; ?>
 
-        <!-- Tabs de NavegaciÃ³n -->
+        <!-- Tabs de Navegación -->
         <div class="bg-white p-1.5 rounded-2xl border border-slate-100 flex shadow-sm gap-1">
             <button onclick="switchTab('#dashboard')" id="tab-btn-dashboard" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
                 <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -662,7 +662,7 @@ foreach ($productos as $prod) {
                 <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
-                <span>CategorÃ­as</span>
+                <span>📁 Categorías</span>
             </button>
             <button onclick="switchTab('#profile')" id="tab-btn-profile" class="tab-btn flex-1 flex flex-col md:flex-row items-center justify-center gap-1 py-2 sm:py-2.5 text-center font-bold text-[10px] sm:text-xs md:text-sm rounded-xl transition-all">
                 <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -675,22 +675,22 @@ foreach ($productos as $prod) {
 
         <!-- ================= TAB: DASHBOARD ================= -->
         <section id="dashboard" class="tab-content space-y-6">
-            <!-- EstadÃ­sticas -->
+            <!-- Estadísticas -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">ðŸ“ CategorÃ­as</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">📁 Categorías</span>
                     <span class="text-3xl font-black text-slate-800 mt-2"><?= intval($total_categorias) ?></span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">ðŸ“¦ Total Productos</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">📦 Total Productos</span>
                     <span class="text-3xl font-black text-slate-800 mt-2"><?= intval($total_productos) ?></span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">ðŸŸ¢ Disponibles</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">✅ Disponibles</span>
                     <span class="text-3xl font-black text-emerald-600 mt-2"><?= intval($productos_activos) ?></span>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">ðŸ”´ Agotados / Inactivos</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">❌ Agotados / Inactivos</span>
                     <span class="text-3xl font-black text-red-500 mt-2"><?= intval($productos_inactivos) ?></span>
                 </div>
             </div>
@@ -699,8 +699,8 @@ foreach ($productos as $prod) {
                 <!-- Compartir y QR -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6 flex flex-col justify-between">
                     <div>
-                        <h3 class="text-base font-extrabold tracking-tight text-slate-800">Comparte tu CatÃ¡logo</h3>
-                        <p class="text-xs text-slate-400 mt-1">Haz que tus clientes escaneen el cÃ³digo QR o copia el enlace directo para enviarlo por redes sociales.</p>
+                        <h3 class="text-base font-extrabold tracking-tight text-slate-800">Comparte tu Catálogo</h3>
+                        <p class="text-xs text-slate-400 mt-1">Haz que tus clientes escaneen el código QR o copia el enlace directo para enviarlo por redes sociales.</p>
                     </div>
 
                     <?php
@@ -718,15 +718,15 @@ foreach ($productos as $prod) {
 
                     <div class="space-y-2">
                         <button onclick="copyToClipboard('<?= h($catalogUrl) ?>')" class="w-full py-2.5 border border-[#00CFBD]/20 hover:border-transparent text-[#00CFBD] hover:bg-[#00CFBD] hover:text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1 bg-white">
-                            ðŸ“‹ Copiar Enlace
+                            �??? Copiar Enlace
                         </button>
                         <a href="<?= h($qrCodeApiUrl) ?>" download="qr_catalogo.png" target="_blank" class="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1">
-                            â¬‡ï¸ Descargar CÃ³digo QR
+                            �?️ Descargar Código QR
                         </a>
                     </div>
                 </div>
 
-                <!-- Resumen de OperaciÃ³n y Tipo de Negocio -->
+                <!-- Resumen de Operación y Tipo de Negocio -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm md:col-span-2 space-y-6 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between">
@@ -734,20 +734,20 @@ foreach ($productos as $prod) {
                             <span class="text-xs font-extrabold text-[#00CFBD] bg-cyan-50 px-2.5 py-1 rounded-xl">
                                 <?php
                                 $tipo = $config['tipo_negocio'] ?? 'gastronomia';
-                                if ($tipo === 'boutique') echo 'ðŸ‘• Boutique';
-                                elseif ($tipo === 'ferreteria_repuestos') echo 'ðŸ”§ Repuestos/FerreterÃ­a';
-                                elseif ($tipo === 'belleza_estetica') echo 'âœ‚ï¸ Belleza/EstÃ©tica';
-                                elseif ($tipo === 'otros') echo 'ðŸ›ï¸ Otro Negocio';
-                                else echo 'ðŸ” GastronomÃ­a';
-                                ?>
+                                if ($tipo === 'boutique') echo '👕';
+                                elseif ($tipo === 'ferreteria_repuestos') echo '🔧';
+                                elseif ($tipo === 'belleza_estetica') echo '✂️';
+                                elseif ($tipo === 'otros') echo '🛍️';
+                                else echo '🍔';
+?>
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-1">Detalles actuales de configuraciÃ³n pÃºblica de tu negocio.</p>
+                        <p class="text-xs text-slate-400 mt-1">Detalles actuales de configuración pública de tu negocio.</p>
                     </div>
 
                     <div class="divide-y divide-slate-100 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 space-y-3">
                         <div class="flex justify-between items-center py-1">
-                            <span class="text-xs font-bold text-slate-400">WhatsApp de AtenciÃ³n</span>
+                            <span class="text-xs font-bold text-slate-400">WhatsApp de Atención</span>
                             <span class="text-xs font-bold text-slate-800"><?= h($config['telefono_whatsapp'] ?? 'No configurado') ?></span>
                         </div>
                         <div class="flex justify-between items-center pt-2 py-1">
@@ -772,7 +772,7 @@ foreach ($productos as $prod) {
 
                     <div class="flex gap-2">
                         <button onclick="switchTab('#profile')" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1">
-                            âš™ï¸ Editar ConfiguraciÃ³n
+                            �??️ Editar Configuración
                         </button>
                     </div>
                 </div>
@@ -785,7 +785,7 @@ foreach ($productos as $prod) {
         <section id="profile" class="tab-content bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div class="border-b border-slate-50 pb-4">
                 <h2 class="text-xl font-extrabold tracking-tight">Ajustes del Sistema</h2>
-                <p class="text-xs text-slate-400">Administra la configuraciÃ³n comercial, pasarela de WhatsApp, tasas de cambio y credenciales de acceso de tu catÃ¡logo.</p>
+                <p class="text-xs text-slate-400">Administra la configuración comercial, pasarela de WhatsApp, tasas de cambio y credenciales de acceso de tu catálogo.</p>
             </div>
             
             <form action="admin.php" method="POST" class="space-y-6">
@@ -793,12 +793,12 @@ foreach ($productos as $prod) {
                 <input type="hidden" name="action" value="update_profile">
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- COLUMNA IZQUIERDA: InformaciÃ³n del Comercio y OperaciÃ³n -->
+                    <!-- COLUMNA IZQUIERDA: Información del Comercio y Operación -->
                     <div class="space-y-6">
                         
                         <!-- Tarjeta: Datos del Comercio -->
                         <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">ðŸ“¦ Datos del Comercio</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">📦 Datos del Comercio</h3>
                             
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del Comercio</label>
@@ -810,7 +810,7 @@ foreach ($productos as $prod) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL del Logo del Comercio</label>
                                 <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png"
                                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacÃ­o, se mostrarÃ¡ el nombre en texto.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacío, se mostrará el nombre en texto.</p>
                             </div>
                             
                             <div>
@@ -824,8 +824,8 @@ foreach ($productos as $prod) {
                                         $local_number = $phone_split['local'];
                                         
                                         $prefixes = [
-                                            '58'  => 'ðŸ‡»ðŸ‡ª +58',
-                                            '57'  => 'ðŸ‡¨ðŸ‡´ +57'
+                                            '58'  => '�??��??� +58',
+                                            '57'  => '�??��??� +57'
                                         ];
                                         foreach ($prefixes as $code => $label):
                                             $selected = ($selected_code == $code) ? 'selected' : '';
@@ -836,42 +836,42 @@ foreach ($productos as $prod) {
                                     <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
                                            class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 </div>
-                                <p class="text-[10px] text-slate-400 mt-1">Selecciona el cÃ³digo de tu paÃ­s e ingresa el nÃºmero local sin el signo + ni ceros al inicio.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número local sin el signo + ni ceros al inicio.</p>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de negocio</label>
                                 <select name="tipo_negocio" required
                                         class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>ðŸ” GastronomÃ­a (Restaurantes, CafÃ©s, Comida)</option>
-                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>ðŸ‘• Tienda de Ropa / Calzado / Boutique</option>
-                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>ðŸ”§ Repuestos / FerreterÃ­a / Herramientas</option>
-                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>âœ‚ï¸ EstÃ©tica / PeluquerÃ­a / Belleza</option>
-                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>ðŸ›ï¸ Otros Negocios Locales / Servicios</option>
+                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>�?�? Gastronomía (Restaurantes, Cafés, Comida)</option>
+                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>�??? Tienda de Ropa / Calzado / Boutique</option>
+                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>�??� Repuestos / Ferretería / Herramientas</option>
+                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>�??️ Estética / Peluquería / Belleza</option>
+                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>�??�️ Otros Negocios Locales / Servicios</option>
                                 </select>
-                                <p class="text-[10px] text-slate-400 mt-1">Esto cambia la apariencia visual, los iconos por defecto y adaptaciones temÃ¡ticas del catÃ¡logo.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Esto cambia la apariencia visual, los iconos por defecto y adaptaciones temáticas del catálogo.</p>
                             </div>
                         </div>
 
-                        <!-- Tarjeta: OperaciÃ³n del Establecimiento -->
+                        <!-- Tarjeta: Operación del Establecimiento -->
                         <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">ðŸ›µ OperaciÃ³n y Delivery</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">🛵 Operación y Delivery</h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Costo de Delivery ($)</label>
                                     <input type="number" step="0.01" name="costo_delivery" value="<?= number_format(floatval($config['costo_delivery'] ?? 0.00), 2, '.', '') ?>" required
                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                    <p class="text-[10px] text-slate-400 mt-1">0 = EnvÃ­o gratis o a acordar.</p>
+                                    <p class="text-[10px] text-slate-400 mt-1">0 = Envío gratis o a acordar.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Horario de AtenciÃ³n</label>
-                                    <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej: Lun a SÃ¡b: 8am - 6pm"
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Horario de Atención</label>
+                                    <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej: Lun a Sáb: 8am - 6pm"
                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">DirecciÃ³n del Local</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Dirección del Local</label>
                                 <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej: Av. Principal con Calle 4, Local 2"
                                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                             </div>
@@ -883,7 +883,7 @@ foreach ($productos as $prod) {
                         
                         <!-- Tarjeta: Moneda y Cambio -->
                         <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">ðŸ’µ Moneda y Tasa de Cambio</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">💵 Moneda y Tasa de Cambio</h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -891,8 +891,8 @@ foreach ($productos as $prod) {
                                     <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
                                             class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                         <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Manual / Fija</option>
-                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>AutomÃ¡tico: Banco Central de Venezuela (BCV)</option>
-                                        <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>AutomÃ¡tico: TRM Colombia (Pesos)</option>
+                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
+                                        <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
                                     </select>
                                 </div>
                                 <div>
@@ -913,7 +913,7 @@ foreach ($productos as $prod) {
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">SÃ­mbolo Moneda Local</label>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Símbolo Moneda Local</label>
                                     <input type="text" name="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej: Bs. o COP$" required
                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 </div>
@@ -927,7 +927,7 @@ foreach ($productos as $prod) {
 
                         <!-- Tarjeta: Credenciales de Acceso -->
                         <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">ðŸ” Seguridad</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">🔒 Seguridad</h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -936,10 +936,10 @@ foreach ($productos as $prod) {
                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva ContraseÃ±a</label>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva Contraseña</label>
                                     <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                    <p class="text-[10px] text-slate-400 mt-1">Dejar vacÃ­o para conservar la contraseÃ±a actual.</p>
+                                    <p class="text-[10px] text-slate-400 mt-1">Dejar vacío para conservar la contraseña actual.</p>
                                 </div>
                             </div>
                         </div>
@@ -948,31 +948,31 @@ foreach ($productos as $prod) {
 
                 <div class="flex justify-end pt-4 border-t border-slate-100">
                     <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-md transition-all">
-                        ðŸ’¾ Guardar Ajustes
+                        �??� Guardar Ajustes
                     </button>
                 </div>
             </form>
         </section>
 
-        <!-- ================= TAB: CATEGORÃAS ================= -->
+        <!-- ================= TAB: CATEGORÍAS ================= -->
         <section id="categories" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-50 pb-4">
                     <div>
-                        <h2 class="text-xl font-extrabold tracking-tight">CategorÃ­as Registradas</h2>
-                        <p class="text-xs text-slate-400">Define el orden en el que se verÃ¡n las secciones en tu catÃ¡logo.</p>
+                        <h2 class="text-xl font-extrabold tracking-tight">Categorías Registradas</h2>
+                        <p class="text-xs text-slate-400">Define el orden en el que se verán las secciones en tu catálogo.</p>
                     </div>
                     <div>
                         <button onclick="openCategoryModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            âž• Nueva CategorÃ­a
+                            �?? Nueva Categoría
                         </button>
                     </div>
                 </div>
 
                 <?php if (empty($categorias)): ?>
-                    <p class="text-sm text-slate-400 py-10 text-center">No has registrado categorÃ­as aÃºn. Haz clic en "Nueva CategorÃ­a" para comenzar.</p>
+                    <p class="text-sm text-slate-400 py-10 text-center">➕ Nueva Categoría" para comenzar.</p>
                 <?php else: ?>
-                    <!-- Vista de Tarjetas para MÃ³vil -->
+                    <!-- Vista de Tarjetas para Móvil -->
                     <div class="space-y-3 lg:hidden">
                         <?php foreach ($categorias as $cat): ?>
                             <div class="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
@@ -984,7 +984,7 @@ foreach ($productos as $prod) {
                                     <button type="button" onclick="openCategoryModalForEdit(<?= h($cat['id']) ?>, '<?= h(addslashes($cat['nombre_categoria'])) ?>', <?= h($cat['orden_visual']) ?>)" class="text-xs font-bold text-[#00CFBD] bg-cyan-50 hover:bg-cyan-100 px-3 py-2 rounded-xl transition-colors">
                                         Editar
                                     </button>
-                                    <button type="button" onclick="confirmDelete('delete_category', 'categoria_id', <?= h($cat['id']) ?>, 'Â¿Seguro que deseas eliminar esta categorÃ­a? Se eliminarÃ¡n todos los productos asociados.')" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
+                                    <button type="button" onclick="confirmDelete('delete_category', 'categoria_id', <?= h($cat['id']) ?>, '¿Seguro que deseas eliminar esta categoría? Se eliminarán todos los productos asociados.')" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
                                         Eliminar
                                     </button>
                                 </div>
@@ -1013,7 +1013,7 @@ foreach ($productos as $prod) {
                                                     Editar
                                                 </button>
                                                 <span class="text-slate-200">|</span>
-                                                <button type="button" onclick="confirmDelete('delete_category', 'categoria_id', <?= h($cat['id']) ?>, 'Â¿Seguro que deseas eliminar esta categorÃ­a? Se eliminarÃ¡n todos los productos asociados.')" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
+                                                <button type="button" onclick="confirmDelete('delete_category', 'categoria_id', <?= h($cat['id']) ?>, '¿Seguro que deseas eliminar esta categoría? Se eliminarán todos los productos asociados.')" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
                                                     Eliminar
                                                 </button>
                                             </div>
@@ -1032,27 +1032,27 @@ foreach ($productos as $prod) {
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-50 pb-4">
                     <div>
-                        <h2 class="text-xl font-extrabold tracking-tight">CatÃ¡logo de Productos</h2>
-                        <p class="text-xs text-slate-400">Agrega, edita o cambia la disponibilidad de tus artÃ­culos.</p>
+                        <h2 class="text-xl font-extrabold tracking-tight">Catálogo de Productos</h2>
+                        <p class="text-xs text-slate-400">Agrega, edita o cambia la disponibilidad de tus artículos.</p>
                     </div>
                     <div>
                         <button onclick="openProductModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            âž• Nuevo Producto
+                            �?? Nuevo Producto
                         </button>
                     </div>
                 </div>
 
-                <!-- Barra de bÃºsqueda y filtros -->
+                <!-- Barra de búsqueda y filtros -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">ðŸ”</span>
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">�??�</span>
                         <input type="text" id="admin-search-input" onkeyup="filterAdminProducts()" placeholder="Buscar producto..."
                                class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#00CFBD] transition-all">
                     </div>
                     <div>
                         <select id="admin-filter-category" onchange="filterAdminProducts()"
                                 class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#00CFBD] transition-all">
-                            <option value="">Todas las CategorÃ­as</option>
+                            <option value="">Todas las Categorías</option>
                             <?php foreach ($categorias as $cat): ?>
                                 <option value="<?= h($cat['id']) ?>"><?= h($cat['nombre_categoria']) ?></option>
                             <?php endforeach; ?>
@@ -1062,16 +1062,16 @@ foreach ($productos as $prod) {
                         <select id="admin-filter-available" onchange="filterAdminProducts()"
                                 class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#00CFBD] transition-all">
                             <option value="">Todos los Estados</option>
-                            <option value="1">ðŸŸ¢ Disponibles</option>
-                            <option value="0">ðŸ”´ Agotados / Inactivos</option>
+                            <option value="1">✅ Disponibles</option>
+                            <option value="0">❌ Agotados / Inactivos</option>
                         </select>
                     </div>
                 </div>
 
                 <?php if (empty($productos)): ?>
-                    <p class="text-sm text-slate-400 py-10 text-center">No has registrado productos aÃºn. Haz clic en "Nuevo Producto" para comenzar.</p>
+                    <p class="text-sm text-slate-400 py-10 text-center">➕ Nuevo Producto" para comenzar.</p>
                 <?php else: ?>
-                    <!-- Vista de Tarjetas para MÃ³vil -->
+                    <!-- Vista de Tarjetas para Móvil -->
                     <div id="admin-product-cards-container" class="space-y-3 lg:hidden">
                         <?php foreach ($productos as $prod): ?>
                             <div class="admin-product-card bg-white border border-slate-100 rounded-xl p-4 space-y-3 shadow-sm"
@@ -1086,17 +1086,17 @@ foreach ($productos as $prod) {
                                         <div class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-lg font-bold">
                                             <?php
                                             $tipo = $config['tipo_negocio'] ?? 'gastronomia';
-                                            if ($tipo === 'boutique') echo 'ðŸ‘•';
-                                            elseif ($tipo === 'ferreteria_repuestos') echo 'ðŸ”§';
-                                            elseif ($tipo === 'belleza_estetica') echo 'âœ‚ï¸';
-                                            elseif ($tipo === 'otros') echo 'ðŸ›ï¸';
-                                            else echo 'ðŸ”';
-                                            ?>
+                                            if ($tipo === 'boutique') echo '👕';
+                                            elseif ($tipo === 'ferreteria_repuestos') echo '🔧';
+                                            elseif ($tipo === 'belleza_estetica') echo '✂️';
+                                            elseif ($tipo === 'otros') echo '🛍️';
+                                            else echo '🍔';
+?>
                                         </div>
                                     <?php endif; ?>
                                     <div class="flex-1 min-w-0">
                                         <h4 class="font-bold text-slate-800 truncate"><?= h($prod['nombre']) ?></h4>
-                                        <p class="text-xs text-slate-500 font-semibold mt-0.5"><?= h($categoriasMap[$prod['categoria_id']] ?? 'Sin CategorÃ­a') ?></p>
+                                        <p class="text-xs text-slate-500 font-semibold mt-0.5"><?= h($categoriasMap[$prod['categoria_id']] ?? 'Sin Categoría') ?></p>
                                     </div>
                                     <div class="text-right">
                                         <span class="font-extrabold text-slate-850 text-sm">$<?= number_format($prod['precio'], 2) ?></span>
@@ -1132,7 +1132,7 @@ foreach ($productos as $prod) {
                                         ]) ?>)' class="text-xs font-bold text-[#00CFBD] bg-cyan-50 hover:bg-cyan-100 px-3.5 py-2 rounded-xl transition-colors">
                                             Editar
                                         </button>
-                                        <button type="button" onclick="confirmDelete('delete_product', 'producto_id', <?= h($prod['id']) ?>, 'Â¿Seguro que deseas eliminar este producto?')" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
+                                        <button type="button" onclick="confirmDelete('delete_product', 'producto_id', <?= h($prod['id']) ?>, '¿Seguro que deseas eliminar este producto?')" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-colors">
                                             Eliminar
                                         </button>
                                     </div>
@@ -1147,7 +1147,7 @@ foreach ($productos as $prod) {
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">
                                     <th class="py-3 px-2">Producto</th>
-                                    <th class="py-3 px-2">CategorÃ­a</th>
+                                    <th class="py-3 px-2">Categoría</th>
                                     <th class="py-3 px-2">Precio</th>
                                     <th class="py-3 px-2 text-center">Disponible</th>
                                     <th class="py-3 px-2 text-right">Acciones</th>
@@ -1168,12 +1168,12 @@ foreach ($productos as $prod) {
                                                     <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-bold">
                                                         <?php
                                                         $tipo = $config['tipo_negocio'] ?? 'gastronomia';
-                                                        if ($tipo === 'boutique') echo 'ðŸ‘•';
-                                                        elseif ($tipo === 'ferreteria_repuestos') echo 'ðŸ”§';
-                                                        elseif ($tipo === 'belleza_estetica') echo 'âœ‚ï¸';
-                                                        elseif ($tipo === 'otros') echo 'ðŸ›ï¸';
-                                                        else echo 'ðŸ”';
-                                                        ?>
+                                                        if ($tipo === 'boutique') echo '👕';
+                                                        elseif ($tipo === 'ferreteria_repuestos') echo '🔧';
+                                                        elseif ($tipo === 'belleza_estetica') echo '✂️';
+                                                        elseif ($tipo === 'otros') echo '🛍️';
+                                                        else echo '🍔';
+?>
                                                     </div>
                                                 <?php endif; ?>
                                                 <div>
@@ -1183,11 +1183,11 @@ foreach ($productos as $prod) {
                                             </div>
                                         </td>
                                         <td class="py-3 px-2 text-xs font-semibold text-slate-500">
-                                            <?= h($categoriasMap[$prod['categoria_id']] ?? 'Sin CategorÃ­a') ?>
+                                            <?= h($categoriasMap[$prod['categoria_id']] ?? 'Sin Categoría') ?>
                                         </td>
                                         <td class="py-3 px-2 font-extrabold text-slate-800">$<?= number_format($prod['precio'], 2) ?></td>
                                         <td class="py-3 px-2 text-center">
-                                            <!-- Formulario rÃ¡pido disponible/agotado -->
+                                            <!-- Formulario rápido disponible/agotado -->
                                             <form action="admin.php" method="POST" class="inline-block">
                                                 <?= csrf_input() ?>
                                                 <input type="hidden" name="action" value="toggle_disponible">
@@ -1212,7 +1212,7 @@ foreach ($productos as $prod) {
                                                     Editar
                                                 </button>
                                                 <span class="text-slate-200">|</span>
-                                                <button type="button" onclick="confirmDelete('delete_product', 'producto_id', <?= h($prod['id']) ?>, 'Â¿Seguro que deseas eliminar este producto?')" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
+                                                <button type="button" onclick="confirmDelete('delete_product', 'producto_id', <?= h($prod['id']) ?>, '¿Seguro que deseas eliminar este producto?')" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
                                                     Eliminar
                                                 </button>
                                             </div>
@@ -1230,7 +1230,7 @@ foreach ($productos as $prod) {
     <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400 font-medium mt-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
         <span>&copy; 2026 <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>. Desarrollado por Montero Studio.</span>
         <span class="hidden sm:inline text-slate-200">|</span>
-        <a href="/legal" class="text-slate-400 hover:text-[#00CFBD] transition-colors">TÃ©rminos y Privacidad</a>
+        <a href="/legal" class="text-slate-400 hover:text-[#00CFBD] transition-colors">Términos y Privacidad</a>
     </footer>
 
     <!-- Ventana Modal: Producto -->
@@ -1238,8 +1238,8 @@ foreach ($productos as $prod) {
         <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh] sm:max-h-[90vh]">
             <!-- Header -->
             <div class="bg-slate-800 hover:bg-slate-700 p-5 text-white flex justify-between items-center shrink-0">
-                <h3 id="product-form-title" class="font-extrabold text-base">Nuevo Producto</h3>
-                <button type="button" onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">âœ•</button>
+                <h3 id="product-form-title" class="font-extrabold text-base">➕ Nuevo Producto</h3>
+                <button type="button" onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">✖</button>
             </div>
             <!-- Form -->
             <form id="form-product" action="admin.php" method="POST" class="p-6 space-y-4 overflow-y-auto">
@@ -1254,10 +1254,10 @@ foreach ($productos as $prod) {
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">CategorÃ­a</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Categoría</label>
                     <select name="categoria_id" id="prod-cat" required 
                             class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                        <option value="">Selecciona una categorÃ­a</option>
+                        <option value="">Selecciona una categoría</option>
                         <?php foreach ($categorias as $cat): ?>
                             <option value="<?= h($cat['id']) ?>"><?= h($cat['nombre_categoria']) ?></option>
                         <?php endforeach; ?>
@@ -1265,7 +1265,7 @@ foreach ($productos as $prod) {
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">DescripciÃ³n</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Descripción</label>
                     <textarea name="descripcion" id="prod-desc" rows="2" placeholder="Detalles, especificaciones, ingredientes..." 
                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all"></textarea>
                 </div>
@@ -1301,13 +1301,13 @@ foreach ($productos as $prod) {
         </div>
     </div>
 
-    <!-- Ventana Modal: CategorÃ­a -->
+    <!-- Ventana Modal: Categoría -->
     <div id="modal-category" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
         <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh]">
             <!-- Header -->
             <div class="bg-slate-800 hover:bg-slate-700 p-5 text-white flex justify-between items-center shrink-0">
-                <h3 id="category-form-title" class="font-extrabold text-base">Nueva CategorÃ­a</h3>
-                <button type="button" onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">âœ•</button>
+                <h3 id="category-form-title" class="font-extrabold text-base">➕ Nueva Categoría</h3>
+                <button type="button" onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">✖</button>
             </div>
             <!-- Form -->
             <form id="form-category" action="admin.php" method="POST" class="p-6 space-y-4 overflow-y-auto">
@@ -1316,12 +1316,12 @@ foreach ($productos as $prod) {
                 <input type="hidden" name="categoria_id" id="cat-id" value="">
                 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de la CategorÃ­a</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de la Categoría</label>
                     <input type="text" name="nombre_categoria" id="cat-nombre" required placeholder="ej: Repuestos, Joyas, Tortas, Helados" 
                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orden de VisualizaciÃ³n</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orden de Visualización</label>
                     <input type="number" name="orden_visual" id="cat-orden" value="<?= $next_cat_order ?>" required 
                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
                 </div>
@@ -1331,20 +1331,20 @@ foreach ($productos as $prod) {
                         Cancelar
                     </button>
                     <button type="submit" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
-                        Guardar CategorÃ­a
+                        Guardar Categoría
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Ventana Modal: ConfirmaciÃ³n de EliminaciÃ³n -->
+    <!-- Ventana Modal: Confirmación de Eliminación -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
         <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-all duration-300 p-6 space-y-4">
             <div class="text-center space-y-2">
-                <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto text-xl font-bold">âš ï¸</div>
-                <h3 class="font-extrabold text-base text-slate-800">Â¿EstÃ¡s seguro?</h3>
-                <p id="confirm-modal-text" class="text-xs text-slate-500 leading-relaxed">Esta acciÃ³n es irreversible y podrÃ­a afectar datos vinculados.</p>
+                <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto text-xl font-bold">⚠️</div>
+                <h3 class="font-extrabold text-base text-slate-800">¿Estás seguro?</h3>
+                <p id="confirm-modal-text" class="text-xs text-slate-500 leading-relaxed">Esta acción es irreversible y podría afectar datos vinculados.</p>
             </div>
             <div class="flex gap-2">
                 <button type="button" onclick="closeConfirmModal()" class="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs rounded-xl transition-all">
@@ -1422,7 +1422,7 @@ foreach ($productos as $prod) {
             document.getElementById('form-product').reset();
         }
 
-        // Modales de CategorÃ­as
+        // Modales de Categorías
         function openCategoryModal() {
             resetCategoryForm();
             const modal = document.getElementById('modal-category');
@@ -1432,7 +1432,7 @@ foreach ($productos as $prod) {
         }
 
         function openCategoryModalForEdit(id, name, order) {
-            document.getElementById('category-form-title').textContent = 'Editar CategorÃ­a';
+            document.getElementById('category-form-title').textContent = 'Editar Categoría';
             document.getElementById('cat-id').value = id;
             document.getElementById('cat-nombre').value = name;
             document.getElementById('cat-orden').value = order;
@@ -1451,13 +1451,13 @@ foreach ($productos as $prod) {
         }
 
         function resetCategoryForm() {
-            document.getElementById('category-form-title').textContent = 'Nueva CategorÃ­a';
+            document.getElementById('category-form-title').textContent = 'Nueva Categoría';
             document.getElementById('cat-id').value = '';
             document.getElementById('cat-nombre').value = '';
             document.getElementById('cat-orden').value = '<?= $next_cat_order ?>';
         }
 
-        // Filtro y BÃºsqueda Avanzada de Productos en Admin
+        // Filtro y Búsqueda Avanzada de Productos en Admin
         function filterAdminProducts() {
             const query = document.getElementById('admin-search-input').value.toLowerCase().trim();
             const catFilter = document.getElementById('admin-filter-category').value;
@@ -1481,7 +1481,7 @@ foreach ($productos as $prod) {
                 }
             });
 
-            // Filtrar Tarjetas de MÃ³vil
+            // Filtrar Tarjetas de Móvil
             document.querySelectorAll('.admin-product-card').forEach(card => {
                 const name = card.getAttribute('data-name') || '';
                 const desc = card.getAttribute('data-desc') || '';
@@ -1500,7 +1500,7 @@ foreach ($productos as $prod) {
             });
         }
 
-        // Confirmar EliminaciÃ³n (Modal Personalizado)
+        // Confirmar Eliminación (Modal Personalizado)
         let pendingDeleteForm = null;
         function confirmDelete(actionName, idFieldName, idValue, message) {
             const dialog = document.getElementById('confirm-modal');
@@ -1553,22 +1553,22 @@ foreach ($productos as $prod) {
         // Copiar Enlace al Portapapeles
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                alert('Â¡Enlace copiado al portapapeles!');
+                alert('¡Enlace copiado al portapapeles!');
             }).catch(err => {
                 console.error('Error al copiar enlace:', err);
             });
         }
 
-        // Toggle GuÃ­a de MigraciÃ³n
+        // Toggle Guía de Migración
         function toggleMigrationGuide() {
             const content = document.getElementById('migration-guide-content');
             const arrow = document.getElementById('migration-arrow');
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
-                arrow.textContent = 'â–²';
+                arrow.textContent = this.classList.contains('active') ? '▲' : '▼';
             } else {
                 content.classList.add('hidden');
-                arrow.textContent = 'â–¼';
+                arrow.textContent = this.classList.contains('active') ? '▲' : '▼';
             }
         }
 
@@ -1611,7 +1611,7 @@ foreach ($productos as $prod) {
             }
         }
 
-        // InicializaciÃ³n
+        // Inicialización
         window.addEventListener('DOMContentLoaded', () => {
             let defaultTab = '<?= $active_tab ?? '#dashboard' ?>';
             if (window.location.hash) {
