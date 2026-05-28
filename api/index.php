@@ -63,6 +63,7 @@ if ($isLocalhost) {
     <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.svg">
     <link rel="shortcut icon" href="/assets/favicon.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="apple-touch-icon" href="/assets/favicon.svg">
     <?php
     // Mapeo de colores principales según el tipo de negocio
@@ -195,7 +196,7 @@ if ($isLocalhost) {
     <?php if ($dbError): ?>
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
         <div class="bg-red-600 text-white text-xs font-bold px-4 py-3 text-center shadow-md relative z-50">
-            ⚠️ <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
+            <i class="bi bi-exclamation-triangle-fill text-red-500"></i> <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
         </div>
     <?php endif; ?>
     <!-- Header -->
@@ -261,13 +262,13 @@ if ($isLocalhost) {
                     <div class="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-slate-655 font-semibold max-w-lg mx-auto">
                         <?php if (!empty($direccion_local)): ?>
                             <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span>📍</span>
+                                <span><i class="bi bi-geo-alt-fill text-primary"></i></span>
                                 <span class="truncate max-w-[220px] sm:max-w-xs" title="<?= h($direccion_local) ?>"><?= h($direccion_local) ?></span>
                             </div>
                         <?php endif; ?>
                         <?php if (!empty($horario_local)): ?>
                             <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span>🕒</span>
+                                <span><i class="bi bi-clock-fill text-primary"></i></span>
                                 <span><?= h($horario_local) ?></span>
                             </div>
                         <?php endif; ?>
@@ -327,7 +328,7 @@ if ($isLocalhost) {
                     </p>
                     <div class="pt-2">
                         <a href="admin.php" class="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all">
-                            Ir al Panel ⚙️
+                            Ir al Panel <i class="bi bi-gear-fill"></i>
                         </a>
                     </div>
                 </div>
@@ -335,7 +336,7 @@ if ($isLocalhost) {
                 <!-- Mensaje de Búsqueda sin Resultados -->
                 <div id="search-no-results" class="hidden text-center py-16 space-y-3">
                     <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                        🔍
+                        <i class="bi bi-search text-slate-300 text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
                     <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
@@ -444,7 +445,7 @@ if ($isLocalhost) {
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-md mx-auto z-40 hidden">
         <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
-                <span>🕒</span>
+                <span><i class="bi bi-clock-fill text-primary"></i></span>
                 <span id="cart-count">0 artículos</span>
             </div>
             <div class="text-right">
@@ -495,7 +496,7 @@ if ($isLocalhost) {
                     <div class="space-y-1.5">
                         <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">👤</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs"><i class="bi bi-person-fill"></i></span>
                             <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
                                    class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all">
                         </div>
@@ -507,18 +508,18 @@ if ($isLocalhost) {
                         <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
                             <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
                                     class="py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-100">
-                                🛵 Delivery
+                                <i class="bi bi-truck"></i> Delivery
                             </button>
                             <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
                                     class="py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
-                                🛍️ Retiro
+                                <i class="bi bi-bag-check-fill"></i> Retiro
                             </button>
                         </div>
                         <p id="delivery-cost-note" class="text-[10px] text-amber-600 font-semibold flex items-center gap-1 mt-1 pl-1">
                             <?php if ($costo_delivery > 0): ?>
-                                🛵 Costo de envío: $<?= number_format($costo_delivery, 2) ?>
+                                <i class="bi bi-truck"></i> Costo de envío: $<?= number_format($costo_delivery, 2) ?>
                             <?php else: ?>
-                                🛵 Envío gratis o a acordar con el vendedor.
+                                <i class="bi bi-truck"></i> Envío gratis o a acordar con el vendedor.
                             <?php endif; ?>
                         </p>
                     </div>
@@ -527,7 +528,7 @@ if ($isLocalhost) {
                     <div id="delivery-address-container" class="space-y-1.5 transition-all duration-300">
                         <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-2.5 text-xs">📍</span>
+                            <span class="absolute left-3 top-3 text-slate-400 text-sm"><i class="bi bi-geo-alt-fill"></i></span>
                             <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
                                       class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"></textarea>
                         </div>
@@ -537,7 +538,7 @@ if ($isLocalhost) {
                     <div class="space-y-1.5">
                         <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Método de Pago</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">💳</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs"><i class="bi bi-credit-card-fill"></i></span>
                             <select id="cust-payment" 
                                     class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-8">
                                 <option value="Pago Móvil">📱 Pago Móvil (Bolívares - VES)</option>
@@ -575,7 +576,7 @@ if ($isLocalhost) {
                 </div>
                 <button onclick="checkoutOrder()" class="w-full py-4 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-98">
                     <span>Enviar Pedido por WhatsApp</span>
-                    <span>⚡</span>
+                    <span><i class="bi bi-whatsapp"></i></span>
                 </button>
             </div>
         </div>
