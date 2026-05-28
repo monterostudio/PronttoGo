@@ -244,16 +244,7 @@ if ($isLocalhost) {
                 </span>
             <?php endif; ?>
 
-            <!-- Tipo de Negocio Badge -->
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-bold uppercase tracking-wider mb-1 select-none">
-                <?php
-                if ($tipo_negocio === 'boutique') echo '👕 Boutique y Moda';
-                elseif ($tipo_negocio === 'ferreteria_repuestos') echo '🔧 Repuestos y Ferretería';
-                elseif ($tipo_negocio === 'belleza_estetica') echo '✂️ Belleza y Estética';
-                elseif ($tipo_negocio === 'otros') echo '🛍️ Comercio Local';
-                else echo '🍔 Gastronomía';
-                ?>
-            </span>
+
 
             <!-- Tagline principal -->
             <div class="space-y-1.5 max-w-lg pt-1">

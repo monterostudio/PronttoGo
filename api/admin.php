@@ -755,182 +755,179 @@ foreach ($productos as $prod) {
                 </div>
             </div>
 
-            <!-- Guía de Migración de Base de Datos -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <div class="flex items-center justify-between cursor-pointer" onclick="toggleMigrationGuide()">
-                    <div>
-                        <h3 class="text-sm font-extrabold tracking-tight text-slate-800">🛠️ Guía de Actualización de Base de Datos</h3>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Si es la primera vez que usas la versión de soporte para todo tipo de negocio local, haz clic aquí para ver cómo actualizar tu base de datos en Supabase.</p>
-                    </div>
-                    <span id="migration-arrow" class="text-slate-400 transform transition-transform duration-200">▼</span>
-                </div>
-                
-                <div id="migration-guide-content" class="hidden pt-4 border-t border-slate-50 space-y-3">
-                    <p class="text-xs text-slate-500 leading-relaxed">
-                        Para habilitar el soporte de monedas personalizadas, dirección, horarios y rubros en tu base de datos actual, copia el siguiente fragmento SQL y pégalo en el **SQL Editor** de tu panel de **Supabase**, luego presiona **RUN**:
-                    </p>
-                    <div class="relative">
-                        <pre class="bg-slate-900 text-slate-100 text-[10px] p-4 rounded-xl overflow-x-auto font-mono select-all">ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS tipo_negocio TEXT NOT NULL DEFAULT 'gastronomia' CHECK (tipo_negocio IN ('gastronomia', 'boutique', 'ferreteria_repuestos', 'belleza_estetica', 'otros'));
-ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS moneda_simbolo TEXT NOT NULL DEFAULT '$';
-ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS moneda_nombre TEXT NOT NULL DEFAULT 'USD';
-ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS costo_delivery NUMERIC(12, 2) NOT NULL DEFAULT 0.00;
-ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS direccion TEXT NOT NULL DEFAULT '';
-ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL DEFAULT '';</pre>
-                    </div>
-                </div>
-            </div>
+
         </section>
 
         <!-- ================= TAB: PERFIL COMERCIAL ================= -->
         <section id="profile" class="tab-content bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <div class="border-b border-slate-50 pb-4">
-                <h2 class="text-xl font-extrabold tracking-tight">Perfil</h2>
-                <p class="text-xs text-slate-400">Ajustes principales del comercio y contacto de WhatsApp que se mostrarán en el catálogo digital.</p>
+                <h2 class="text-xl font-extrabold tracking-tight">Ajustes del Sistema</h2>
+                <p class="text-xs text-slate-400">Administra la configuración comercial, pasarela de WhatsApp, tasas de cambio y credenciales de acceso de tu catálogo.</p>
             </div>
             
-            <form action="admin.php" method="POST" class="space-y-4 max-w-xl">
+            <form action="admin.php" method="POST" class="space-y-6">
                 <?= csrf_input() ?>
                 <input type="hidden" name="action" value="update_profile">
                 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del Comercio</label>
-                    <input type="text" name="nombre" value="<?= h($config['nombre']) ?>" required
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL del Logo del Comercio</label>
-                    <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png"
-                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
-                    <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacío, se mostrará el nombre en texto.</p>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
-                    <div class="flex gap-2 w-full">
-                        <select name="codigo_pais" required
-                                class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                            <?php
-                            $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
-                            $selected_code = $phone_split['code'];
-                            $local_number = $phone_split['local'];
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- COLUMNA IZQUIERDA: Información del Comercio y Operación -->
+                    <div class="space-y-6">
+                        
+                        <!-- Tarjeta: Datos del Comercio -->
+                        <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">📦 Datos del Comercio</h3>
                             
-                            $prefixes = [
-                                '58'  => 'Venezuela (+58)',
-                                '57'  => 'Colombia (+57)'
-                            ];
-                            foreach ($prefixes as $code => $label):
-                                $selected = ($selected_code == $code) ? 'selected' : '';
-                            ?>
-                                <option value="<?= h($code) ?>" <?= $selected ?>><?= h($label) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
-                               class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
-                    </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número telefónico local sin el signo + ni ceros al inicio.</p>
-                </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del Comercio</label>
+                                <input type="text" name="nombre" value="<?= h($config['nombre']) ?>" required
+                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                            </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Rubro o Tipo de Negocio</label>
-                    <select name="tipo_negocio" required
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                        <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>🍔 Gastronomía (Restaurantes, Cafés, Comida)</option>
-                        <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>👕 Tienda de Ropa / Calzado / Boutique</option>
-                        <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>🔧 Repuestos / Ferretería / Herramientas</option>
-                        <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>✂️ Estética / Peluquería / Belleza</option>
-                        <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>🛍️ Otros Negocios Locales / Servicios</option>
-                    </select>
-                    <p class="text-[10px] text-slate-400 mt-1">Esto cambia la apariencia visual, los iconos por defecto y adaptaciones temáticas del catálogo.</p>
-                </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">URL del Logo del Comercio</label>
+                                <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png"
+                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                <p class="text-[10px] text-slate-400 mt-1">Ingresa el enlace de la imagen del logotipo. Si lo dejas vacío, se mostrará el nombre en texto.</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">WhatsApp para Pedidos</label>
+                                <div class="flex gap-2 w-full">
+                                    <select name="codigo_pais" required
+                                            class="w-[125px] sm:w-[155px] shrink-0 pl-3 pr-6 sm:pl-3.5 sm:pr-8 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                        <?php
+                                        $phone_split = split_whatsapp_number($config['telefono_whatsapp'] ?? '');
+                                        $selected_code = $phone_split['code'];
+                                        $local_number = $phone_split['local'];
+                                        
+                                        $prefixes = [
+                                            '58'  => 'Venezuela (+58)',
+                                            '57'  => 'Colombia (+57)'
+                                        ];
+                                        foreach ($prefixes as $code => $label):
+                                            $selected = ($selected_code == $code) ? 'selected' : '';
+                                        ?>
+                                            <option value="<?= h($code) ?>" <?= $selected ?>><?= h($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="tel" name="telefono_local" value="<?= h($local_number) ?>" required placeholder="Ej: 4121234567"
+                                           class="flex-1 min-w-0 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Selecciona el código de tu país e ingresa el número local sin el signo + ni ceros al inicio.</p>
+                            </div>
 
-                <!-- Tasa de Cambio Inteligente -->
-                <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Moneda y Tasa de Cambio</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de Tasa</label>
-                            <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
-                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Fija / Personalizada</option>
-                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
-                                <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
-                            </select>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de negocio</label>
+                                <select name="tipo_negocio" required
+                                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>🍔 Gastronomía (Restaurantes, Cafés, Comida)</option>
+                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>👕 Tienda de Ropa / Calzado / Boutique</option>
+                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>🔧 Repuestos / Ferretería / Herramientas</option>
+                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>✂️ Estética / Peluquería / Belleza</option>
+                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>🛍️ Otros Negocios Locales / Servicios</option>
+                                </select>
+                                <p class="text-[10px] text-slate-400 mt-1">Esto cambia la apariencia visual, los iconos por defecto y adaptaciones temáticas del catálogo.</p>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
-                            <div class="relative">
-                                <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
-                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent transition-all">
-                                <div id="tasa_loading" class="absolute right-3 top-3.5 hidden">
-                                    <svg class="animate-spin h-4 w-4 text-[#00CFBD]" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
+
+                        <!-- Tarjeta: Operación del Establecimiento -->
+                        <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">🛵 Operación y Delivery</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Costo de Delivery ($)</label>
+                                    <input type="number" step="0.01" name="costo_delivery" value="<?= number_format(floatval($config['costo_delivery'] ?? 0.00), 2, '.', '') ?>" required
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                    <p class="text-[10px] text-slate-400 mt-1">0 = Envío gratis o a acordar.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Horario de Atención</label>
+                                    <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej: Lun a Sáb: 8am - 6pm"
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
                                 </div>
                             </div>
-                            <p id="tasa_note" class="text-[11px] text-slate-400 mt-1">Introduce el valor de cambio manualmente.</p>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Dirección del Local</label>
+                                <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej: Av. Principal con Calle 4, Local 2"
+                                       class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Símbolo Moneda Local</label>
-                            <input type="text" name="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej: Bs. o COP$" required
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                    <!-- COLUMNA DERECHA: Moneda, Cambio y Seguridad -->
+                    <div class="space-y-6">
+                        
+                        <!-- Tarjeta: Moneda y Cambio -->
+                        <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">💵 Moneda y Tasa de Cambio</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de Tasa</label>
+                                    <select name="tasa_tipo" id="tasa_tipo" onchange="handleTasaTipoChange()" required
+                                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                        <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Fija / Personalizada</option>
+                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automático: Banco Central de Venezuela (BCV)</option>
+                                        <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automático: TRM Colombia (Pesos)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Valor de la Tasa ($1 USD = X)</label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar_input" value="<?= number_format(floatval($config['tasa_dolar'] ?? 1.00), 2, '.', '') ?>" required
+                                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                        <div id="tasa_loading" class="absolute right-3 top-3.5 hidden">
+                                            <svg class="animate-spin h-4 w-4 text-[#00CFBD]" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p id="tasa_note" class="text-[10px] text-slate-400 mt-1">Introduce el valor de cambio manualmente.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Símbolo Moneda Local</label>
+                                    <input type="text" name="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej: Bs. o COP$" required
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre Moneda Local</label>
+                                    <input type="text" name="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej: VES, COP, MXN" required
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre Moneda Local</label>
-                            <input type="text" name="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej: VES, COP, MXN" required
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+
+                        <!-- Tarjeta: Credenciales de Acceso -->
+                        <div class="bg-[#F8FAFC]/50 border border-slate-100 p-5 rounded-2xl space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200/50 pb-2 flex items-center gap-1.5">🔐 Seguridad</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario Administrativo</label>
+                                    <input type="text" name="admin_user" value="<?= h($dbAdminUser) ?>" required placeholder="ej: admin"
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva Contraseña</label>
+                                    <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
+                                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
+                                    <p class="text-[10px] text-slate-400 mt-1">Dejar vacío para conservar la contraseña actual.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Datos de Operación Local -->
-                <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Operación del Establecimiento</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Costo de Delivery ($)</label>
-                            <input type="number" step="0.01" name="costo_delivery" value="<?= number_format(floatval($config['costo_delivery'] ?? 0.00), 2, '.', '') ?>" required
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                            <p class="text-[10px] text-slate-400 mt-1">Precio base cobrado al cliente. 0 = Gratis/A acordar.</p>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Horario de Atención</label>
-                            <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej: Lun a Sáb: 8am - 6pm"
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Dirección del Local</label>
-                        <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej: Av. Principal con Calle 4, Local 2"
-                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                    </div>
+                <div class="flex justify-end pt-4 border-t border-slate-100">
+                    <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+                        💾 Guardar Ajustes
+                    </button>
                 </div>
-
-                <!-- Credenciales Administrativas -->
-                <div class="border border-slate-100 bg-slate-50/50 p-4 rounded-xl space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Credenciales de Acceso</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Usuario Administrativo</label>
-                            <input type="text" name="admin_user" value="<?= h($dbAdminUser) ?>" required placeholder="ej: admin"
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nueva Contraseña</label>
-                            <input type="password" name="admin_password" placeholder="Escribe para cambiar la clave"
-                                   class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                            <p class="text-[10px] text-slate-400 mt-1">Dejar vacío para conservar la contraseña actual.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
-                    Guardar Cambios
-                </button>
             </form>
         </section>
 
@@ -1215,14 +1212,14 @@ ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL 
 
     <!-- Ventana Modal: Producto -->
     <div id="modal-product" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
-        <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300">
+        <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh] sm:max-h-[90vh]">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] p-5 text-white flex justify-between items-center">
+            <div class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] p-5 text-white flex justify-between items-center shrink-0">
                 <h3 id="product-form-title" class="font-extrabold text-base">Nuevo Producto</h3>
                 <button type="button" onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">✕</button>
             </div>
             <!-- Form -->
-            <form id="form-product" action="admin.php" method="POST" class="p-6 space-y-4">
+            <form id="form-product" action="admin.php" method="POST" class="p-6 space-y-4 overflow-y-auto">
                 <?= csrf_input() ?>
                 <input type="hidden" name="action" value="save_product">
                 <input type="hidden" name="producto_id" id="prod-id" value="">
@@ -1283,14 +1280,14 @@ ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL 
 
     <!-- Ventana Modal: Categoría -->
     <div id="modal-category" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
-        <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300">
+        <div class="modal-content bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh]">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] p-5 text-white flex justify-between items-center">
+            <div class="bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] p-5 text-white flex justify-between items-center shrink-0">
                 <h3 id="category-form-title" class="font-extrabold text-base">Nueva Categoría</h3>
                 <button type="button" onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-all">✕</button>
             </div>
             <!-- Form -->
-            <form id="form-category" action="admin.php" method="POST" class="p-6 space-y-4">
+            <form id="form-category" action="admin.php" method="POST" class="p-6 space-y-4 overflow-y-auto">
                 <?= csrf_input() ?>
                 <input type="hidden" name="action" value="save_category">
                 <input type="hidden" name="categoria_id" id="cat-id" value="">
