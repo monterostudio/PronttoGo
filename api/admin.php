@@ -613,7 +613,7 @@ foreach ($productos as $prod) {
                     </svg>
                     <span class="hidden sm:inline">Ver Tienda</span>
                     <span class="sm:hidden">Tienda</span>
-                    <span>�??</span>
+                    <span>↗</span>
                 </a>
                 <a href="admin.php?action=logout" class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 border border-slate-200 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2 hover:bg-red-50 transition-all shadow-sm whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -718,10 +718,10 @@ foreach ($productos as $prod) {
 
                     <div class="space-y-2">
                         <button onclick="copyToClipboard('<?= h($catalogUrl) ?>')" class="w-full py-2.5 border border-[#00CFBD]/20 hover:border-transparent text-[#00CFBD] hover:bg-[#00CFBD] hover:text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1 bg-white">
-                            �??? Copiar Enlace
+                            📋 Copiar Enlace
                         </button>
                         <a href="<?= h($qrCodeApiUrl) ?>" download="qr_catalogo.png" target="_blank" class="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1">
-                            �?️ Descargar Código QR
+                            ⬇️ Descargar Código QR
                         </a>
                     </div>
                 </div>
@@ -772,7 +772,7 @@ foreach ($productos as $prod) {
 
                     <div class="flex gap-2">
                         <button onclick="switchTab('#profile')" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1">
-                            �??️ Editar Configuración
+                            ⚙️ Editar Configuración
                         </button>
                     </div>
                 </div>
@@ -824,8 +824,8 @@ foreach ($productos as $prod) {
                                         $local_number = $phone_split['local'];
                                         
                                         $prefixes = [
-                                            '58'  => '🇻🇪 +58',
-                                            '57'  => '🇨🇴 +57'
+                                            '58'  => '🇻🇪 VE (+58)',
+                                            '57'  => '🇨🇴 CO (+57)'
                                         ];
                                         foreach ($prefixes as $code => $label):
                                             $selected = ($selected_code == $code) ? 'selected' : '';
@@ -843,11 +843,11 @@ foreach ($productos as $prod) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de negocio</label>
                                 <select name="tipo_negocio" required
                                         class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00CFBD] focus:border-transparent bg-white transition-all">
-                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>�?�? Gastronomía (Restaurantes, Cafés, Comida)</option>
-                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>�??? Tienda de Ropa / Calzado / Boutique</option>
+                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? 'gastronomia') === 'gastronomia' ? 'selected' : '' ?>>🍔 Gastronomía (Restaurantes, Cafés, Comida)</option>
+                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>👕 Tienda de Ropa / Calzado / Boutique</option>
                                     <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>🔧 Repuestos / Ferreter�a / Ferretería / Herramientas</option>
-                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>�??️ Estética / Peluquería / Belleza</option>
-                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>�??�️ Otros Negocios Locales / Servicios</option>
+                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>✂️ Estética / Peluquería / Belleza</option>
+                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>🛍️ Otros Negocios Locales / Servicios</option>
                                 </select>
                                 <p class="text-[10px] text-slate-400 mt-1">Esto cambia la apariencia visual, los iconos por defecto y adaptaciones temáticas del catálogo.</p>
                             </div>
@@ -964,7 +964,7 @@ foreach ($productos as $prod) {
                     </div>
                     <div>
                         <button onclick="openCategoryModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            �?? Nueva Categoría
+                            ➕ Nueva Categoría
                         </button>
                     </div>
                 </div>
@@ -1045,7 +1045,7 @@ foreach ($productos as $prod) {
                 <!-- Barra de búsqueda y filtros -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">�??�</span>
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">📁</span>
                         <input type="text" id="admin-search-input" onkeyup="filterAdminProducts()" placeholder="Buscar producto..."
                                class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#00CFBD] transition-all">
                     </div>

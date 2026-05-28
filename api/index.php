@@ -195,7 +195,7 @@ if ($isLocalhost) {
     <?php if ($dbError): ?>
         <!-- Barra de depuraci√≥n en local para avisar errores de conexi√≥n de Supabase -->
         <div class="bg-red-600 text-white text-xs font-bold px-4 py-3 text-center shadow-md relative z-50">
-            ‚?†Ô∏è <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
+            ‚ö†Ô∏è <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
         </div>
     <?php endif; ?>
     <!-- Header -->
@@ -261,7 +261,7 @@ if ($isLocalhost) {
                     <div class="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-slate-655 font-semibold max-w-lg mx-auto">
                         <?php if (!empty($direccion_local)): ?>
                             <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span>??ç</span>
+                                <span>üìç</span>
                                 <span class="truncate max-w-[220px] sm:max-w-xs" title="<?= h($direccion_local) ?>"><?= h($direccion_local) ?></span>
                             </div>
                         <?php endif; ?>
@@ -335,7 +335,7 @@ if ($isLocalhost) {
                 <!-- Mensaje de B√∫squeda sin Resultados -->
                 <div id="search-no-results" class="hidden text-center py-16 space-y-3">
                     <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                        ??ç
+                        üîç
                     </div>
                     <h3 class="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
                     <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
@@ -511,14 +511,14 @@ if ($isLocalhost) {
                             </button>
                             <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
                                     class="py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
-                                ??çÔ∏è Retiro
+                                üõçÔ∏è Retiro
                             </button>
                         </div>
                         <p id="delivery-cost-note" class="text-[10px] text-amber-600 font-semibold flex items-center gap-1 mt-1 pl-1">
                             <?php if ($costo_delivery > 0): ?>
-                                ??µ Costo de env√≠o: $<?= number_format($costo_delivery, 2) ?>
+                                üõµ Costo de env√≠o: $<?= number_format($costo_delivery, 2) ?>
                             <?php else: ?>
-                                ??µ Env√≠o gratis o a acordar con el vendedor.
+                                üõµ Env√≠o gratis o a acordar con el vendedor.
                             <?php endif; ?>
                         </p>
                     </div>
@@ -527,7 +527,7 @@ if ($isLocalhost) {
                     <div id="delivery-address-container" class="space-y-1.5 transition-all duration-300">
                         <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Direcci√≥n de Entrega</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-2.5 text-xs">??ç</span>
+                            <span class="absolute left-3 top-2.5 text-xs">üìç</span>
                             <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
                                       class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"></textarea>
                         </div>
