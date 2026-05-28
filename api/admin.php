@@ -928,7 +928,13 @@ ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL 
                     </div>
                 </div>
 
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#00C        <!-- ================= TAB: CATEGORÍAS ================= -->
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#00CFBD] to-[#00B5A5] hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                    Guardar Cambios
+                </button>
+            </form>
+        </section>
+
+        <!-- ================= TAB: CATEGORÍAS ================= -->
         <section id="categories" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-50 pb-4">
