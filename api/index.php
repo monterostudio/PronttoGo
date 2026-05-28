@@ -196,7 +196,9 @@ if ($isLocalhost) {
         <!-- Barra de depuración en local para avisar errores de conexión de Supabase -->
         <div class="bg-red-600 text-white text-xs font-bold px-4 py-3 text-center shadow-md relative z-50">
             ⚠️ <strong>Error de Base de Datos (Local):</strong> <?= h($dbError) ?> | URL configurada: <code class="bg-red-700 px-1.5 py-0.5 rounded"><?= h(SUPABASE_URL) ?></code>
-        </d    <!-- Header -->
+        </div>
+    <?php endif; ?>
+    <!-- Header -->
     <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
             <div class="flex items-center space-x-2.5 min-w-0">
