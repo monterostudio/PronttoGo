@@ -48,7 +48,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <link rel="apple-touch-icon" href="/assets/img/favicon.svg">
         <?php
         $color_niche = [
-            'gastronomia' => ['primary' => '#00CFBD', 'primary-hover' => '#00B5A5', 'soft' => '#E6FBF9', 'border-soft' => '#B2EFE9', 'hero-bg-from' => '#F0FDFB', 'hero-bg-via' => '#E2F8F5', 'hero-bg-to' => '#F0FDFB', 'hero-glow' => 'rgba(0,207,189,0.05)'],
+            'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#E0E7FF', 'hero-bg-to' => '#EEF2FF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
             'boutique' => ['primary' => '#8B5CF6', 'primary-hover' => '#7C3AED', 'soft' => '#F5F3FF', 'border-soft' => '#DDD6FE', 'hero-bg-from' => '#FAF5FF', 'hero-bg-via' => '#F3E8FF', 'hero-bg-to' => '#FAF5FF', 'hero-glow' => 'rgba(139,92,246,0.05)'],
             'ferreteria_repuestos' => ['primary' => '#F59E0B', 'primary-hover' => '#D97706', 'soft' => '#FFFBEB', 'border-soft' => '#FDE68A', 'hero-bg-from' => '#FFFDF5', 'hero-bg-via' => '#FEF3C7', 'hero-bg-to' => '#FFFDF5', 'hero-glow' => 'rgba(245,158,11,0.05)'],
             'belleza_estetica' => ['primary' => '#EC4899', 'primary-hover' => '#DB2777', 'soft' => '#FDF2F8', 'border-soft' => '#FBCFE8', 'hero-bg-from' => '#FDF2F8', 'hero-bg-via' => '#FCE7F3', 'hero-bg-to' => '#FDF2F8', 'hero-glow' => 'rgba(236,72,153,0.05)'],

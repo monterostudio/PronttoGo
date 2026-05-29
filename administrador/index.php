@@ -12,6 +12,37 @@ require_once __DIR__ . '/../core/db.php';
 $error = '';
 $success = isset($_GET['success']) ? 'Operación realizada con éxito.' : '';
 
+function fetch_bcv_rate() {
+    $ctx = stream_context_create(['http' => ['timeout' => 3]]);
+    $res = @file_get_contents('https://s3.amazonaws.com/dolartoday/data.json', false, $ctx);
+    if ($res) {
+        $data = json_decode($res, true);
+        if (isset($data['USD']['bcv'])) {
+            return floatval($data['USD']['bcv']);
+        }
+    }
+    $res = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $ctx);
+    if ($res) {
+        $data = json_decode($res, true);
+        if (isset($data['rates']['VES'])) {
+            return floatval($data['rates']['VES']);
+        }
+    }
+    return 0;
+}
+
+function fetch_trm_rate() {
+    $ctx = stream_context_create(['http' => ['timeout' => 3]]);
+    $res = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $ctx);
+    if ($res) {
+        $data = json_decode($res, true);
+        if (isset($data['rates']['COP'])) {
+            return floatval($data['rates']['COP']);
+        }
+    }
+    return 0;
+}
+
 // Manejo de peticiones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -39,12 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if ($action === 'update_config') {
+            $tasa_tipo = $_POST['tasa_tipo'] ?? 'manual';
+            $tasa_dolar = floatval($_POST['tasa_dolar'] ?? 1.00);
+            
+            if ($tasa_tipo === 'bcv') {
+                $bcv = fetch_bcv_rate();
+                if ($bcv > 0) $tasa_dolar = $bcv;
+            } elseif ($tasa_tipo === 'trm') {
+                $trm = fetch_trm_rate();
+                if ($trm > 0) $tasa_dolar = $trm;
+            }
+
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
                 'telefono_whatsapp' => $_POST['telefono_whatsapp'] ?? '',
                 'tipo_negocio' => $_POST['tipo_negocio'] ?? 'gastronomia',
-                'tasa_dolar' => floatval($_POST['tasa_dolar'] ?? 1.00),
-                'tasa_tipo' => $_POST['tasa_tipo'] ?? 'manual',
+                'tasa_dolar' => $tasa_dolar,
+                'tasa_tipo' => $tasa_tipo,
                 'moneda_nombre' => $_POST['moneda_nombre'] ?? 'USD',
                 'moneda_simbolo' => $_POST['moneda_simbolo'] ?? '$',
                 'costo_delivery' => floatval($_POST['costo_delivery'] ?? 0.00),
@@ -248,17 +290,41 @@ if (!is_admin_logged_in()): ?>
                                         <hr class="my-2 border-slate-100">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Tasa de Cambio</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Modo de Tasa de Cambio</label>
                                         <div class="relative">
-                                            <i class="bi bi-currency-exchange absolute left-3 top-3.5 text-slate-400"></i>
-                                            <input type="number" step="0.01" name="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            <i class="bi bi-gear-wide-connected absolute left-3 top-3.5 text-slate-400"></i>
+                                            <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
+                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Manual (Ingresada por ti)</option>
+                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automática BCV (Bolívares - Venezuela)</option>
+                                                <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automática TRM (Pesos - Colombia)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa (USD a Local)</label>
+                                        <div class="relative flex gap-2">
+                                            <div class="relative flex-1">
+                                                <i class="bi bi-currency-exchange absolute left-3 top-3.5 text-slate-400"></i>
+                                                <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            </div>
+                                            <button type="button" id="btn-fetch-tasa" class="bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 px-3.5 rounded-xl transition-all flex items-center justify-center shrink-0" title="Consultar tasa ahora por internet">
+                                                <i class="bi bi-arrow-clockwise text-lg"></i>
+                                            </button>
+                                        </div>
+                                        <p id="tasa-status-text" class="text-[11px] mt-1 text-slate-400 font-semibold"></p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Moneda Local</label>
+                                        <div class="relative">
+                                            <i class="bi bi-cash-stack absolute left-3 top-3.5 text-slate-400"></i>
+                                            <input type="text" name="moneda_nombre" id="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej. Bs., COP, USD" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Símbolo Moneda Local</label>
                                         <div class="relative">
                                             <i class="bi bi-coin absolute left-3 top-3.5 text-slate-400"></i>
-                                            <input type="text" name="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            <input type="text" name="moneda_simbolo" id="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej. $, Bs., COP" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div class="md:col-span-2">
@@ -438,6 +504,109 @@ if (!is_admin_logged_in()): ?>
                 </form>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tasaTipoSelect = document.getElementById('tasa_tipo');
+                const tasaDolarInput = document.getElementById('tasa_dolar');
+                const monedaNombreInput = document.getElementById('moneda_nombre');
+                const monedaSimboloInput = document.getElementById('moneda_simbolo');
+                const btnFetchTasa = document.getElementById('btn-fetch-tasa');
+                const statusText = document.getElementById('tasa-status-text');
+
+                async function fetchExchangeRate(silent = false) {
+                    const tipo = tasaTipoSelect.value;
+                    if (tipo === 'manual') {
+                        statusText.innerText = '';
+                        tasaDolarInput.readOnly = false;
+                        return;
+                    }
+
+                    if (!silent) {
+                        statusText.innerText = 'Consultando tasa en tiempo real...';
+                        statusText.className = 'text-[11px] mt-1 text-amber-500 font-semibold';
+                    }
+
+                    try {
+                        let rate = 0;
+                        if (tipo === 'bcv') {
+                            try {
+                                const dtRes = await fetch('https://s3.amazonaws.com/dolartoday/data.json');
+                                if (dtRes.ok) {
+                                    const dtData = await dtRes.json();
+                                    if (dtData.USD && dtData.USD.bcv) {
+                                        rate = parseFloat(dtData.USD.bcv);
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn('Fallo fetch Dolartoday, usando fallback global...', e);
+                            }
+
+                            if (rate === 0) {
+                                const globalRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                                if (globalRes.ok) {
+                                    const globalData = await globalRes.json();
+                                    if (globalData.rates && globalData.rates.VES) {
+                                        rate = parseFloat(globalData.rates.VES);
+                                    }
+                                }
+                            }
+
+                            if (rate > 0) {
+                                tasaDolarInput.value = rate.toFixed(2);
+                                monedaNombreInput.value = 'Bs.';
+                                monedaSimboloInput.value = 'Bs.';
+                                statusText.innerText = 'Tasa BCV cargada automáticamente desde internet.';
+                                statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
+                            } else {
+                                throw new Error('No se pudo obtener la tasa de Venezuela.');
+                            }
+
+                        } else if (tipo === 'trm') {
+                            const globalRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                            if (globalRes.ok) {
+                                const globalData = await globalRes.json();
+                                if (globalData.rates && globalData.rates.COP) {
+                                    rate = parseFloat(globalData.rates.COP);
+                                }
+                            }
+
+                            if (rate > 0) {
+                                tasaDolarInput.value = rate.toFixed(2);
+                                monedaNombreInput.value = 'COP';
+                                monedaSimboloInput.value = '$';
+                                statusText.innerText = 'Tasa TRM cargada automáticamente desde internet.';
+                                statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
+                            } else {
+                                throw new Error('No se pudo obtener la tasa de Colombia.');
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        statusText.innerText = 'Error al actualizar tasa. Ingresa el valor manual.';
+                        statusText.className = 'text-[11px] mt-1 text-red-500 font-semibold';
+                    }
+                }
+
+                tasaTipoSelect.addEventListener('change', () => {
+                    if (tasaTipoSelect.value !== 'manual') {
+                        fetchExchangeRate();
+                        tasaDolarInput.readOnly = true;
+                    } else {
+                        tasaDolarInput.readOnly = false;
+                        statusText.innerText = '';
+                    }
+                });
+
+                btnFetchTasa.addEventListener('click', () => {
+                    fetchExchangeRate(false);
+                });
+
+                if (tasaTipoSelect.value !== 'manual') {
+                    tasaDolarInput.readOnly = true;
+                    fetchExchangeRate(true);
+                }
+            });
+        </script>
     </div>
 <?php endif; ?>
 

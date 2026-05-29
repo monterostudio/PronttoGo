@@ -5,9 +5,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 <?php if ($es_admin): ?>
 <!-- Sidebar de Administrador -->
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 transition-transform duration-300 md:relative md:translate-x-0 flex flex-col">
-    <div class="h-20 flex items-center px-8 bg-slate-950 border-b border-slate-800">
-        <?= get_logo_svg('h-8 w-auto mr-3') ?>
-        <span class="text-white font-bold text-xl tracking-tight">PronttoGo</span>
+    <div class="h-20 flex items-center px-6 bg-slate-950 border-b border-slate-800">
+        <?= get_logo_svg('h-10 w-auto') ?>
     </div>
     
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
