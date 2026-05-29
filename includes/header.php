@@ -36,16 +36,17 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Favicons (Compatibles con Caché Búster) -->
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.svg?v=2">
+    <link rel="shortcut icon" href="/assets/img/favicon.svg?v=2">
+    <link rel="apple-touch-icon" href="/assets/img/favicon.svg?v=2">
 
     <?php if ($es_admin): ?>
         <!-- Alpine.js (Solo Admin) -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <?php else: ?>
-        <!-- Favicon y Estilos Dinámicos (Solo Público) -->
-        <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
-        <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.svg">
-        <link rel="shortcut icon" href="/assets/img/favicon.svg">
-        <link rel="apple-touch-icon" href="/assets/img/favicon.svg">
+        <!-- Estilos Dinámicos (Solo Público) -->
         <?php
         $color_niche = [
             'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#E0E7FF', 'hero-bg-to' => '#EEF2FF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
@@ -95,7 +96,9 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php else: ?>
                         <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                            <?= get_logo_svg('h-8 w-auto shrink-0') ?>
+                            <div class="max-w-[120px] sm:max-w-[140px] shrink-0">
+                                <?= get_logo_svg('w-full h-auto block') ?>
+                            </div>
                         <?php else: ?>
                             <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                         <?php endif; ?>

@@ -178,7 +178,9 @@ if (!is_admin_logged_in()): ?>
         <div class="absolute top-1/2 -right-32 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-xl w-full max-w-md relative z-10 border border-white">
             <div class="text-center mb-8">
-                <?= get_logo_svg('h-16 w-auto mb-4 mx-auto block drop-shadow-md') ?>
+                <div class="max-w-[200px] sm:max-w-[240px] mx-auto mb-4 drop-shadow-sm">
+                    <?= get_logo_svg('w-full h-auto block') ?>
+                </div>
                 <p class="text-slate-500 mt-2">Panel de Administración</p>
             </div>
             <?php if ($error): ?>
@@ -242,7 +244,7 @@ if (!is_admin_logged_in()): ?>
                     <div x-show="currentTab === 'config'" x-cloak class="space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <h2 class="text-2xl font-bold text-slate-800">Configuración del Local</h2>
-                            <a href="index.php" target="_blank" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+                            <a href="../" target="_blank" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
                                 <i class="bi bi-eye"></i> Ver Catálogo
                             </a>
                         </div>
@@ -348,11 +350,11 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="pt-4 text-right">
-                                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-md">
-                                        Guardar Cambios <i class="bi bi-save ml-1"></i>
-                                    </button>
-                                </div>
+                                <div class="pt-4 text-center sm:text-right">
+                                     <button type="submit" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-md">
+                                         Guardar Cambios <i class="bi bi-save ml-1"></i>
+                                     </button>
+                                 </div>
                             </form>
                         </div>
                     </div>
@@ -364,7 +366,8 @@ if (!is_admin_logged_in()): ?>
                                 <i class="bi bi-plus-lg"></i> Nueva Categoría
                             </button>
                         </div>
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <!-- Tabla para Escritorio -->
+                        <div class="hidden sm:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
@@ -394,6 +397,29 @@ if (!is_admin_logged_in()): ?>
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Tarjetas para Móvil -->
+                        <div class="block sm:hidden space-y-4">
+                            <?php if(empty($categorias)): ?>
+                                <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-slate-500">No hay categorías.</div>
+                            <?php else: ?>
+                                <?php foreach($categorias as $cat): ?>
+                                <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center justify-between gap-4">
+                                    <div class="space-y-1">
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Orden: <?= h($cat['orden_visual']) ?></div>
+                                        <div class="font-bold text-slate-800 text-base"><?= h($cat['nombre']) ?></div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button x-data @click="$dispatch('open-edit-cat', { id: <?= $cat['id'] ?>, nombre: '<?= h(addslashes($cat['nombre'])) ?>', orden: <?= $cat['orden_visual'] ?> })" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-2.5 rounded-xl transition-colors"><i class="bi bi-pencil-fill"></i></button>
+                                        <form method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría?');">
+                                            <?= $csrfField ?><input type="hidden" name="action" value="delete_category"><input type="hidden" name="id" value="<?= $cat['id'] ?>">
+                                            <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2.5 rounded-xl transition-colors"><i class="bi bi-trash-fill"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <div x-show="currentTab === 'productos'" x-cloak class="space-y-6">
@@ -403,7 +429,8 @@ if (!is_admin_logged_in()): ?>
                                 <i class="bi bi-plus-lg"></i> Nuevo Producto
                             </button>
                         </div>
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <!-- Tabla para Escritorio -->
+                        <div class="hidden sm:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse min-w-[600px]">
                                     <thead>
@@ -448,6 +475,55 @@ if (!is_admin_logged_in()): ?>
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Tarjetas para Móvil -->
+                        <div class="block sm:hidden space-y-4">
+                            <?php if(empty($productos)): ?>
+                                <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-slate-500">No hay productos disponibles.</div>
+                            <?php else: ?>
+                                <?php $catMap = []; foreach($categorias as $c) $catMap[$c['id']] = $c['nombre']; ?>
+                                <?php foreach($productos as $prod): ?>
+                                <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <?php if(!empty($prod['imagen_url'])): ?>
+                                            <img src="<?= h($prod['imagen_url']) ?>" alt="img" class="w-12 h-12 rounded-xl object-cover bg-slate-200 shrink-0">
+                                        <?php else: ?>
+                                            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="bi bi-image"></i></div>
+                                        <?php endif; ?>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="font-bold text-slate-800 text-sm truncate"><?= h($prod['nombre']) ?></div>
+                                            <div class="text-xs text-slate-500 mt-0.5"><span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold"><?= h($catMap[$prod['categoria_id']] ?? 'Sin Categoría') ?></span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between pt-1 border-t border-slate-50">
+                                        <div class="space-y-0.5">
+                                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Precio</div>
+                                            <div class="font-extrabold text-indigo-600 text-base">$<?= number_format($prod['precio_usd'], 2) ?></div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Estado</div>
+                                            <?php if($prod['disponible']): ?>
+                                                <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-xs font-bold border border-emerald-100"><i class="bi bi-check-circle-fill"></i> Activo</span>
+                                            <?php else: ?>
+                                                <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-0.5 rounded-md text-xs font-bold border border-red-100"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                                        <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url']]); ?>
+                                        <button x-data @click="$dispatch('open-edit-prod', <?= htmlspecialchars($jsonProd, ENT_QUOTES, 'UTF-8') ?>)" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 py-2 px-3 rounded-xl transition-colors text-xs font-bold flex items-center gap-1"><i class="bi bi-pencil-fill"></i> Editar</button>
+                                        <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar producto?');">
+                                            <?= $csrfField ?><input type="hidden" name="action" value="delete_product"><input type="hidden" name="id" value="<?= $prod['id'] ?>">
+                                            <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 py-2 px-3 rounded-xl transition-colors text-xs font-bold flex items-center gap-1"><i class="bi bi-trash-fill"></i> Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

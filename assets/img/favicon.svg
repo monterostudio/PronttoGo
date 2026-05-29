@@ -2,14 +2,14 @@
     <!-- Contenedor del carrito centrado y con el mismo skew de -11 grados del logo -->
     <g transform="translate(3.665, 11) skewX(-11)">
         <!-- Cuerpo de la cesta (Cian sólido) -->
-        <path d="M 16 24 H 28 L 38 52 H 76 L 86 24 H 32 Z" fill="#00CFBD" />
+        <path d="M 16 24 H 28 L 38 52 H 76 L 86 24 H 32 Z" fill="#4F46E5" />
         
         <!-- Asa de la cesta (Cian) -->
-        <line x1="28" y1="24" x2="18" y2="10" stroke="#00CFBD" stroke-width="5.5" stroke-linecap="round" />
+        <line x1="28" y1="24" x2="18" y2="10" stroke="#4F46E5" stroke-width="5.5" stroke-linecap="round" />
         
         <!-- Ruedas (Cian) -->
-        <circle cx="46" cy="62" r="6" fill="#00CFBD" />
-        <circle cx="68" cy="62" r="6" fill="#00CFBD" />
+        <circle cx="46" cy="62" r="6" fill="#4F46E5" />
+        <circle cx="68" cy="62" r="6" fill="#4F46E5" />
         
         <!-- Flecha y líneas de velocidad internas (Blanco) -->
         <g stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
