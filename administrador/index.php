@@ -136,9 +136,7 @@ if (!is_admin_logged_in()): ?>
         <div class="absolute top-1/2 -right-32 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-xl w-full max-w-md relative z-10 border border-white">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-2xl mb-4 shadow-lg">
-                    <i class="bi bi-box-seam text-3xl"></i>
-                </div>
+                <?= get_logo_svg('h-16 w-auto mb-4 mx-auto block drop-shadow-md') ?>
                 <h1 class="text-3xl font-bold text-slate-800 tracking-tight">PronttoGo</h1>
                 <p class="text-slate-500 mt-2">Panel de Administración</p>
             </div>
