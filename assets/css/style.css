@@ -1,0 +1,178 @@
+/* assets/css/style.css */
+/* Estilos base unificados */
+
+:root {
+    --primary-color: #e63946;
+    --secondary-color: #1d3557;
+    --bg-light: #f1faee;
+    --text-dark: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* =========================================
+   ESTILOS COMPARTIDOS
+   ========================================= */
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.public-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Público */
+.public-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.public-header nav ul {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Footer Compartido */
+.admin-footer, .public-footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    color: white;
+    margin-top: auto;
+}
+
+/* Sidebar Admin */
+.admin-sidebar {
+    width: 250px;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 2rem 1rem;
+}
+
+.admin-sidebar .sidebar-logo h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.admin-sidebar nav ul li {
+    margin-bottom: 1rem;
+}
+
+.admin-sidebar nav ul li a {
+    display: block;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.admin-sidebar nav ul li a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Main Content Admin */
+.admin-main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f4f6f9;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.widget {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+/* Main Content Público */
+.public-main-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.layout-container {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.public-sidebar {
+    width: 250px;
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.public-sidebar h3 {
+    margin-bottom: 1rem;
+}
+
+.content-area {
+    flex: 1;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.product-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+[x-cloak] { display: none !important; }
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Ocultar barra de desplazamiento manteniendo funcionalidad de scroll */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
