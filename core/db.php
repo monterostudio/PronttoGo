@@ -71,15 +71,24 @@ function fetch_automatic_rate(string $type): ?float {
     return null;
 }
 
-function get_logo_svg(string $class = 'h-8 w-auto'): string {
+function get_logo_svg(string $class = 'h-8 w-auto', bool $darkMode = false): string {
     $path = dirname(__DIR__) . '/assets/img/logo.svg';
     if (!file_exists($path)) {
         $path = dirname(__DIR__) . '/assets/logo.svg'; // Fallback for old path
         if (!file_exists($path)) {
-            return '<span style="font-weight:900;font-size:1.25rem;background:linear-gradient(to right,#10B981,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PronttoGo</span>';
+            return '<span style="font-weight:900;font-size:1.25rem;background:linear-gradient(to right,#4F46E5,#8B5CF6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PronttoGo</span>';
         }
     }
     $svg = file_get_contents($path);
+    
+    // Cambiar el viejo color turquesa (#00CFBD) por el definitivo de la app (Índigo #4F46E5)
+    $svg = str_replace('#00CFBD', '#4F46E5', $svg);
+    
+    // Si está en modo oscuro (fondo negro), el texto "Prontto" (#2A3543) pasa a ser blanco (#FFFFFF)
+    if ($darkMode) {
+        $svg = str_replace('#2A3543', '#FFFFFF', $svg);
+    }
+    
     return str_replace('width="100%" height="100%"', 'class="' . htmlspecialchars($class, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"', $svg);
 }
 

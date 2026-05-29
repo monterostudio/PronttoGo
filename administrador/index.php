@@ -331,11 +331,20 @@ if (!is_admin_logged_in()): ?>
                                             <input type="text" name="moneda_simbolo" id="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej. $, Bs., COP" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
-                                        <div class="relative">
-                                            <i class="bi bi-geo-alt absolute left-3 top-3.5 text-slate-400"></i>
-                                            <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
+                                            <div class="relative">
+                                                <i class="bi bi-geo-alt absolute left-3 top-3.5 text-slate-400"></i>
+                                                <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej. Calle Falsa 123, Ciudad" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Horario de Atención</label>
+                                            <div class="relative">
+                                                <i class="bi bi-clock absolute left-3 top-3.5 text-slate-400"></i>
+                                                <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lun a Sáb: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
