@@ -15,13 +15,13 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 :class="currentTab === 'config' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-white'"
                 class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium text-left">
             <i class="bi bi-gear-fill text-lg"></i>
-            ConfiguraciÃ³n
+            Configuración
         </button>
         <button @click="currentTab = 'categorias'; sidebarOpen = false" 
                 :class="currentTab === 'categorias' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-white'"
                 class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium text-left">
             <i class="bi bi-tags-fill text-lg"></i>
-            CategorÃ­as
+            Categorías
         </button>
         <button @click="currentTab = 'productos'; sidebarOpen = false" 
                 :class="currentTab === 'productos' ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-white'"
@@ -36,7 +36,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <?= isset($csrfField) ? $csrfField : '' ?>
             <input type="hidden" name="action" value="logout">
             <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 hover:bg-slate-800 hover:text-red-300 rounded-xl transition-colors text-sm font-medium">
-                <i class="bi bi-box-arrow-right"></i> Cerrar SesiÃ³n
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
             </button>
         </form>
     </div>
@@ -45,5 +45,5 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 <!-- Overlay mobile -->
 <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
 <?php else: ?>
-    <!-- No hay sidebar en la vista pÃºblica por ahora, pero se deja el espacio -->
+    <!-- No hay sidebar en la vista pública por ahora, pero se deja el espacio -->
 <?php endif; ?>

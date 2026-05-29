@@ -1,7 +1,7 @@
-﻿<?php
+<?php
 $es_admin = true;
 /**
- * PronttoGo - Panel de AdministraciÃƒÂ³n
+ * PronttoGo - Panel de Administración
  * Refactorizado (MVC)
  */
 
@@ -10,14 +10,14 @@ require_once __DIR__ . '/../core/auth.php';
 require_once __DIR__ . '/../core/db.php';
 
 $error = '';
-$success = isset($_GET['success']) ? 'OperaciÃƒÂ³n realizada con ÃƒÂ©xito.' : '';
+$success = isset($_GET['success']) ? 'Operación realizada con éxito.' : '';
 
 // Manejo de peticiones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
-        die("Error CSRF: Token invÃƒÂ¡lido o sesiÃƒÂ³n expirada.");
+        die("Error CSRF: Token inválido o sesión expirada.");
     }
     
     if ($action === 'login') {
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_logged_in'] = true;
             redirect('admin.php');
         } else {
-            $error = "Usuario o contraseÃƒÂ±a incorrectos.";
+            $error = "Usuario o contraseña incorrectos.";
         }
     }
     
@@ -140,7 +140,7 @@ if (!is_admin_logged_in()): ?>
                     <i class="bi bi-box-seam text-3xl"></i>
                 </div>
                 <h1 class="text-3xl font-bold text-slate-800 tracking-tight">PronttoGo</h1>
-                <p class="text-slate-500 mt-2">Panel de AdministraciÃƒÂ³n</p>
+                <p class="text-slate-500 mt-2">Panel de Administración</p>
             </div>
             <?php if ($error): ?>
                 <div class="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm flex items-center border border-red-100">
@@ -161,12 +161,12 @@ if (!is_admin_logged_in()): ?>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">ContraseÃƒÂ±a</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Contraseña</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="password" required class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none" placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢">
+                        <input type="password" name="password" required class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none" placeholder="••••••••">
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 mt-2">
@@ -203,9 +203,9 @@ if (!is_admin_logged_in()): ?>
 
                     <div x-show="currentTab === 'config'" x-cloak class="space-y-6">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-2xl font-bold text-slate-800">ConfiguraciÃƒÂ³n del Local</h2>
+                            <h2 class="text-2xl font-bold text-slate-800">Configuración del Local</h2>
                             <a href="index.php" target="_blank" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
-                                <i class="bi bi-eye"></i> Ver CatÃƒÂ¡logo
+                                <i class="bi bi-eye"></i> Ver Catálogo
                             </a>
                         </div>
                         
@@ -234,7 +234,7 @@ if (!is_admin_logged_in()): ?>
                                         <div class="relative">
                                             <i class="bi bi-briefcase absolute left-3 top-3.5 text-slate-400"></i>
                                             <select name="tipo_negocio" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
-                                                <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>GastronomÃƒÂ­a</option>
+                                                <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía</option>
                                                 <option value="retail" <?= ($config['tipo_negocio'] ?? '') === 'retail' ? 'selected' : '' ?>>Retail / Tienda</option>
                                             </select>
                                         </div>
@@ -257,14 +257,14 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">SÃƒÂ­mbolo Moneda Local</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Símbolo Moneda Local</label>
                                         <div class="relative">
                                             <i class="bi bi-coin absolute left-3 top-3.5 text-slate-400"></i>
                                             <input type="text" name="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">DirecciÃƒÂ³n del Local</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
                                         <div class="relative">
                                             <i class="bi bi-geo-alt absolute left-3 top-3.5 text-slate-400"></i>
                                             <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -282,9 +282,9 @@ if (!is_admin_logged_in()): ?>
 
                     <div x-show="currentTab === 'categorias'" x-cloak class="space-y-6">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-2xl font-bold text-slate-800">CategorÃƒÂ­as</h2>
+                            <h2 class="text-2xl font-bold text-slate-800">Categorías</h2>
                             <button x-data @click="$dispatch('open-modal', 'modal-cat-new')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2">
-                                <i class="bi bi-plus-lg"></i> Nueva CategorÃƒÂ­a
+                                <i class="bi bi-plus-lg"></i> Nueva Categoría
                             </button>
                         </div>
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -298,7 +298,7 @@ if (!is_admin_logged_in()): ?>
                                 </thead>
                                 <tbody>
                                     <?php if(empty($categorias)): ?>
-                                        <tr><td colspan="3" class="p-6 text-center text-slate-500">No hay categorÃƒÂ­as.</td></tr>
+                                        <tr><td colspan="3" class="p-6 text-center text-slate-500">No hay categorías.</td></tr>
                                     <?php else: ?>
                                         <?php foreach($categorias as $cat): ?>
                                         <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
@@ -306,7 +306,7 @@ if (!is_admin_logged_in()): ?>
                                             <td class="p-4 font-semibold text-slate-800"><?= h($cat['nombre']) ?></td>
                                             <td class="p-4 text-right space-x-2">
                                                 <button x-data @click="$dispatch('open-edit-cat', { id: <?= $cat['id'] ?>, nombre: '<?= h(addslashes($cat['nombre'])) ?>', orden: <?= $cat['orden_visual'] ?> })" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-colors"><i class="bi bi-pencil-fill"></i></button>
-                                                <form method="POST" class="inline" onsubmit="return confirm('Ã‚Â¿Seguro que deseas eliminar esta categorÃƒÂ­a?');">
+                                                <form method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría?');">
                                                     <?= $csrfField ?><input type="hidden" name="action" value="delete_category"><input type="hidden" name="id" value="<?= $cat['id'] ?>">
                                                     <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors"><i class="bi bi-trash-fill"></i></button>
                                                 </form>
@@ -332,7 +332,7 @@ if (!is_admin_logged_in()): ?>
                                     <thead>
                                         <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
                                             <th class="p-4 font-semibold">Producto</th>
-                                            <th class="p-4 font-semibold">CategorÃƒÂ­a</th>
+                                            <th class="p-4 font-semibold">Categoría</th>
                                             <th class="p-4 font-semibold">Precio (USD)</th>
                                             <th class="p-4 font-semibold text-center">Estado</th>
                                             <th class="p-4 font-semibold text-right">Acciones</th>
@@ -351,7 +351,7 @@ if (!is_admin_logged_in()): ?>
                                                         <div class="font-semibold text-slate-800"><?= h($prod['nombre']) ?></div>
                                                     </div>
                                                 </td>
-                                                <td class="p-4 text-slate-600 text-sm"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md"><?= h($catMap[$prod['categoria_id']] ?? 'Sin CategorÃƒÂ­a') ?></span></td>
+                                                <td class="p-4 text-slate-600 text-sm"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md"><?= h($catMap[$prod['categoria_id']] ?? 'Sin Categoría') ?></span></td>
                                                 <td class="p-4 font-bold text-indigo-600">$<?= number_format($prod['precio_usd'], 2) ?></td>
                                                 <td class="p-4 text-center">
                                                     <?php if($prod['disponible']): ?><span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md text-xs font-bold border border-emerald-100"><i class="bi bi-check-circle-fill"></i> Activo</span><?php else: ?><span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-1 rounded-md text-xs font-bold border border-red-100"><i class="bi bi-x-circle-fill"></i> Inactivo</span><?php endif; ?>
@@ -359,7 +359,7 @@ if (!is_admin_logged_in()): ?>
                                                 <td class="p-4 text-right space-x-2">
                                                     <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url']]); ?>
                                                     <button x-data @click="$dispatch('open-edit-prod', <?= htmlspecialchars($jsonProd, ENT_QUOTES, 'UTF-8') ?>)" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-colors"><i class="bi bi-pencil-fill"></i></button>
-                                                    <form method="POST" class="inline" onsubmit="return confirm('Ã‚Â¿Eliminar producto?');">
+                                                    <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar producto?');">
                                                         <?= $csrfField ?><input type="hidden" name="action" value="delete_product"><input type="hidden" name="id" value="<?= $prod['id'] ?>">
                                                         <button type="submit" class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors"><i class="bi bi-trash-fill"></i></button>
                                                     </form>
@@ -380,7 +380,7 @@ if (!is_admin_logged_in()): ?>
         <div x-data="{ open: false }" @open-modal.window="if ($event.detail === 'modal-cat-new') open = true" x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center">
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 p-6 transform transition-all">
-                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Nueva CategorÃƒÂ­a</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
+                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Nueva Categoría</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
                 <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="create_category">
                     <div><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
@@ -393,7 +393,7 @@ if (!is_admin_logged_in()): ?>
         <div x-data="{ open: false, cat: {id:'', nombre:'', orden:0} }" @open-edit-cat.window="cat = $event.detail; open = true" x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center">
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 p-6 transform transition-all">
-                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Editar CategorÃƒÂ­a</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
+                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Editar Categoría</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
                 <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="update_category"><input type="hidden" name="id" x-model="cat.id">
                     <div><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" x-model="cat.nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
@@ -412,9 +412,9 @@ if (!is_admin_logged_in()): ?>
                     <div class="flex items-center gap-2 mb-4"><input type="checkbox" name="disponible" id="disp_new" value="1" checked class="w-4 h-4 text-indigo-600 rounded"><label for="disp_new" class="font-semibold text-sm">Producto Disponible</label></div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
-                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">DescripciÃƒÂ³n</label><textarea name="descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Descripción</label><textarea name="descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
                         <div><label class="block text-sm font-semibold mb-1">Precio (USD)</label><input type="number" step="0.01" name="precio_usd" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
-                        <div><label class="block text-sm font-semibold mb-1">CategorÃƒÂ­a</label><select name="categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
+                        <div><label class="block text-sm font-semibold mb-1">Categoría</label><select name="categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
                     </div>
                     <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl">Guardar Producto</button>
@@ -431,9 +431,9 @@ if (!is_admin_logged_in()): ?>
                     <div class="flex items-center gap-2 mb-4"><input type="checkbox" name="disponible" id="disp_edit" value="1" x-model="prod.disponible" class="w-4 h-4 text-indigo-600 rounded"><label for="disp_edit" class="font-semibold text-sm">Producto Disponible</label></div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" x-model="prod.nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
-                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">DescripciÃƒÂ³n</label><textarea name="descripcion" x-model="prod.descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
+                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Descripción</label><textarea name="descripcion" x-model="prod.descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
                         <div><label class="block text-sm font-semibold mb-1">Precio (USD)</label><input type="number" step="0.01" name="precio_usd" x-model="prod.precio_usd" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
-                        <div><label class="block text-sm font-semibold mb-1">CategorÃƒÂ­a</label><select name="categoria_id" x-model="prod.categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
+                        <div><label class="block text-sm font-semibold mb-1">Categoría</label><select name="categoria_id" x-model="prod.categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" x-model="prod.imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
                     </div>
                     <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl">Actualizar Producto</button>
