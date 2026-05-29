@@ -154,8 +154,8 @@ function saveCart(cart) {
 
 function addToCart(product, event) {
     const evt = event || window.event;
-    addToCartWithDetails(product, 1, '');
-    if (evt && evt.target) {
+    const success = addToCartWithDetails(product, 1, '');
+    if (success && evt && evt.target) {
         triggerFlyAnimation(evt.target);
     }
 }
@@ -163,8 +163,21 @@ function addToCart(product, event) {
 // Agregar al carrito con detalles (notas y cantidad)
 function addToCartWithDetails(product, quantity, notes) {
     let cart = getCart();
-    const existingItem = cart.find(item => item.id === product.id && (item.notes || '') === (notes || ''));
     
+    // Calcular cantidad total actual de este producto en el carrito
+    const currentQtyInCart = cart
+        .filter(item => item.id === product.id)
+        .reduce((sum, item) => sum + item.quantity, 0);
+    const targetQty = currentQtyInCart + quantity;
+    if (product.stock !== undefined && product.stock !== null) {
+        const stockVal = parseInt(product.stock);
+        if (targetQty > stockVal) {
+            alert(`Lo sentimos, no puedes agregar más de ${stockVal} unidades de este producto (disponibles: ${stockVal}, en tu pedido actual: ${currentQtyInCart}).`);
+            return false;
+        }
+    }
+    
+    const existingItem = cart.find(item => item.id === product.id && (item.notes || '') === (notes || ''));
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
@@ -173,7 +186,8 @@ function addToCartWithDetails(product, quantity, notes) {
             nombre: product.nombre,
             precio: parseFloat(product.precio),
             quantity: quantity,
-            notes: notes || ''
+            notes: notes || '',
+            stock: product.stock !== undefined ? product.stock : null
         });
     }
     saveCart(cart);
@@ -183,12 +197,24 @@ function addToCartWithDetails(product, quantity, notes) {
         bar.classList.add('scale-105');
         setTimeout(() => bar.classList.remove('scale-105'), 150);
     }
+    return true;
 }
 
 function updateQuantity(productId, change, notes = '') {
     let cart = getCart();
     const item = cart.find(item => item.id === productId && (item.notes || '') === (notes || ''));
     if (!item) return;
+
+    if (change > 0 && item.stock !== undefined && item.stock !== null) {
+        const stockVal = parseInt(item.stock);
+        const totalQtyInCart = cart
+            .filter(i => i.id === productId)
+            .reduce((sum, i) => sum + i.quantity, 0);
+        if (totalQtyInCart + change > stockVal) {
+            alert(`No puedes agregar más unidades. El stock máximo disponible para este producto es ${stockVal}.`);
+            return;
+        }
+    }
 
     item.quantity += change;
     if (item.quantity <= 0) {
@@ -495,13 +521,22 @@ function checkoutOrder() {
     const tasaDolar = pronttogoConfig.tasaDolar;
     const monedaNombre = pronttogoConfig.monedaNombre;
     const tasaTipo = pronttogoConfig.tasaTipo;
-    let localTotalText = "";
+    let formattedLocal = "";
     if (tasaDolar > 1) {
         const totalLocal = grandTotal * tasaDolar;
-        const formattedLocal = tasaTipo === 'trm' 
+        formattedLocal = tasaTipo === 'trm' 
             ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
             : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        localTotalText = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})\n`;
+    }
+
+    const storeName = pronttogoConfig.nombre;
+    const subtotalUsd = `$${totalPrice.toFixed(2)}`;
+    const costoEnvio = deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Gratis / Retiro';
+    const totalUsd = `$${grandTotal.toFixed(2)}`;
+    
+    let totalMonedaLocal = "";
+    if (tasaDolar > 1) {
+        totalMonedaLocal = `*Total en ${monedaNombre}: ${monedaNombre} ${formattedLocal}* (tasa: ${tasaDolar.toFixed(2)})`;
     }
 
     let deliveryText = "";
@@ -511,20 +546,35 @@ function checkoutOrder() {
         deliveryText = `📦 *Despacho:* Retiro en local`;
     }
 
-    // Formato exacto del mensaje de WhatsApp (usando emojis de texto legibles para WhatsApp)
-    const storeName = pronttogoConfig.nombre;
-    const message = `*Pedido de ${storeName}* 🛍️\n` +
-                    `--------------------------\n` +
-                    `👤 *Cliente:* ${clientName}\n` +
-                    `${deliveryText}\n` +
-                    `💸 *Pago:* ${clientPayment}\n` +
-                    `--------------------------\n` +
-                    `${itemsText}` +
-                    `--------------------------\n` +
-                    `*Subtotal:* $${totalPrice.toFixed(2)}\n` +
-                    (deliveryFee > 0 ? `*Envío:* $${deliveryFee.toFixed(2)}\n` : '') +
-                    `*Total a pagar: $${grandTotal.toFixed(2)}*\n` +
-                    localTotalText;
+    let message = pronttogoConfig.plantillaWhatsapp || "";
+    
+    if (!message) {
+        // Usar plantilla por defecto si está vacía
+        message = `*Pedido de {nombre_comercio}* 🛍️\n` +
+                  `--------------------------\n` +
+                  `👤 *Cliente:* {nombre_cliente}\n` +
+                  `{tipo_despacho}\n` +
+                  `💸 *Pago:* {metodo_pago}\n` +
+                  `--------------------------\n` +
+                  `{detalles_pedido}` +
+                  `--------------------------\n` +
+                  `*Subtotal:* {subtotal_usd}\n` +
+                  (deliveryFee > 0 ? `*Envío:* {costo_envio}\n` : '') +
+                  `*Total a pagar: {total_usd}*\n` +
+                  (totalMonedaLocal ? `${totalMonedaLocal}\n` : '');
+    }
+
+    // Reemplazar comodines
+    message = message
+        .replace(/{nombre_comercio}/g, storeName)
+        .replace(/{nombre_cliente}/g, clientName)
+        .replace(/{tipo_despacho}/g, deliveryText)
+        .replace(/{metodo_pago}/g, clientPayment)
+        .replace(/{detalles_pedido}/g, itemsText)
+        .replace(/{subtotal_usd}/g, subtotalUsd)
+        .replace(/{costo_envio}/g, costoEnvio)
+        .replace(/{total_usd}/g, totalUsd)
+        .replace(/{total_moneda_local}/g, totalMonedaLocal);
 
     const encodedText = encodeURIComponent(message);
     const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;

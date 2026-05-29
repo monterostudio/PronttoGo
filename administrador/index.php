@@ -81,10 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($trm > 0) $tasa_dolar = $trm;
             }
 
+            $tipo_negocio = $_POST['tipo_negocio'] ?? 'gastronomia';
+
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
                 'telefono_whatsapp' => $_POST['telefono_whatsapp'] ?? '',
-                'tipo_negocio' => $_POST['tipo_negocio'] ?? 'gastronomia',
+                'logo_url' => empty($_POST['logo_url']) ? null : $_POST['logo_url'],
+                'color_primario' => $_POST['color_primario'] ?? '#4F46E5',
+                'plantilla_whatsapp' => empty($_POST['plantilla_whatsapp']) ? null : $_POST['plantilla_whatsapp'],
+                'tipo_negocio' => $tipo_negocio,
                 'tasa_dolar' => $tasa_dolar,
                 'tasa_tipo' => $tasa_tipo,
                 'moneda_nombre' => $_POST['moneda_nombre'] ?? 'USD',
@@ -94,7 +99,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'horario' => $_POST['horario'] ?? ''
             ];
             supabase_request('PATCH', 'configuracion?id=eq.1', $data);
+
+            // AUTO-PRECARGAR CATEGORÍAS SI LA LISTA ESTÁ TOTALMENTE VACÍA
+            $resCat = supabase_request('GET', 'categorias?limit=1');
+            if ($resCat['success'] && empty($resCat['data'])) {
+                // Intentar obtener desde la base de datos (tabla categorias_predeterminadas)
+                $resPred = supabase_request('GET', 'categorias_predeterminadas?tipo_negocio=eq.' . urlencode($tipo_negocio) . '&order=orden_visual.asc');
+                
+                $cats = [];
+                if ($resPred['success'] && !empty($resPred['data'])) {
+                    foreach ($resPred['data'] as $p) {
+                        $cats[] = $p['nombre'];
+                    }
+                }
+                
+                // Fallback por si acaso no han corrido la migración de la tabla predeterminadas
+                if (empty($cats)) {
+                    $categorias_defecto = [
+                        'gastronomia' => ['Entradas', 'Platos Principales', 'Postres', 'Bebidas'],
+                        'comida_rapida' => ['Hamburguesas', 'Perros Calientes', 'Pizzas', 'Bebidas y Combos'],
+                        'minimarket' => ['Víveres y Alimentos', 'Charcutería y Lácteos', 'Bebidas y Licores', 'Limpieza y Hogar'],
+                        'farmacia' => ['Medicamentos', 'Cuidado Personal', 'Bienestar y Suplementos', 'Bebés y Maternidad'],
+                        'boutique' => ['Damas', 'Caballeros', 'Niños', 'Calzado', 'Accesorios'],
+                        'ferreteria_repuestos' => ['Herramientas', 'Electricidad', 'Plomería', 'Repuestos y Tornillos'],
+                        'belleza_estetica' => ['Cuidado Capilar', 'Maquillaje', 'Cuidado de la Piel', 'Perfumería'],
+                        'otros' => ['Productos Generales', 'Ofertas Especiales', 'Nuevos Ingresos']
+                    ];
+                    $cats = $categorias_defecto[$tipo_negocio] ?? $categorias_defecto['gastronomia'];
+                }
+
+                foreach ($cats as $idx => $catName) {
+                    $catData = [
+                        'nombre' => $catName,
+                        'nombre_categoria' => $catName, // Compatibilidad doble de nombre de columna
+                        'orden_visual' => ($idx + 1) * 10
+                    ];
+                    supabase_request('POST', 'categorias', $catData);
+                }
+            }
             redirect('admin.php?tab=config&success=1');
+        }
+
+        if ($action === 'load_default_categories') {
+            // Cargar configuración actual para saber el tipo de negocio
+            $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
+            $config_temp = ($resConfig['success'] && !empty($resConfig['data'])) ? $resConfig['data'][0] : [];
+            $tipo_negocio = $config_temp['tipo_negocio'] ?? 'gastronomia';
+            
+            // Intentar obtener desde la base de datos (tabla categorias_predeterminadas)
+            $resPred = supabase_request('GET', 'categorias_predeterminadas?tipo_negocio=eq.' . urlencode($tipo_negocio) . '&order=orden_visual.asc');
+            
+            $cats = [];
+            if ($resPred['success'] && !empty($resPred['data'])) {
+                foreach ($resPred['data'] as $p) {
+                    $cats[] = $p['nombre'];
+                }
+            }
+            
+            // Fallback por si acaso no han corrido la migración de la tabla predeterminadas
+            if (empty($cats)) {
+                $categorias_defecto = [
+                    'gastronomia' => ['Entradas', 'Platos Principales', 'Postres', 'Bebidas'],
+                    'comida_rapida' => ['Hamburguesas', 'Perros Calientes', 'Pizzas', 'Bebidas y Combos'],
+                    'minimarket' => ['Víveres y Alimentos', 'Charcutería y Lácteos', 'Bebidas y Licores', 'Limpieza y Hogar'],
+                    'farmacia' => ['Medicamentos', 'Cuidado Personal', 'Bienestar y Suplementos', 'Bebés y Maternidad'],
+                    'boutique' => ['Damas', 'Caballeros', 'Niños', 'Calzado', 'Accesorios'],
+                    'ferreteria_repuestos' => ['Herramientas', 'Electricidad', 'Plomería', 'Repuestos y Tornillos'],
+                    'belleza_estetica' => ['Cuidado Capilar', 'Maquillaje', 'Cuidado de la Piel', 'Perfumería'],
+                    'otros' => ['Productos Generales', 'Ofertas Especiales', 'Nuevos Ingresos']
+                ];
+                $cats = $categorias_defecto[$tipo_negocio] ?? $categorias_defecto['gastronomia'];
+            }
+            
+            // Verificar que no existan categorías previas para evitar duplicidad accidental
+            $resCatCheck = supabase_request('GET', 'categorias?limit=1');
+            if ($resCatCheck['success'] && empty($resCatCheck['data'])) {
+                foreach ($cats as $idx => $catName) {
+                    $catData = [
+                        'nombre' => $catName,
+                        'nombre_categoria' => $catName, // Compatibilidad doble de nombre de columna
+                        'orden_visual' => ($idx + 1) * 10
+                    ];
+                    supabase_request('POST', 'categorias', $catData);
+                }
+            }
+            redirect('admin.php?tab=categorias&success=1');
         }
         
         if ($action === 'create_category') {
@@ -117,13 +206,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if ($action === 'create_product') {
+            $stock = (isset($_POST['stock']) && $_POST['stock'] !== '') ? intval($_POST['stock']) : null;
+            if ($stock !== null && $stock < 0) {
+                die("Error: El stock no puede ser un número negativo.");
+            }
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
                 'descripcion' => $_POST['descripcion'] ?? '',
-                'precio_usd' => floatval($_POST['precio_usd'] ?? 0),
+                'precio' => floatval($_POST['precio_usd'] ?? 0),
+                'precio_usd' => floatval($_POST['precio_usd'] ?? 0), // Compatibilidad doble de columna
                 'categoria_id' => intval($_POST['categoria_id'] ?? 0),
                 'disponible' => isset($_POST['disponible']) ? true : false,
-                'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url']
+                'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url'],
+                'stock' => $stock
             ];
             supabase_request('POST', 'productos', $data);
             redirect('admin.php?tab=productos&success=1');
@@ -131,13 +226,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($action === 'update_product') {
             $id = intval($_POST['id']);
+            $stock = (isset($_POST['stock']) && $_POST['stock'] !== '') ? intval($_POST['stock']) : null;
+            if ($stock !== null && $stock < 0) {
+                die("Error: El stock no puede ser un número negativo.");
+            }
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
                 'descripcion' => $_POST['descripcion'] ?? '',
-                'precio_usd' => floatval($_POST['precio_usd'] ?? 0),
+                'precio' => floatval($_POST['precio_usd'] ?? 0),
+                'precio_usd' => floatval($_POST['precio_usd'] ?? 0), // Compatibilidad doble de columna
                 'categoria_id' => intval($_POST['categoria_id'] ?? 0),
                 'disponible' => isset($_POST['disponible']) ? true : false,
-                'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url']
+                'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url'],
+                'stock' => $stock
             ];
             supabase_request('PATCH', 'productos?id=eq.' . $id, $data);
             redirect('admin.php?tab=productos&success=1');
@@ -258,23 +359,43 @@ if (!is_admin_logged_in()): ?>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Comercial</label>
                                         <div class="relative">
-                                            <i class="bi bi-shop absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-shop absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <input type="text" name="nombre" value="<?= h($config['nombre'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">WhatsApp para Pedidos</label>
                                         <div class="relative">
-                                            <i class="bi bi-whatsapp absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">URL del Logotipo (Imagen)</label>
+                                        <div class="relative">
+                                            <i class="bi bi-image absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png (Vacío usa PronttoGo)" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Personalizado)</label>
+                                        <div class="flex gap-2">
+                                            <div class="relative flex-1">
+                                                <i class="bi bi-palette absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                <input type="text" id="color_text" name="color_primario" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" placeholder="#4F46E5" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-mono">
+                                            </div>
+                                            <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
                                         <div class="relative">
-                                            <i class="bi bi-briefcase absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-briefcase absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <select name="tipo_negocio" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white">
                                                 <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía / Restaurante</option>
+                                                <option value="comida_rapida" <?= ($config['tipo_negocio'] ?? '') === 'comida_rapida' ? 'selected' : '' ?>>Comida Rápida / Callejera</option>
+                                                <option value="minimarket" <?= ($config['tipo_negocio'] ?? '') === 'minimarket' ? 'selected' : '' ?>>Minimarket / Supermercado</option>
+                                                <option value="farmacia" <?= ($config['tipo_negocio'] ?? '') === 'farmacia' ? 'selected' : '' ?>>Farmacia / Salud</option>
                                                 <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>Boutique / Tienda de Ropa</option>
                                                 <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>Ferretería y Repuestos</option>
                                                 <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>Belleza y Estética</option>
@@ -288,7 +409,7 @@ if (!is_admin_logged_in()): ?>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery (USD)</label>
                                         <div class="relative">
-                                            <i class="bi bi-bicycle absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-bicycle absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
@@ -298,7 +419,7 @@ if (!is_admin_logged_in()): ?>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Modo de Tasa de Cambio</label>
                                         <div class="relative">
-                                            <i class="bi bi-gear-wide-connected absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-gear-wide-connected absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
                                                 <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Manual (Ingresada por ti)</option>
                                                 <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automática BCV (Bolívares - Venezuela)</option>
@@ -310,7 +431,7 @@ if (!is_admin_logged_in()): ?>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa (USD a Local)</label>
                                         <div class="relative flex gap-2">
                                             <div class="relative flex-1">
-                                                <i class="bi bi-currency-exchange absolute left-3 top-3.5 text-slate-400"></i>
+                                                <i class="bi bi-currency-exchange absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                             </div>
                                             <button type="button" id="btn-fetch-tasa" class="bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 px-3.5 rounded-xl transition-all flex items-center justify-center shrink-0" title="Consultar tasa ahora por internet">
@@ -322,14 +443,14 @@ if (!is_admin_logged_in()): ?>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Moneda Local</label>
                                         <div class="relative">
-                                            <i class="bi bi-cash-stack absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-cash-stack absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <input type="text" name="moneda_nombre" id="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej. Bs., COP, USD" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Símbolo Moneda Local</label>
                                         <div class="relative">
-                                            <i class="bi bi-coin absolute left-3 top-3.5 text-slate-400"></i>
+                                            <i class="bi bi-coin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                             <input type="text" name="moneda_simbolo" id="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej. $, Bs., COP" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
@@ -337,15 +458,42 @@ if (!is_admin_logged_in()): ?>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
                                             <div class="relative">
-                                                <i class="bi bi-geo-alt absolute left-3 top-3.5 text-slate-400"></i>
+                                                <i class="bi bi-geo-alt absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej. Calle Falsa 123, Ciudad" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Horario de Atención</label>
                                             <div class="relative">
-                                                <i class="bi bi-clock absolute left-3 top-3.5 text-slate-400"></i>
+                                                <i class="bi bi-clock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                                                 <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lun a Sáb: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <hr class="my-2 border-slate-100">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Plantilla del Mensaje de WhatsApp</label>
+                                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                            <div class="lg:col-span-2 relative">
+                                                <textarea name="plantilla_whatsapp" rows="8" placeholder="Escribe el formato de tu mensaje de WhatsApp aquí... (Vacío usa la plantilla por defecto)" class="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm leading-relaxed"><?= h($config['plantilla_whatsapp'] ?? '') ?></textarea>
+                                            </div>
+                                            <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-3">
+                                                <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1.5"><i class="bi bi-info-circle-fill"></i> Comodines Disponibles</h4>
+                                                <p class="text-slate-500 text-[11px] leading-relaxed">Copia y pega estos comodines en tu plantilla. Se reemplazarán automáticamente con los datos del pedido:</p>
+                                                <div class="grid grid-cols-1 gap-1.5 text-[10px] font-semibold text-slate-600 font-mono">
+                                                    <div><span class="text-indigo-600 font-bold">{nombre_comercio}</span>: Nombre local</div>
+                                                    <div><span class="text-indigo-600 font-bold">{nombre_cliente}</span>: Nombre cliente</div>
+                                                    <div><span class="text-indigo-600 font-bold">{tipo_despacho}</span>: Envío / Retiro</div>
+                                                    <div><span class="text-indigo-600 font-bold">{metodo_pago}</span>: Forma de pago</div>
+                                                    <div><span class="text-indigo-600 font-bold">{detalles_pedido}</span>: Lista de productos</div>
+                                                    <div><span class="text-indigo-600 font-bold">{subtotal_usd}</span>: Subtotal en USD</div>
+                                                    <div><span class="text-indigo-600 font-bold">{costo_envio}</span>: Costo delivery</div>
+                                                    <div><span class="text-indigo-600 font-bold">{total_usd}</span>: Total en USD</div>
+                                                    <div><span class="text-indigo-600 font-bold">{total_moneda_local}</span>: Total local</div>
+                                                </div>
+                                                <p class="text-slate-400 text-[9px] leading-relaxed italic pt-1 border-t border-slate-200/50">Si dejas el campo vacío, se usará la plantilla estándar de PronttoGo.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -366,20 +514,36 @@ if (!is_admin_logged_in()): ?>
                                 <i class="bi bi-plus-lg"></i> Nueva Categoría
                             </button>
                         </div>
-                        <!-- Tabla para Escritorio -->
-                        <div class="hidden sm:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
-                                        <th class="p-4 font-semibold">Orden</th>
-                                        <th class="p-4 font-semibold">Nombre</th>
-                                        <th class="p-4 font-semibold text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if(empty($categorias)): ?>
-                                        <tr><td colspan="3" class="p-6 text-center text-slate-500">No hay categorías.</td></tr>
-                                    <?php else: ?>
+                        <?php if(empty($categorias)): ?>
+                            <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
+                                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                                    <i class="bi bi-folder-plus"></i>
+                                </div>
+                                <div class="max-w-md mx-auto space-y-1">
+                                    <h3 class="text-lg font-bold text-slate-800">Crea tus Categorías</h3>
+                                    <p class="text-sm text-slate-500">Organiza tus productos en secciones. Puedes agregarlas manualmente o precargar las sugeridas para tu tipo de negocio.</p>
+                                </div>
+                                <form method="POST" action="admin.php?tab=categorias" class="pt-2">
+                                    <?= $csrfField ?>
+                                    <input type="hidden" name="action" value="load_default_categories">
+                                    <button type="submit" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 mx-auto">
+                                        <i class="bi bi-magic"></i> Precargar categorías de 
+                                        <span class="capitalize"><?= h(str_replace('_', ' ', $config['tipo_negocio'] ?? 'gastronomia')) ?></span>
+                                    </button>
+                                </form>
+                            </div>
+                        <?php else: ?>
+                            <!-- Tabla para Escritorio -->
+                            <div class="hidden sm:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
+                                            <th class="p-4 font-semibold">Orden</th>
+                                            <th class="p-4 font-semibold">Nombre</th>
+                                            <th class="p-4 font-semibold text-right">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <?php foreach($categorias as $cat): ?>
                                         <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                             <td class="p-4 text-slate-600"><?= h($cat['orden_visual']) ?></td>
@@ -393,16 +557,12 @@ if (!is_admin_logged_in()): ?>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        <!-- Tarjetas para Móvil -->
-                        <div class="block sm:hidden space-y-4">
-                            <?php if(empty($categorias)): ?>
-                                <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-slate-500">No hay categorías.</div>
-                            <?php else: ?>
+                            <!-- Tarjetas para Móvil -->
+                            <div class="block sm:hidden space-y-4">
                                 <?php foreach($categorias as $cat): ?>
                                 <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center justify-between gap-4">
                                     <div class="space-y-1">
@@ -418,8 +578,8 @@ if (!is_admin_logged_in()): ?>
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div x-show="currentTab === 'productos'" x-cloak class="space-y-6">
@@ -438,13 +598,14 @@ if (!is_admin_logged_in()): ?>
                                             <th class="p-4 font-semibold">Producto</th>
                                             <th class="p-4 font-semibold">Categoría</th>
                                             <th class="p-4 font-semibold">Precio (USD)</th>
+                                            <th class="p-4 font-semibold text-center">Stock</th>
                                             <th class="p-4 font-semibold text-center">Estado</th>
                                             <th class="p-4 font-semibold text-right">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php if(empty($productos)): ?>
-                                            <tr><td colspan="5" class="p-6 text-center text-slate-500">No hay productos disponibles.</td></tr>
+                                            <tr><td colspan="6" class="p-6 text-center text-slate-500">No hay productos disponibles.</td></tr>
                                         <?php else: ?>
                                             <?php $catMap = []; foreach($categorias as $c) $catMap[$c['id']] = $c['nombre']; ?>
                                             <?php foreach($productos as $prod): ?>
@@ -458,10 +619,29 @@ if (!is_admin_logged_in()): ?>
                                                 <td class="p-4 text-slate-600 text-sm"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md"><?= h($catMap[$prod['categoria_id']] ?? 'Sin Categoría') ?></span></td>
                                                 <td class="p-4 font-bold text-indigo-600">$<?= number_format($prod['precio_usd'], 2) ?></td>
                                                 <td class="p-4 text-center">
+                                                    <?php if($prod['stock'] === null): ?>
+                                                        <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-xs font-bold border border-slate-200" title="Stock Ilimitado">
+                                                            <i class="bi bi-infinity"></i> Ilimitado
+                                                        </span>
+                                                    <?php elseif($prod['stock'] <= 0): ?>
+                                                        <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-0.5 rounded-md text-xs font-bold border border-red-100">
+                                                            Agotado
+                                                        </span>
+                                                    <?php elseif($prod['stock'] <= 5): ?>
+                                                        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md text-xs font-bold border border-amber-100" title="Stock Crítico: requiere reposición">
+                                                            <i class="bi bi-exclamation-triangle-fill"></i> Bajo: <?= $prod['stock'] ?>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-xs font-bold border border-emerald-100">
+                                                            <?= $prod['stock'] ?> disp.
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="p-4 text-center">
                                                     <?php if($prod['disponible']): ?><span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md text-xs font-bold border border-emerald-100"><i class="bi bi-check-circle-fill"></i> Activo</span><?php else: ?><span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-1 rounded-md text-xs font-bold border border-red-100"><i class="bi bi-x-circle-fill"></i> Inactivo</span><?php endif; ?>
                                                 </td>
                                                 <td class="p-4 text-right space-x-2">
-                                                    <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url']]); ?>
+                                                    <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url'],'stock' => $prod['stock']]); ?>
                                                     <button x-data @click="$dispatch('open-edit-prod', <?= htmlspecialchars($jsonProd, ENT_QUOTES, 'UTF-8') ?>)" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-colors"><i class="bi bi-pencil-fill"></i></button>
                                                     <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar producto?');">
                                                         <?= $csrfField ?><input type="hidden" name="action" value="delete_product"><input type="hidden" name="id" value="<?= $prod['id'] ?>">
@@ -496,23 +676,39 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                     </div>
                                     
-                                    <div class="flex items-center justify-between pt-1 border-t border-slate-50">
+                                    <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-50 items-center">
                                         <div class="space-y-0.5">
                                             <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Precio</div>
                                             <div class="font-extrabold text-indigo-600 text-base">$<?= number_format($prod['precio_usd'], 2) ?></div>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Estado</div>
-                                            <?php if($prod['disponible']): ?>
-                                                <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-xs font-bold border border-emerald-100"><i class="bi bi-check-circle-fill"></i> Activo</span>
-                                            <?php else: ?>
-                                                <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-0.5 rounded-md text-xs font-bold border border-red-100"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
-                                            <?php endif; ?>
+                                        <div class="text-center space-y-0.5">
+                                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Stock</div>
+                                            <div>
+                                                <?php if($prod['stock'] === null): ?>
+                                                    <span class="inline-flex items-center gap-0.5 bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md text-[10px] font-bold border border-slate-200"><i class="bi bi-infinity"></i> Ilimitado</span>
+                                                <?php elseif($prod['stock'] <= 0): ?>
+                                                    <span class="inline-flex items-center gap-0.5 bg-red-50 text-red-700 px-1.5 py-0.5 rounded-md text-[10px] font-bold border border-red-100">Agotado</span>
+                                                <?php elseif($prod['stock'] <= 5): ?>
+                                                    <span class="inline-flex items-center gap-0.5 bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-md text-[10px] font-bold border border-amber-100"><i class="bi bi-exclamation-triangle-fill"></i> <?= $prod['stock'] ?></span>
+                                                <?php else: ?>
+                                                    <span class="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-md text-[10px] font-bold border border-emerald-100"><?= $prod['stock'] ?> disp.</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="text-right space-y-0.5">
+                                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Estado</div>
+                                            <div>
+                                                <?php if($prod['disponible']): ?>
+                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md text-xs font-bold border border-emerald-100"><i class="bi bi-check-circle-fill"></i> Activo</span>
+                                                <?php else: ?>
+                                                    <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2 py-0.5 rounded-md text-xs font-bold border border-red-100"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                     
                                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                                        <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url']]); ?>
+                                        <?php $jsonProd = json_encode(['id' => $prod['id'],'nombre' => $prod['nombre'],'descripcion' => $prod['descripcion'],'precio_usd' => $prod['precio_usd'],'categoria_id' => $prod['categoria_id'],'disponible' => $prod['disponible'],'imagen_url' => $prod['imagen_url'],'stock' => $prod['stock']]); ?>
                                         <button x-data @click="$dispatch('open-edit-prod', <?= htmlspecialchars($jsonProd, ENT_QUOTES, 'UTF-8') ?>)" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 py-2 px-3 rounded-xl transition-colors text-xs font-bold flex items-center gap-1"><i class="bi bi-pencil-fill"></i> Editar</button>
                                         <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar producto?');">
                                             <?= $csrfField ?><input type="hidden" name="action" value="delete_product"><input type="hidden" name="id" value="<?= $prod['id'] ?>">
@@ -568,14 +764,15 @@ if (!is_admin_logged_in()): ?>
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Descripción</label><textarea name="descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
                         <div><label class="block text-sm font-semibold mb-1">Precio (USD)</label><input type="number" step="0.01" name="precio_usd" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
                         <div><label class="block text-sm font-semibold mb-1">Categoría</label><select name="categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
-                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
+                        <div><label class="block text-sm font-semibold mb-1">Stock Disponible</label><input type="number" name="stock" min="0" placeholder="Ilimitado" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
                     </div>
                     <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl">Guardar Producto</button>
                 </form>
             </div>
         </div>
 
-        <div x-data="{ open: false, prod: {id:'', nombre:'', descripcion:'', precio_usd:0, categoria_id:'', disponible:false, imagen_url:''} }" @open-edit-prod.window="prod = $event.detail; open = true" x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div x-data="{ open: false, prod: {id:'', nombre:'', descripcion:'', precio_usd:0, categoria_id:'', disponible:false, imagen_url:'', stock:''} }" @open-edit-prod.window="prod = $event.detail; open = true" x-show="open" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg relative z-10 p-6 transform transition-all max-h-full overflow-y-auto">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Editar Producto</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
@@ -587,7 +784,8 @@ if (!is_admin_logged_in()): ?>
                         <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Descripción</label><textarea name="descripcion" x-model="prod.descripcion" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
                         <div><label class="block text-sm font-semibold mb-1">Precio (USD)</label><input type="number" step="0.01" name="precio_usd" x-model="prod.precio_usd" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
                         <div><label class="block text-sm font-semibold mb-1">Categoría</label><select name="categoria_id" x-model="prod.categoria_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required><?php foreach($categorias as $c): ?><option value="<?= $c['id'] ?>"><?= h($c['nombre']) ?></option><?php endforeach; ?></select></div>
-                        <div class="col-span-2"><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" x-model="prod.imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
+                        <div><label class="block text-sm font-semibold mb-1">Stock Disponible</label><input type="number" name="stock" x-model="prod.stock" min="0" placeholder="Ilimitado" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div><label class="block text-sm font-semibold mb-1">URL de Imagen</label><input type="url" name="imagen_url" x-model="prod.imagen_url" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://..."></div>
                     </div>
                     <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl">Actualizar Producto</button>
                 </form>
@@ -659,6 +857,18 @@ if (!is_admin_logged_in()): ?>
                 if (tasaTipoSelect.value !== 'manual') {
                     tasaDolarInput.readOnly = true;
                     fetchExchangeRate(true);
+                }
+
+                // Sincronizar selectores de color
+                const colorText = document.getElementById('color_text');
+                const colorPicker = document.getElementById('color_picker');
+                if (colorText && colorPicker) {
+                    colorText.addEventListener('input', function() {
+                        let val = this.value;
+                        if (val.match(/^#[0-9A-Fa-f]{6}$/)) {
+                            colorPicker.value = val;
+                        }
+                    });
                 }
             });
         </script>

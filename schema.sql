@@ -20,12 +20,14 @@ CREATE TABLE IF NOT EXISTS public.configuracion (
     admin_user          TEXT            NOT NULL DEFAULT 'admin',
     admin_password      TEXT            NOT NULL DEFAULT 'admin123',
     tipo_negocio        TEXT            NOT NULL DEFAULT 'gastronomia'
-                                        CHECK (tipo_negocio IN ('gastronomia', 'boutique', 'ferreteria_repuestos', 'belleza_estetica', 'otros')),
+                                        CHECK (tipo_negocio IN ('gastronomia', 'comida_rapida', 'minimarket', 'farmacia', 'boutique', 'ferreteria_repuestos', 'belleza_estetica', 'otros')),
     moneda_simbolo      TEXT            NOT NULL DEFAULT '$',
     moneda_nombre       TEXT            NOT NULL DEFAULT 'USD',
     costo_delivery      NUMERIC(12, 2)  NOT NULL DEFAULT 0.00,
     direccion           TEXT            NOT NULL DEFAULT '',
     horario             TEXT            NOT NULL DEFAULT '',
+    color_primario      TEXT            NOT NULL DEFAULT '#4F46E5',
+    plantilla_whatsapp  TEXT            NULL,
     created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
@@ -81,6 +83,7 @@ CREATE TABLE IF NOT EXISTS public.productos (
     precio              NUMERIC(10, 2)  NOT NULL CHECK (precio > 0),
     imagen_url          TEXT            NULL,
     disponible          BOOLEAN         NOT NULL DEFAULT TRUE,
+    stock               INTEGER         NULL DEFAULT NULL CHECK (stock >= 0 OR stock IS NULL),
     created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
@@ -127,16 +130,132 @@ CREATE POLICY "escritura_service_productos" ON public.productos
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 
+-- ────────────────────────────────────────────────────────────
+-- TABLA 4: categorias_predeterminadas
+-- Categorías sugeridas según el tipo de negocio.
+-- ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS public.categorias_predeterminadas (
+    id                  BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    tipo_negocio        TEXT            NOT NULL,
+    nombre              TEXT            NOT NULL,
+    orden_visual        INTEGER         NOT NULL DEFAULT 10
+);
+
+ALTER TABLE public.categorias_predeterminadas ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "lectura_publica_predeterminadas" ON public.categorias_predeterminadas
+    FOR SELECT TO anon USING (true);
+
+CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+-- Insertar categorías por defecto para cada rubro
+INSERT INTO public.categorias_predeterminadas (tipo_negocio, nombre, orden_visual) VALUES
+('gastronomia', 'Entradas', 10),
+('gastronomia', 'Platos Principales', 20),
+('gastronomia', 'Postres', 30),
+('gastronomia', 'Bebidas', 40),
+
+('comida_rapida', 'Hamburguesas', 10),
+('comida_rapida', 'Perros Calientes', 20),
+('comida_rapida', 'Pizzas', 30),
+('comida_rapida', 'Bebidas y Combos', 40),
+
+('minimarket', 'Víveres y Alimentos', 10),
+('minimarket', 'Charcutería y Lácteos', 20),
+('minimarket', 'Bebidas y Licores', 30),
+('minimarket', 'Limpieza y Hogar', 40),
+
+('farmacia', 'Medicamentos', 10),
+('farmacia', 'Cuidado Personal', 20),
+('farmacia', 'Bienestar y Suplementos', 30),
+('farmacia', 'Bebés y Maternidad', 40),
+
+('boutique', 'Damas', 10),
+('boutique', 'Caballeros', 20),
+('boutique', 'Niños', 30),
+('boutique', 'Calzado', 40),
+('boutique', 'Accesorios', 50),
+
+('ferreteria_repuestos', 'Herramientas', 10),
+('ferreteria_repuestos', 'Electricidad', 20),
+('ferreteria_repuestos', 'Plomería', 30),
+('ferreteria_repuestos', 'Repuestos y Tornillos', 40),
+
+('belleza_estetica', 'Cuidado Capilar', 10),
+('belleza_estetica', 'Maquillaje', 20),
+('belleza_estetica', 'Cuidado de la Piel', 30),
+('belleza_estetica', 'Perfumería', 40),
+
+('otros', 'Productos Generales', 10),
+('otros', 'Ofertas Especiales', 20),
+('otros', 'Nuevos Ingresos', 30)
+ON CONFLICT DO NOTHING;
+
+
 -- ============================================================
---  MIGRACIÓN: Si ya tienes la tabla configuracion creada,
+--  MIGRACIÓN: Si ya tienes la base de datos activa,
 --  ejecuta estos comandos en tu SQL Editor de Supabase:
 -- ============================================================
--- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS tipo_negocio TEXT NOT NULL DEFAULT 'gastronomia' CHECK (tipo_negocio IN ('gastronomia', 'boutique', 'ferreteria_repuestos', 'belleza_estetica', 'otros'));
+-- ALTER TABLE public.configuracion DROP CONSTRAINT IF EXISTS configuracion_tipo_negocio_check;
+-- ALTER TABLE public.configuracion ADD CONSTRAINT configuracion_tipo_negocio_check CHECK (tipo_negocio IN ('gastronomia', 'comida_rapida', 'minimarket', 'farmacia', 'boutique', 'ferreteria_repuestos', 'belleza_estetica', 'otros'));
+-- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS color_primario TEXT NOT NULL DEFAULT '#4F46E5';
+-- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS logo_url TEXT NULL;
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS moneda_simbolo TEXT NOT NULL DEFAULT '$';
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS moneda_nombre TEXT NOT NULL DEFAULT 'USD';
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS costo_delivery NUMERIC(12, 2) NOT NULL DEFAULT 0.00;
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS direccion TEXT NOT NULL DEFAULT '';
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL DEFAULT '';
+-- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS plantilla_whatsapp TEXT NULL;
+--
+-- ALTER TABLE public.productos ADD COLUMN IF NOT EXISTS stock INTEGER NULL DEFAULT NULL;
+-- ALTER TABLE public.productos DROP CONSTRAINT IF EXISTS productos_stock_check;
+-- ALTER TABLE public.productos ADD CONSTRAINT productos_stock_check CHECK (stock >= 0 OR stock IS NULL);
+--
+-- CREATE TABLE IF NOT EXISTS public.categorias_predeterminadas (
+--     id                  BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+--     tipo_negocio        TEXT            NOT NULL,
+--     nombre              TEXT            NOT NULL,
+--     orden_visual        INTEGER         NOT NULL DEFAULT 10
+-- );
+-- ALTER TABLE public.categorias_predeterminadas ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "lectura_publica_predeterminadas" ON public.categorias_predeterminadas FOR SELECT TO anon USING (true);
+-- CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas FOR ALL TO service_role USING (true) WITH CHECK (true);
+--
+-- INSERT INTO public.categorias_predeterminadas (tipo_negocio, nombre, orden_visual) VALUES
+-- ('gastronomia', 'Entradas', 10),
+-- ('gastronomia', 'Platos Principales', 20),
+-- ('gastronomia', 'Postres', 30),
+-- ('gastronomia', 'Bebidas', 40),
+-- ('comida_rapida', 'Hamburguesas', 10),
+-- ('comida_rapida', 'Perros Calientes', 20),
+-- ('comida_rapida', 'Pizzas', 30),
+-- ('comida_rapida', 'Bebidas y Combos', 40),
+-- ('minimarket', 'Víveres y Alimentos', 10),
+-- ('minimarket', 'Charcutería y Lácteos', 20),
+-- ('minimarket', 'Bebidas y Licores', 30),
+-- ('minimarket', 'Limpieza y Hogar', 40),
+-- ('farmacia', 'Medicamentos', 10),
+-- ('farmacia', 'Cuidado Personal', 20),
+-- ('farmacia', 'Bienestar y Suplementos', 30),
+-- ('farmacia', 'Bebés y Maternidad', 40),
+-- ('boutique', 'Damas', 10),
+-- ('boutique', 'Caballeros', 20),
+-- ('boutique', 'Niños', 30),
+-- ('boutique', 'Calzado', 40),
+-- ('boutique', 'Accesorios', 50),
+-- ('ferreteria_repuestos', 'Herramientas', 10),
+-- ('ferreteria_repuestos', 'Electricidad', 20),
+-- ('ferreteria_repuestos', 'Plomería', 30),
+-- ('ferreteria_repuestos', 'Repuestos y Tornillos', 40),
+-- ('belleza_estetica', 'Cuidado Capilar', 10),
+-- ('belleza_estetica', 'Maquillaje', 20),
+-- ('belleza_estetica', 'Cuidado de la Piel', 30),
+-- ('belleza_estetica', 'Perfumería', 40),
+-- ('otros', 'Productos Generales', 10),
+-- ('otros', 'Ofertas Especiales', 20),
+-- ('otros', 'Nuevos Ingresos', 30)
+-- ON CONFLICT DO NOTHING;
 
 -- ============================================================
 --  Fin del esquema · PronttoGo · Montero Studio © 2026

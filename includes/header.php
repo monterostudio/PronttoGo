@@ -50,6 +50,9 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <?php
         $color_niche = [
             'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#E0E7FF', 'hero-bg-to' => '#EEF2FF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
+            'comida_rapida' => ['primary' => '#EF4444', 'primary-hover' => '#DC2626', 'soft' => '#FEF2F2', 'border-soft' => '#FEE2E2', 'hero-bg-from' => '#FEF2F2', 'hero-bg-via' => '#FEE2E2', 'hero-bg-to' => '#FEF2F2', 'hero-glow' => 'rgba(239,68,68,0.05)'],
+            'minimarket' => ['primary' => '#10B981', 'primary-hover' => '#059669', 'soft' => '#ECFDF5', 'border-soft' => '#D1FAE5', 'hero-bg-from' => '#ECFDF5', 'hero-bg-via' => '#D1FAE5', 'hero-bg-to' => '#ECFDF5', 'hero-glow' => 'rgba(16,185,129,0.05)'],
+            'farmacia' => ['primary' => '#06B6D4', 'primary-hover' => '#0891B2', 'soft' => '#ECFEFF', 'border-soft' => '#CFFAFE', 'hero-bg-from' => '#ECFEFF', 'hero-bg-via' => '#CFFAFE', 'hero-bg-to' => '#ECFEFF', 'hero-glow' => 'rgba(6,182,212,0.05)'],
             'boutique' => ['primary' => '#8B5CF6', 'primary-hover' => '#7C3AED', 'soft' => '#F5F3FF', 'border-soft' => '#DDD6FE', 'hero-bg-from' => '#FAF5FF', 'hero-bg-via' => '#F3E8FF', 'hero-bg-to' => '#FAF5FF', 'hero-glow' => 'rgba(139,92,246,0.05)'],
             'ferreteria_repuestos' => ['primary' => '#F59E0B', 'primary-hover' => '#D97706', 'soft' => '#FFFBEB', 'border-soft' => '#FDE68A', 'hero-bg-from' => '#FFFDF5', 'hero-bg-via' => '#FEF3C7', 'hero-bg-to' => '#FFFDF5', 'hero-glow' => 'rgba(245,158,11,0.05)'],
             'belleza_estetica' => ['primary' => '#EC4899', 'primary-hover' => '#DB2777', 'soft' => '#FDF2F8', 'border-soft' => '#FBCFE8', 'hero-bg-from' => '#FDF2F8', 'hero-bg-via' => '#FCE7F3', 'hero-bg-to' => '#FDF2F8', 'hero-glow' => 'rgba(236,72,153,0.05)'],
@@ -57,6 +60,19 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         ];
         $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
         $colors = $color_niche[$tipo_negocio] ?? $color_niche['gastronomia'];
+
+        // Color personalizado de marca desde configuracion si existe
+        if (!empty($config['color_primario'])) {
+            $custom_primary = $config['color_primario'];
+            $colors['primary'] = $custom_primary;
+            $colors['primary-hover'] = $custom_primary;
+            $colors['soft'] = $custom_primary . '0D'; // ~5% opacidad
+            $colors['border-soft'] = $custom_primary . '26'; // ~15% opacidad
+            $colors['hero-bg-from'] = $custom_primary . '08'; // ~3% opacidad
+            $colors['hero-bg-via'] = $custom_primary . '13'; // ~7% opacidad
+            $colors['hero-bg-to'] = $custom_primary . '08';
+            $colors['hero-glow'] = $custom_primary . '0D';
+        }
         ?>
         <meta name="theme-color" content="<?= h($colors['primary']) ?>">
         
@@ -71,6 +87,12 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 --hero-bg-via: <?= $colors['hero-bg-via'] ?>;
                 --hero-bg-to: <?= $colors['hero-bg-to'] ?>;
                 --hero-glow: <?= $colors['hero-glow'] ?>;
+            }
+            
+            /* Filtro de oscurecimiento automático para hovers con color personalizado */
+            .bg-primary:hover, .hover\:bg-primary:hover {
+                filter: brightness(0.92) !important;
+                transition: filter 0.2s ease-in-out;
             }
         </style>
         

@@ -142,11 +142,15 @@ require_once __DIR__ . '/../includes/header.php';
             });
 
             const handleAdd = (prod, e) => {
+                if (prod.stock !== null && parseInt(prod.stock) <= 0) {
+                    return;
+                }
                 if (window.addToCart) {
                     window.addToCart({
                         id: prod.id,
                         nombre: prod.nombre,
-                        precio: parseFloat(prod.precio_usd)
+                        precio: parseFloat(prod.precio_usd),
+                        stock: prod.stock !== null ? parseInt(prod.stock) : null
                     }, e);
                 }
             };
@@ -248,15 +252,22 @@ require_once __DIR__ . '/../includes/header.php';
                                             ? Math.round(totalLocal).toLocaleString('es-CO')
                                             : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+                                        const isAgotado = prod.stock !== null && parseInt(prod.stock) <= 0;
+                                        const isStockCritico = prod.stock !== null && parseInt(prod.stock) > 0 && parseInt(prod.stock) <= 5;
+
                                         return (
                                             <div 
                                                 key={prod.id}
-                                                onClick={(e) => handleAdd(prod, e)}
-                                                className="cursor-pointer bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 flex items-stretch justify-between gap-4 relative group"
+                                                onClick={(e) => !isAgotado && handleAdd(prod, e)}
+                                                className={`bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 flex items-stretch justify-between gap-4 relative group ${
+                                                    isAgotado 
+                                                        ? 'opacity-65 cursor-not-allowed' 
+                                                        : 'cursor-pointer hover:shadow-md hover:border-slate-200'
+                                                }`}
                                             >
                                                 <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                                                     <div className="space-y-1">
-                                                        <h3 className="font-extrabold text-slate-900 text-sm md:text-base leading-snug group-hover:text-primary transition-colors">
+                                                        <h3 className={`font-extrabold text-slate-900 text-sm md:text-base leading-snug transition-colors ${!isAgotado ? 'group-hover:text-primary' : ''}`}>
                                                             {prod.nombre}
                                                         </h3>
                                                         {prod.descripcion && (
@@ -274,6 +285,16 @@ require_once __DIR__ . '/../includes/header.php';
                                                                 {monedaLocalSimbolo} {formattedLocal} {monedaLocalNombre}
                                                             </span>
                                                         )}
+                                                        {isAgotado && (
+                                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-500 mt-1.5 bg-red-50 px-2 py-0.5 rounded-md">
+                                                                <i className="bi bi-x-circle-fill"></i> Agotado
+                                                            </span>
+                                                        )}
+                                                        {isStockCritico && (
+                                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-1.5 bg-amber-50 px-2 py-0.5 rounded-md">
+                                                                <i className="bi bi-exclamation-triangle-fill"></i> ¡Solo quedan {prod.stock}!
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -285,10 +306,15 @@ require_once __DIR__ . '/../includes/header.php';
                                                             className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300"
                                                         />
                                                         <button 
-                                                            onClick={(e) => { e.stopPropagation(); handleAdd(prod, e); }}
-                                                            className="w-full bg-primary hover:bg-primary-hover text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap"
+                                                            onClick={(e) => { e.stopPropagation(); !isAgotado && handleAdd(prod, e); }}
+                                                            disabled={isAgotado}
+                                                            className={`w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap ${
+                                                                isAgotado 
+                                                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+                                                                    : 'bg-primary hover:bg-primary-hover text-white'
+                                                            }`}
                                                         >
-                                                            + Agregar
+                                                            {isAgotado ? 'Agotado' : '+ Agregar'}
                                                         </button>
                                                     </div>
                                                 ) : (
@@ -297,10 +323,15 @@ require_once __DIR__ . '/../includes/header.php';
                                                             <i className="bi bi-image text-xl"></i>
                                                         </div>
                                                         <button 
-                                                            onClick={(e) => { e.stopPropagation(); handleAdd(prod, e); }}
-                                                            className="w-full bg-primary hover:bg-primary-hover text-white font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap"
+                                                            onClick={(e) => { e.stopPropagation(); !isAgotado && handleAdd(prod, e); }}
+                                                            disabled={isAgotado}
+                                                            className={`w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap ${
+                                                                isAgotado 
+                                                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+                                                                    : 'bg-primary hover:bg-primary-hover text-white'
+                                                            }`}
                                                         >
-                                                            + Agregar
+                                                            {isAgotado ? 'Agotado' : '+ Agregar'}
                                                         </button>
                                                     </div>
                                                 )}
