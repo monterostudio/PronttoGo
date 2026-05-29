@@ -179,7 +179,6 @@ if (!is_admin_logged_in()): ?>
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-xl w-full max-w-md relative z-10 border border-white">
             <div class="text-center mb-8">
                 <?= get_logo_svg('h-16 w-auto mb-4 mx-auto block drop-shadow-md') ?>
-                <h1 class="text-3xl font-bold text-slate-800 tracking-tight">PronttoGo</h1>
                 <p class="text-slate-500 mt-2">Panel de Administración</p>
             </div>
             <?php if ($error): ?>
@@ -223,8 +222,7 @@ if (!is_admin_logged_in()): ?>
         <main class="flex-1 flex flex-col h-full overflow-hidden">
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:hidden shrink-0">
                 <div class="flex items-center gap-2">
-                    <i class="bi bi-box-seam text-indigo-600 text-xl"></i>
-                    <span class="font-bold text-slate-800">PronttoGo</span>
+                    <?= get_logo_svg('h-8 w-auto') ?>
                 </div>
                 <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 text-2xl">
                     <i class="bi bi-list"></i>
@@ -242,9 +240,9 @@ if (!is_admin_logged_in()): ?>
                     <?php endif; ?>
 
                     <div x-show="currentTab === 'config'" x-cloak class="space-y-6">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <h2 class="text-2xl font-bold text-slate-800">Configuración del Local</h2>
-                            <a href="index.php" target="_blank" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
+                            <a href="index.php" target="_blank" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
                                 <i class="bi bi-eye"></i> Ver Catálogo
                             </a>
                         </div>
@@ -273,10 +271,16 @@ if (!is_admin_logged_in()): ?>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
                                         <div class="relative">
                                             <i class="bi bi-briefcase absolute left-3 top-3.5 text-slate-400"></i>
-                                            <select name="tipo_negocio" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
-                                                <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía</option>
-                                                <option value="retail" <?= ($config['tipo_negocio'] ?? '') === 'retail' ? 'selected' : '' ?>>Retail / Tienda</option>
+                                            <select name="tipo_negocio" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white">
+                                                <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía / Restaurante</option>
+                                                <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>Boutique / Tienda de Ropa</option>
+                                                <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>Ferretería y Repuestos</option>
+                                                <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>Belleza y Estética</option>
+                                                <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>Otros Negocios (General)</option>
                                             </select>
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </div>
                                         </div>
                                     </div>
                                     <div>
@@ -345,9 +349,9 @@ if (!is_admin_logged_in()): ?>
                     </div>
 
                     <div x-show="currentTab === 'categorias'" x-cloak class="space-y-6">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <h2 class="text-2xl font-bold text-slate-800">Categorías</h2>
-                            <button x-data @click="$dispatch('open-modal', 'modal-cat-new')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2">
+                            <button x-data @click="$dispatch('open-modal', 'modal-cat-new')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2">
                                 <i class="bi bi-plus-lg"></i> Nueva Categoría
                             </button>
                         </div>
@@ -527,62 +531,28 @@ if (!is_admin_logged_in()): ?>
                     }
 
                     try {
-                        let rate = 0;
-                        if (tipo === 'bcv') {
-                            try {
-                                const dtRes = await fetch('https://s3.amazonaws.com/dolartoday/data.json');
-                                if (dtRes.ok) {
-                                    const dtData = await dtRes.json();
-                                    if (dtData.USD && dtData.USD.bcv) {
-                                        rate = parseFloat(dtData.USD.bcv);
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn('Fallo fetch Dolartoday, usando fallback global...', e);
-                            }
-
-                            if (rate === 0) {
-                                const globalRes = await fetch('https://open.er-api.com/v6/latest/USD');
-                                if (globalRes.ok) {
-                                    const globalData = await globalRes.json();
-                                    if (globalData.rates && globalData.rates.VES) {
-                                        rate = parseFloat(globalData.rates.VES);
-                                    }
-                                }
-                            }
-
-                            if (rate > 0) {
-                                tasaDolarInput.value = rate.toFixed(2);
+                        const response = await fetch(`/api/tasa.php?tipo=${tipo}`);
+                        if (!response.ok) throw new Error('Error al conectar con el servidor.');
+                        const data = await response.json();
+                        
+                        if (data.success && data.rate > 0) {
+                            tasaDolarInput.value = data.rate.toFixed(2);
+                            if (tipo === 'bcv') {
                                 monedaNombreInput.value = 'Bs.';
                                 monedaSimboloInput.value = 'Bs.';
-                                statusText.innerText = 'Tasa BCV cargada automáticamente desde internet.';
-                                statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
-                            } else {
-                                throw new Error('No se pudo obtener la tasa de Venezuela.');
-                            }
-
-                        } else if (tipo === 'trm') {
-                            const globalRes = await fetch('https://open.er-api.com/v6/latest/USD');
-                            if (globalRes.ok) {
-                                const globalData = await globalRes.json();
-                                if (globalData.rates && globalData.rates.COP) {
-                                    rate = parseFloat(globalData.rates.COP);
-                                }
-                            }
-
-                            if (rate > 0) {
-                                tasaDolarInput.value = rate.toFixed(2);
+                                statusText.innerText = 'Tasa BCV cargada automáticamente por el servidor.';
+                            } else if (tipo === 'trm') {
                                 monedaNombreInput.value = 'COP';
                                 monedaSimboloInput.value = '$';
-                                statusText.innerText = 'Tasa TRM cargada automáticamente desde internet.';
-                                statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
-                            } else {
-                                throw new Error('No se pudo obtener la tasa de Colombia.');
+                                statusText.innerText = 'Tasa TRM cargada automáticamente por el servidor.';
                             }
+                            statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
+                        } else {
+                            throw new Error(data.error || 'No se pudo obtener la tasa.');
                         }
                     } catch (err) {
                         console.error(err);
-                        statusText.innerText = 'Error al actualizar tasa. Ingresa el valor manual.';
+                        statusText.innerText = 'Error de conexión. Ingresa el valor manual.';
                         statusText.className = 'text-[11px] mt-1 text-red-500 font-semibold';
                     }
                 }
