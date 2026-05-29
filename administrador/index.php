@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pass = $_POST['password'] ?? '';
         if ($user === ADMIN_USER && $pass === ADMIN_PASSWORD) {
             $_SESSION['admin_logged_in'] = true;
-            redirect('index.php');
+            redirect('admin.php');
         } else {
             $error = "Usuario o contraseÃƒÂ±a incorrectos.";
         }
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'logout') {
             $_SESSION['admin_logged_in'] = false;
             session_destroy();
-            redirect('index.php');
+            redirect('admin.php');
         }
         
         if ($action === 'update_config') {
@@ -52,26 +52,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'horario' => $_POST['horario'] ?? ''
             ];
             supabase_request('PATCH', 'configuracion?id=eq.1', $data);
-            redirect('index.php?tab=config&success=1');
+            redirect('admin.php?tab=config&success=1');
         }
         
         if ($action === 'create_category') {
             $data = ['nombre' => $_POST['nombre'] ?? '', 'orden_visual' => intval($_POST['orden_visual'] ?? 0)];
             supabase_request('POST', 'categorias', $data);
-            redirect('index.php?tab=categorias&success=1');
+            redirect('admin.php?tab=categorias&success=1');
         }
         
         if ($action === 'update_category') {
             $id = intval($_POST['id']);
             $data = ['nombre' => $_POST['nombre'] ?? '', 'orden_visual' => intval($_POST['orden_visual'] ?? 0)];
             supabase_request('PATCH', 'categorias?id=eq.' . $id, $data);
-            redirect('index.php?tab=categorias&success=1');
+            redirect('admin.php?tab=categorias&success=1');
         }
         
         if ($action === 'delete_category') {
             $id = intval($_POST['id']);
             supabase_request('DELETE', 'categorias?id=eq.' . $id);
-            redirect('index.php?tab=categorias&success=1');
+            redirect('admin.php?tab=categorias&success=1');
         }
         
         if ($action === 'create_product') {
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url']
             ];
             supabase_request('POST', 'productos', $data);
-            redirect('index.php?tab=productos&success=1');
+            redirect('admin.php?tab=productos&success=1');
         }
         
         if ($action === 'update_product') {
@@ -98,13 +98,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'imagen_url' => empty($_POST['imagen_url']) ? null : $_POST['imagen_url']
             ];
             supabase_request('PATCH', 'productos?id=eq.' . $id, $data);
-            redirect('index.php?tab=productos&success=1');
+            redirect('admin.php?tab=productos&success=1');
         }
         
         if ($action === 'delete_product') {
             $id = intval($_POST['id']);
             supabase_request('DELETE', 'productos?id=eq.' . $id);
-            redirect('index.php?tab=productos&success=1');
+            redirect('admin.php?tab=productos&success=1');
         }
     }
 }
@@ -148,7 +148,7 @@ if (!is_admin_logged_in()): ?>
                     <?= h($error) ?>
                 </div>
             <?php endif; ?>
-            <form method="POST" action="index.php" class="space-y-5">
+            <form method="POST" action="admin.php" class="space-y-5">
                 <?= $csrfField ?>
                 <input type="hidden" name="action" value="login">
                 <div>
@@ -210,7 +210,7 @@ if (!is_admin_logged_in()): ?>
                         </div>
                         
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                            <form method="POST" action="index.php" class="space-y-6">
+                            <form method="POST" action="admin.php" class="space-y-6">
                                 <?= $csrfField ?>
                                 <input type="hidden" name="action" value="update_config">
                                 
@@ -381,7 +381,7 @@ if (!is_admin_logged_in()): ?>
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 p-6 transform transition-all">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Nueva CategorÃƒÂ­a</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
-                <form method="POST" action="index.php" class="space-y-4">
+                <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="create_category">
                     <div><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
                     <div><label class="block text-sm font-semibold mb-1">Orden</label><input type="number" name="orden_visual" value="0" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
@@ -394,7 +394,7 @@ if (!is_admin_logged_in()): ?>
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 p-6 transform transition-all">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Editar CategorÃƒÂ­a</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
-                <form method="POST" action="index.php" class="space-y-4">
+                <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="update_category"><input type="hidden" name="id" x-model="cat.id">
                     <div><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" x-model="cat.nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
                     <div><label class="block text-sm font-semibold mb-1">Orden</label><input type="number" name="orden_visual" x-model="cat.orden" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
@@ -407,7 +407,7 @@ if (!is_admin_logged_in()): ?>
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg relative z-10 p-6 transform transition-all max-h-full overflow-y-auto">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Nuevo Producto</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
-                <form method="POST" action="index.php" class="space-y-4">
+                <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="create_product">
                     <div class="flex items-center gap-2 mb-4"><input type="checkbox" name="disponible" id="disp_new" value="1" checked class="w-4 h-4 text-indigo-600 rounded"><label for="disp_new" class="font-semibold text-sm">Producto Disponible</label></div>
                     <div class="grid grid-cols-2 gap-4">
@@ -426,7 +426,7 @@ if (!is_admin_logged_in()): ?>
             <div @click="open = false" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg relative z-10 p-6 transform transition-all max-h-full overflow-y-auto">
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Editar Producto</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
-                <form method="POST" action="index.php" class="space-y-4">
+                <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="update_product"><input type="hidden" name="id" x-model="prod.id">
                     <div class="flex items-center gap-2 mb-4"><input type="checkbox" name="disponible" id="disp_edit" value="1" x-model="prod.disponible" class="w-4 h-4 text-indigo-600 rounded"><label for="disp_edit" class="font-semibold text-sm">Producto Disponible</label></div>
                     <div class="grid grid-cols-2 gap-4">
