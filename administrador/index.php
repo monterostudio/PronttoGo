@@ -308,15 +308,19 @@ if (!is_admin_logged_in()): ?>
                 <input type="hidden" name="action" value="login">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Usuario</label>
-                    <div class="relative flex items-center">
-                        <i class="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="bi bi-person text-slate-400 text-lg"></i>
+                        </span>
                         <input type="text" name="username" required class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none" placeholder="Tu usuario">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Contraseña</label>
-                    <div class="relative flex items-center">
-                        <i class="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="bi bi-lock text-slate-400 text-lg"></i>
+                        </span>
                         <input type="password" name="password" required class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none" placeholder="••••••••">
                     </div>
                 </div>
@@ -367,30 +371,38 @@ if (!is_admin_logged_in()): ?>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Comercial</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-shop text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-shop text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="text" name="nombre" value="<?= h($config['nombre'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">WhatsApp para Pedidos</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-whatsapp text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-whatsapp text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">URL del Logotipo (Imagen)</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-image text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-image text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png (Vacío usa PronttoGo)" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Personalizado)</label>
                                         <div class="flex gap-2">
-                                            <div class="relative flex-1 flex items-center">
-                                                <i class="bi bi-palette text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                            <div class="relative flex-1">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-palette text-slate-400 text-lg"></i>
+                                                </span>
                                                 <input type="text" id="color_text" name="color_primario" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" placeholder="#4F46E5" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-mono">
                                             </div>
                                             <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
@@ -398,8 +410,10 @@ if (!is_admin_logged_in()): ?>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-briefcase text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-briefcase text-slate-400 text-lg"></i>
+                                            </span>
                                             <select name="tipo_negocio" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white">
                                                 <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía / Restaurante</option>
                                                 <option value="comida_rapida" <?= ($config['tipo_negocio'] ?? '') === 'comida_rapida' ? 'selected' : '' ?>>Comida Rápida / Callejera</option>
@@ -410,13 +424,17 @@ if (!is_admin_logged_in()): ?>
                                                 <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>Belleza y Estética</option>
                                                 <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>Otros Negocios (General)</option>
                                             </select>
-                                            <i class="bi bi-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                <i class="bi bi-chevron-down text-slate-400"></i>
+                                            </span>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery (USD)</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-bicycle text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-bicycle text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
@@ -425,20 +443,27 @@ if (!is_admin_logged_in()): ?>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Modo de Tasa de Cambio</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-gear-wide-connected text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                                            <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
+                                            </span>
+                                            <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
                                                 <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Manual (Ingresada por ti)</option>
                                                 <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automática BCV (Bolívares - Venezuela)</option>
                                                 <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automática TRM (Pesos - Colombia)</option>
                                             </select>
+                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                <i class="bi bi-chevron-down text-slate-400"></i>
+                                            </span>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa (USD a Local)</label>
                                         <div class="relative flex gap-2">
-                                            <div class="relative flex-1 flex items-center">
-                                                <i class="bi bi-currency-exchange text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                            <div class="relative flex-1">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-currency-exchange text-slate-400 text-lg"></i>
+                                                </span>
                                                 <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                             </div>
                                             <button type="button" id="btn-fetch-tasa" class="bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 px-3.5 rounded-xl transition-all flex items-center justify-center shrink-0" title="Consultar tasa ahora por internet">
@@ -449,30 +474,38 @@ if (!is_admin_logged_in()): ?>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Moneda Local</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-cash-stack text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-cash-stack text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="text" name="moneda_nombre" id="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej. Bs., COP, USD" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Símbolo Moneda Local</label>
-                                        <div class="relative flex items-center">
-                                            <i class="bi bi-coin text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="bi bi-coin text-slate-400 text-lg"></i>
+                                            </span>
                                             <input type="text" name="moneda_simbolo" id="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej. $, Bs., COP" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
                                     </div>
                                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
-                                            <div class="relative flex items-center">
-                                                <i class="bi bi-geo-alt text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-geo-alt text-slate-400 text-lg"></i>
+                                                </span>
                                                 <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej. Calle Falsa 123, Ciudad" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Horario de Atención</label>
-                                            <div class="relative flex items-center">
-                                                <i class="bi bi-clock text-lg absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-clock text-slate-400 text-lg"></i>
+                                                </span>
                                                 <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lun a Sáb: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
                                             </div>
                                         </div>

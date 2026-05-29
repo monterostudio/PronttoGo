@@ -22,8 +22,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS v4.0 Play CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Tailwind CSS v3 Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -75,13 +75,23 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         ?>
         <meta name="theme-color" content="<?= h($colors['primary']) ?>">
         
-        <!-- Configuración de Tema Personalizado para Tailwind CSS v4.0 -->
-        <style type="text/tailwindcss">
-            @theme {
-                --color-primary: <?= $colors['primary'] ?>;
-                --color-primary-hover: <?= $colors['primary-hover'] ?>;
-                --color-soft: <?= $colors['soft'] ?>;
-                --color-border-soft: <?= $colors['border-soft'] ?>;
+        <!-- Configuración de Tema Personalizado para Tailwind CSS v3 -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '<?= $colors['primary'] ?>',
+                            'primary-hover': '<?= $colors['primary-hover'] ?>',
+                            soft: '<?= $colors['soft'] ?>',
+                            'border-soft': '<?= $colors['border-soft'] ?>',
+                        }
+                    }
+                }
+            }
+        </script>
+        <style type="text/css">
+            :root {
                 --hero-bg-from: <?= $colors['hero-bg-from'] ?>;
                 --hero-bg-via: <?= $colors['hero-bg-via'] ?>;
                 --hero-bg-to: <?= $colors['hero-bg-to'] ?>;

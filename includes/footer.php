@@ -88,8 +88,10 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <!-- Nombre -->
                         <div class="space-y-1">
                             <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre</label>
-                            <div class="relative flex items-center">
-                                <i class="bi bi-person-fill absolute left-3 text-slate-400 text-xs pointer-events-none"></i>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="bi bi-person-fill text-slate-400 text-xs"></i>
+                                </span>
                                 <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
                                        class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                             </div>
@@ -130,8 +132,10 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <!-- Método de pago -->
                         <div class="space-y-1">
                             <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Método de Pago</label>
-                            <div class="relative flex items-center">
-                                <i class="bi bi-credit-card-fill absolute left-3 text-slate-400 text-xs pointer-events-none"></i>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="bi bi-credit-card-fill text-slate-400 text-xs"></i>
+                                </span>
                                 <select id="cust-payment" 
                                         class="w-full pl-8 pr-8 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
                                     <option value="Pago Móvil">Pago Móvil (Bolívares - VES)</option>
@@ -140,7 +144,9 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                                     <option value="Efectivo Bs.">Efectivo Bolívares (VES)</option>
                                     <option value="Tarjeta / Punto de Venta">Tarjeta / Punto de Venta</option>
                                 </select>
-                                <i class="bi bi-chevron-down absolute right-3 text-slate-400 text-[10px] pointer-events-none"></i>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="bi bi-chevron-down text-slate-400 text-[10px]"></i>
+                                </span>
                             </div>
                         </div>
                     </div>

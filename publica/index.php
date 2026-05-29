@@ -138,7 +138,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Seleccionar por defecto la primera categoría que tenga productos
             React.useEffect(() => {
-                const firstCat = categories.find(cat => products.some(p => p.categoria_id === cat.id));
+                const firstCat = categories.find(cat => products.some(p => String(p.categoria_id) === String(cat.id)));
                 if (firstCat) {
                     setSelectedCategory(firstCat.id);
                 }
@@ -146,7 +146,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Filtrar productos por categoría y por buscador
             const filteredProducts = products.filter(prod => {
-                const matchesCategory = selectedCategory ? prod.categoria_id === selectedCategory : true;
+                const matchesCategory = selectedCategory ? String(prod.categoria_id) === String(selectedCategory) : true;
                 const matchesSearch = search 
                     ? prod.nombre.toLowerCase().includes(search.toLowerCase()) || 
                       (prod.descripcion && prod.descripcion.toLowerCase().includes(search.toLowerCase()))
@@ -227,9 +227,9 @@ require_once __DIR__ . '/../includes/header.php';
                                         style={{padding: '10px 16px', gap: '8px', scrollSnapType: 'x mandatory'}}
                                     >
                                         {categories.map(cat => {
-                                            const hasProducts = products.some(p => p.categoria_id === cat.id);
+                                            const hasProducts = products.some(p => String(p.categoria_id) === String(cat.id));
                                             if (!hasProducts) return null;
-                                            const isActive = selectedCategory === cat.id;
+                                            const isActive = String(selectedCategory) === String(cat.id);
                                             return (
                                                 <button
                                                     key={cat.id}
