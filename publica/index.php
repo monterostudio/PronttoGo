@@ -1,7 +1,7 @@
 <?php
 $es_admin = false;
 /**
- * PronttoGo - CatÃ¡logo PÃºblico Responsivo (Single-Store)
+ * PronttoGo - Catálogo Público Responsivo (Single-Store)
  * Refactorizado a arquitectura MVC simplificada
  */
 
@@ -9,7 +9,7 @@ require_once __DIR__ . '/../core/config.php';
 require_once __DIR__ . '/../core/db.php';
 require_once __DIR__ . '/../core/auth.php';
 
-// 1. OBTENER CONFIGURACIÃ“N DEL LOCAL (Fila Ãºnica id = 1)
+// 1. OBTENER CONFIGURACIÓN DEL LOCAL (Fila única id = 1)
 $response = supabase_request('GET', 'configuracion?id=eq.1');
 
 if ($response['success'] && !empty($response['data'])) {
@@ -21,7 +21,7 @@ if ($response['success'] && !empty($response['data'])) {
     ];
 }
 
-// ConfiguraciÃ³n de Tasa de Cambio y Moneda Local
+// Configuración de Tasa de Cambio y Moneda Local
 $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
 $tasa_dolar = floatval($config['tasa_dolar'] ?? 1.00);
 $tasa_tipo = $config['tasa_tipo'] ?? 'manual';
@@ -31,7 +31,7 @@ $costo_delivery = floatval($config['costo_delivery'] ?? 0.00);
 $direccion_local = !empty($config['direccion']) ? $config['direccion'] : '';
 $horario_local = !empty($config['horario']) ? $config['horario'] : '';
 
-// 2. CONSULTAR CATEGORÃAS (Ordenadas)
+// 2. CONSULTAR CATEGORÍAS (Ordenadas)
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
 $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
 
@@ -39,19 +39,19 @@ $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
 $resProductos = supabase_request('GET', 'productos?disponible=eq.true&order=id.asc');
 $productos = $resProductos['success'] ? $resProductos['data'] : [];
 
-// Agrupar productos por categorÃ­a
+// Agrupar productos por categoría
 $productosPorCategoria = [];
 foreach ($productos as $prod) {
     $productosPorCategoria[$prod['categoria_id']][] = $prod;
 }
 
-// Determinar si hay algÃºn error de conexiÃ³n o base de datos (visible solo en entorno local)
+// Determinar si hay algún error de conexión o base de datos (visible solo en entorno local)
 $dbError = null;
 if ($isLocalhost) {
     if (!$resCategorias['success']) {
-        $dbError = 'Error de CategorÃ­as: ' . ($resCategorias['error'] ?? $resCategorias['raw'] ?? 'Error de conexiÃ³n.');
+        $dbError = 'Error de Categorías: ' . ($resCategorias['error'] ?? $resCategorias['raw'] ?? 'Error de conexión.');
     } elseif (!$resProductos['success']) {
-        $dbError = 'Error de Productos: ' . ($resProductos['error'] ?? $resProductos['raw'] ?? 'Error de conexiÃ³n.');
+        $dbError = 'Error de Productos: ' . ($resProductos['error'] ?? $resProductos['raw'] ?? 'Error de conexión.');
     }
 }
 
@@ -59,7 +59,7 @@ if ($isLocalhost) {
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-    <!-- Full Hero Section (PresentaciÃ³n de Ancho Completo Premium en Blanco) -->
+    <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
     <div class="relative w-full bg-gradient-to-br from-[var(--hero-bg-from)] via-[var(--hero-bg-via)] to-[var(--hero-bg-to)] text-slate-800 overflow-hidden border-b border-primary/15">
         <div class="absolute -right-10 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
@@ -80,11 +80,11 @@ require_once __DIR__ . '/../includes/header.php';
 
             <div class="space-y-1.5 max-w-lg pt-1">
                 <p class="text-xl md:text-2xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
-                    Tu catÃ¡logo digital,
+                    Tu catálogo digital,
                     <span class="bg-primary bg-clip-text text-transparent">siempre disponible</span>
                 </p>
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                    Explora nuestros productos, arma tu pedido y envÃ­alo directo por WhatsApp en segundos.
+                    Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.
                 </p>
 
                 <?php if (!empty($direccion_local) || !empty($horario_local)): ?>
@@ -104,13 +104,13 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 <?php endif; ?>
             </div>
-        </div>    <!-- Contenedor del CatÃ¡logo React -->
+        </div>    <!-- Contenedor del Catálogo React -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
         <div id="react-catalog-root"></div>
     </main>
 
     <script type="text/babel">
-        // InyecciÃ³n de variables de PHP a React
+        // Inyección de variables de PHP a React
         const categories = <?= json_encode($categorias) ?>;
         const products = <?= json_encode($productos) ?>;
         const tasaDolar = <?= json_encode($tasa_dolar) ?>;
@@ -123,7 +123,7 @@ require_once __DIR__ . '/../includes/header.php';
             const [search, setSearch] = React.useState('');
             const [selectedCategory, setSelectedCategory] = React.useState(null);
 
-            // Seleccionar por defecto la primera categorÃ­a que tenga productos
+            // Seleccionar por defecto la primera categoría que tenga productos
             React.useEffect(() => {
                 const firstCat = categories.find(cat => products.some(p => p.categoria_id === cat.id));
                 if (firstCat) {
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../includes/header.php';
                 }
             }, []);
 
-            // Filtrar productos por categorÃ­a y por buscador
+            // Filtrar productos por categoría y por buscador
             const filteredProducts = products.filter(prod => {
                 const matchesCategory = selectedCategory ? prod.categoria_id === selectedCategory : true;
                 const matchesSearch = search 
@@ -162,14 +162,14 @@ require_once __DIR__ . '/../includes/header.php';
             return (
                 <div className="w-full space-y-6">
                     {products.length === 0 ? (
-                        /* CatÃ¡logo VacÃ­o */
+                        /* Catálogo Vacío */
                         <div className="text-center py-20 max-w-sm mx-auto space-y-3">
                             <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
                                 <i className={`bi ${placeholderIconClass()}`}></i>
                             </div>
-                            <h3 className="font-bold text-slate-800 text-sm">El catÃ¡logo estÃ¡ vacÃ­o</h3>
+                            <h3 className="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
                             <p className="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                                AÃºn no se han aÃ±adido productos. Inicia sesiÃ³n en el panel para comenzar a cargar tu catÃ¡logo.
+                                Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
                             </p>
                             <div className="pt-2">
                                 <a href="/administrador/index.php" className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all shadow-sm">
@@ -202,7 +202,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 )}
                             </div>
 
-                            {/* CategorÃ­as Deslizables */}
+                            {/* Categorías Deslizables */}
                             {categories.length > 0 && (
                                 <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
                                     <nav className="flex space-x-2.5 overflow-x-auto no-scrollbar scroll-smooth">
@@ -236,7 +236,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     </div>
                                     <h3 className="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
                                     <p className="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                                        Intenta con otra palabra clave o explora las categorÃ­as del catÃ¡logo.
+                                        Intenta con otra palabra clave o explora las categorías del catálogo.
                                     </p>
                                 </div>
                             ) : (
