@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('PronttoGo App Inicializada.');
 });
 
-// Configuración global (lee del objeto inyectado en el footer de la vista pública)
+// ConfiguraciÃ³n global (lee del objeto inyectado en el footer de la vista pÃºblica)
 const pronttogoConfig = window.pronttogoConfig || {
     whatsappNumber: '584121234567',
     costoDelivery: 0,
@@ -22,12 +22,12 @@ const costoDelivery = pronttogoConfig.costoDelivery;
 let isScrolling = false;
 let scrollTimeout;
 
-// Animación volar al carrito
+// AnimaciÃ³n volar al carrito
 function triggerFlyAnimation(startElement) {
     const floatingCart = document.getElementById('floating-cart');
     if (!floatingCart) return;
 
-    // Asegurarnos de que el carrito no esté oculto para obtener su posición
+    // Asegurarnos de que el carrito no estÃ© oculto para obtener su posiciÃ³n
     const wasHidden = floatingCart.classList.contains('hidden');
     if (wasHidden) {
         floatingCart.classList.remove('hidden');
@@ -40,7 +40,7 @@ function triggerFlyAnimation(startElement) {
         floatingCart.classList.add('hidden');
     }
 
-    // Crear la partícula
+    // Crear la partÃ­cula
     const particle = document.createElement('div');
     particle.className = 'fixed z-50 w-6 h-6 bg-primary rounded-full pointer-events-none transition-all duration-750 ease-in-out flex items-center justify-center text-white text-[10px] font-black shadow-lg';
     particle.textContent = '+1';
@@ -81,7 +81,7 @@ function handleCategoryLinkClick(e) {
     }, 800);
 }
 
-// ScrollSpy para Categorías
+// ScrollSpy para CategorÃ­as
 window.addEventListener('DOMContentLoaded', () => {
     const observerOptions = {
         root: null,
@@ -110,7 +110,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function setActiveCategory(id) {
-    // Activar pill correspondiente en la barra de categorías unificada
+    // Activar pill correspondiente en la barra de categorÃ­as unificada
     document.querySelectorAll('.mobile-category-pill').forEach(pill => {
         if (pill.getAttribute('href') === `#${id}`) {
             pill.classList.add('active');
@@ -202,7 +202,7 @@ function updateQuantity(productId, change, notes = '') {
 }
 
 function clearCart() {
-    if (confirm('¿Seguro que deseas vaciar tu carrito de compras?')) {
+    if (confirm('Â¿Seguro que deseas vaciar tu carrito de compras?')) {
         saveCart([]);
         toggleCartDrawer(false);
     }
@@ -249,7 +249,7 @@ function updateCartUI() {
     }
     const grandTotal = subtotal + deliveryFee;
 
-    if (cartCount) cartCount.textContent = `${totalItems} ${totalItems === 1 ? 'artículo' : 'artículos'}`;
+    if (cartCount) cartCount.textContent = `${totalItems} ${totalItems === 1 ? 'artÃ­culo' : 'artÃ­culos'}`;
     if (cartTotal) cartTotal.textContent = `$${grandTotal.toFixed(2)}`;
     
     const subtotalEl = document.getElementById('drawer-subtotal');
@@ -276,7 +276,7 @@ function updateCartUI() {
     
     if (drawerTotal) drawerTotal.textContent = `$${grandTotal.toFixed(2)}`;
 
-    // Tasa de cambio local dinámica (lee del objeto inyectado)
+    // Tasa de cambio local dinÃ¡mica (lee del objeto inyectado)
     const tasaDolar = pronttogoConfig.tasaDolar;
     const monedaNombre = pronttogoConfig.monedaNombre;
     const tasaTipo = pronttogoConfig.tasaTipo;
@@ -361,7 +361,7 @@ function updateCartUI() {
 
         const notesInput = document.createElement('input');
         notesInput.type = "text";
-        notesInput.placeholder = "Indica aquí la talla, color, modelo o detalles...";
+        notesInput.placeholder = "Indica aquÃ­ la talla, color, modelo o detalles...";
         notesInput.value = item.notes || '';
         notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all";
         notesInput.onchange = (e) => {
@@ -410,7 +410,7 @@ function loadCustomerData() {
     try {
         const name = localStorage.getItem('cust_name') || '';
         const address = localStorage.getItem('cust_address') || '';
-        const payment = localStorage.getItem('cust_payment') || 'Pago Móvil';
+        const payment = localStorage.getItem('cust_payment') || 'Pago MÃ³vil';
         const deliveryType = localStorage.getItem('cust_delivery_type') || 'delivery';
 
         const nameInput = document.getElementById('cust-name');
@@ -435,7 +435,7 @@ function saveCustomerData() {
 
         const name = nameInput ? nameInput.value.trim() : '';
         const address = addressInput ? addressInput.value.trim() : '';
-        const payment = paymentInput ? paymentInput.value : 'Pago Móvil';
+        const payment = paymentInput ? paymentInput.value : 'Pago MÃ³vil';
         
         localStorage.setItem('cust_name', name);
         localStorage.setItem('cust_address', address);
@@ -471,13 +471,13 @@ function checkoutOrder() {
     const addressInput = document.getElementById('cust-address');
     const clientAddress = addressInput ? addressInput.value.trim() : '';
     if (currentDeliveryType === 'delivery' && !clientAddress) {
-        alert('Por favor, ingresa tu dirección para el delivery.');
+        alert('Por favor, ingresa tu direcciÃ³n para el delivery.');
         if (addressInput) addressInput.focus();
         return;
     }
 
     const paymentInput = document.getElementById('cust-payment');
-    const clientPayment = paymentInput ? paymentInput.value : 'Pago Móvil';
+    const clientPayment = paymentInput ? paymentInput.value : 'Pago MÃ³vil';
 
     let totalPrice = 0;
     let itemsText = "";
@@ -491,7 +491,7 @@ function checkoutOrder() {
     const deliveryFee = currentDeliveryType === 'delivery' ? costoDelivery : 0;
     const grandTotal = totalPrice + deliveryFee;
 
-    // Tasa de cambio local dinámica
+    // Tasa de cambio local dinÃ¡mica
     const tasaDolar = pronttogoConfig.tasaDolar;
     const monedaNombre = pronttogoConfig.monedaNombre;
     const tasaTipo = pronttogoConfig.tasaTipo;
@@ -506,23 +506,23 @@ function checkoutOrder() {
 
     let deliveryText = "";
     if (currentDeliveryType === 'delivery') {
-        deliveryText = `📍 *Dirección:* ${clientAddress}`;
+        deliveryText = `ðŸ“ *DirecciÃ³n:* ${clientAddress}`;
     } else {
-        deliveryText = `📦 *Despacho:* Retiro en local`;
+        deliveryText = `ðŸ“¦ *Despacho:* Retiro en local`;
     }
 
     // Formato exacto del mensaje de WhatsApp (usando emojis de texto legibles para WhatsApp)
     const storeName = pronttogoConfig.nombre;
-    const message = `*Pedido de ${storeName}* 🛍️\n` +
+    const message = `*Pedido de ${storeName}* ðŸ›ï¸\n` +
                     `--------------------------\n` +
-                    `👤 *Cliente:* ${clientName}\n` +
+                    `ðŸ‘¤ *Cliente:* ${clientName}\n` +
                     `${deliveryText}\n` +
-                    `💵 *Pago:* ${clientPayment}\n` +
+                    `ðŸ’µ *Pago:* ${clientPayment}\n` +
                     `--------------------------\n` +
                     `${itemsText}` +
                     `--------------------------\n` +
                     `*Subtotal:* $${totalPrice.toFixed(2)}\n` +
-                    (deliveryFee > 0 ? `*Envío:* $${deliveryFee.toFixed(2)}\n` : '') +
+                    (deliveryFee > 0 ? `*EnvÃ­o:* $${deliveryFee.toFixed(2)}\n` : '') +
                     `*Total a pagar: $${grandTotal.toFixed(2)}*\n` +
                     localTotalText;
 

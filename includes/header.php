@@ -10,7 +10,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <title>
         <?php 
         if ($es_admin) {
-            echo 'Panel de Administración | PronttoGo';
+            echo 'Panel de AdministraciÃ³n | PronttoGo';
         } else {
             echo h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo');
         }
@@ -41,7 +41,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <!-- Alpine.js (Solo Admin) -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <?php else: ?>
-        <!-- Favicon y Estilos Dinámicos (Solo Público) -->
+        <!-- Favicon y Estilos DinÃ¡micos (Solo PÃºblico) -->
         <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.svg">
         <link rel="shortcut icon" href="/assets/img/favicon.svg">
@@ -59,7 +59,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         ?>
         <meta name="theme-color" content="<?= h($colors['primary']) ?>">
         
-        <!-- Configuración de Tema Personalizado para Tailwind CSS v4.0 -->
+        <!-- ConfiguraciÃ³n de Tema Personalizado para Tailwind CSS v4.0 -->
         <style type="text/tailwindcss">
             @theme {
                 --color-primary: <?= $colors['primary'] ?>;
@@ -102,7 +102,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     <?php endif; ?>
                 </div>
                 <a href="/administrador/index.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
-                    Iniciar Sesión
+                    Iniciar SesiÃ³n
                 </a>
             </div>
         </header>

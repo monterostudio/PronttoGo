@@ -1,29 +1,36 @@
 {
   "functions": {
-    "api/*.php": {
+    "publica/*.php": {
+      "runtime": "vercel-php@0.7.2"
+    },
+    "administrador/*.php": {
       "runtime": "vercel-php@0.7.2"
     }
   },
   "rewrites": [
     {
       "source": "/admin",
-      "destination": "/api/admin.php"
+      "destination": "/administrador/index.php"
     },
     {
       "source": "/admin.php",
-      "destination": "/api/admin.php"
+      "destination": "/administrador/index.php"
+    },
+    {
+      "source": "/administrador",
+      "destination": "/administrador/index.php"
     },
     {
       "source": "/legal",
-      "destination": "/api/legal.php"
+      "destination": "/publica/legal.php"
     },
     {
       "source": "/legal.php",
-      "destination": "/api/legal.php"
+      "destination": "/publica/legal.php"
     },
     {
       "source": "/",
-      "destination": "/api/index.php"
+      "destination": "/publica/index.php"
     }
   ]
 }

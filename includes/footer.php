@@ -13,7 +13,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
             <div class="flex items-center gap-4">
                 <span>&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-                <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">Términos y Privacidad</a>
+                <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">TÃ©rminos y Privacidad</a>
             </div>
             <a href="/administrador/index.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
@@ -27,7 +27,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <button onclick="toggleCartDrawer(true)" class="w-full py-4 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
             <div class="flex items-center space-x-2">
                 <span><i class="bi bi-clock-fill text-primary"></i></span>
-                <span id="cart-count">0 artículos</span>
+                <span id="cart-count">0 artÃ­culos</span>
             </div>
             <div class="text-right">
                 <span id="cart-total" class="block font-black text-sm md:text-base">$0.00</span>
@@ -47,7 +47,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <div class="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
                 <div>
                     <h3 class="font-extrabold text-lg text-slate-800">Mi Pedido</h3>
-                    <p class="text-xs text-slate-400">Verifica los artículos seleccionados</p>
+                    <p class="text-xs text-slate-400">Verifica los artÃ­culos seleccionados</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">
@@ -70,7 +70,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 <div id="customer-data-form" class="border-t border-slate-100 pt-5 space-y-4">
                     <div class="border-b border-slate-50 pb-2">
                         <h4 class="font-extrabold text-sm text-slate-800">Datos del Cliente</h4>
-                        <p class="text-[10px] text-slate-400">Completa esta información para procesar tu pedido.</p>
+                        <p class="text-[10px] text-slate-400">Completa esta informaciÃ³n para procesar tu pedido.</p>
                     </div>
 
                     <!-- Nombre -->
@@ -98,16 +98,16 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         </div>
                         <p id="delivery-cost-note" class="text-[10px] text-amber-600 font-semibold flex items-center gap-1 mt-1 pl-1">
                             <?php if (isset($costo_delivery) && $costo_delivery > 0): ?>
-                                <i class="bi bi-truck"></i> Costo de envío: $<?= number_format($costo_delivery, 2) ?>
+                                <i class="bi bi-truck"></i> Costo de envÃ­o: $<?= number_format($costo_delivery, 2) ?>
                             <?php else: ?>
-                                <i class="bi bi-truck"></i> Envío gratis o a acordar con el vendedor.
+                                <i class="bi bi-truck"></i> EnvÃ­o gratis o a acordar con el vendedor.
                             <?php endif; ?>
                         </p>
                     </div>
 
-                    <!-- Dirección -->
+                    <!-- DirecciÃ³n -->
                     <div id="delivery-address-container" class="space-y-1.5 transition-all duration-300">
-                        <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega</label>
+                        <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">DirecciÃ³n de Entrega</label>
                         <div class="relative">
                             <span class="absolute left-3 top-3 text-slate-400 text-sm"><i class="bi bi-geo-alt-fill"></i></span>
                             <textarea id="cust-address" placeholder="Indica calle, edificio, nro de casa y puntos de referencia..." rows="2" required
@@ -115,17 +115,17 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         </div>
                     </div>
 
-                    <!-- Método de pago -->
+                    <!-- MÃ©todo de pago -->
                     <div class="space-y-1.5">
-                        <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Método de Pago</label>
+                        <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">MÃ©todo de Pago</label>
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs"><i class="bi bi-credit-card-fill"></i></span>
                             <select id="cust-payment" 
                                     class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none pr-8">
-                                <option value="Pago Móvil">Pago Móvil (Bolívares - VES)</option>
-                                <option value="Efectivo Divisas">Efectivo Divisas (Dólares - USD)</option>
-                                <option value="Zelle">Zelle (Dólares - USD)</option>
-                                <option value="Efectivo Bs.">Efectivo Bolívares (VES)</option>
+                                <option value="Pago MÃ³vil">Pago MÃ³vil (BolÃ­vares - VES)</option>
+                                <option value="Efectivo Divisas">Efectivo Divisas (DÃ³lares - USD)</option>
+                                <option value="Zelle">Zelle (DÃ³lares - USD)</option>
+                                <option value="Efectivo Bs.">Efectivo BolÃ­vares (VES)</option>
                                 <option value="Tarjeta / Punto de Venta">Tarjeta / Punto de Venta</option>
                             </select>
                         </div>
@@ -141,7 +141,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <span id="drawer-subtotal" class="font-bold text-slate-700">$0.00</span>
                     </div>
                     <div id="drawer-delivery-row" class="flex justify-between">
-                        <span>Costo de Envío</span>
+                        <span>Costo de EnvÃ­o</span>
                         <span id="drawer-delivery-cost" class="font-bold text-slate-700">$0.00</span>
                     </div>
                 </div>
@@ -163,7 +163,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         </div>
     </div>
 
-    <!-- Script de configuración y app -->
+    <!-- Script de configuraciÃ³n y app -->
     <script>
         window.pronttogoConfig = {
             whatsappNumber: <?= json_encode($config['telefono_whatsapp'] ?? '') ?>,

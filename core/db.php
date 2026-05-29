@@ -4,8 +4,8 @@ require_once __DIR__ . '/config.php';
 function check_supabase_config() {
     if (empty(SUPABASE_URL) || empty(SUPABASE_KEY)) {
         die('<div style="font-family:sans-serif;padding:20px;background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;max-width:500px;margin:50px auto;">
-            <h3 style="margin-top:0;">Error de Conexión</h3>
-            <p>Las variables de entorno <strong>SUPABASE_URL</strong> y <strong>SUPABASE_KEY</strong> no están configuradas.</p>
+            <h3 style="margin-top:0;">Error de ConexiÃ³n</h3>
+            <p>Las variables de entorno <strong>SUPABASE_URL</strong> y <strong>SUPABASE_KEY</strong> no estÃ¡n configuradas.</p>
         </div>');
     }
 }
@@ -42,7 +42,7 @@ function supabase_request(string $method, string $path, array $data = null) {
         $errorMsg = curl_error($ch);
         curl_close($ch);
         error_log("PronttoGo cURL Error: " . $errorMsg);
-        return ['success' => false, 'status' => 500, 'error' => 'Error de conexión.'];
+        return ['success' => false, 'status' => 500, 'error' => 'Error de conexiÃ³n.'];
     }
     curl_close($ch);
     return [
