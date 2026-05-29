@@ -23,7 +23,6 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS v4.0 Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
     <!-- Bootstrap Icons -->

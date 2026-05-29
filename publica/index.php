@@ -34,10 +34,23 @@ $horario_local = !empty($config['horario']) ? $config['horario'] : '';
 // 2. CONSULTAR CATEGORÍAS (Ordenadas)
 $resCategorias = supabase_request('GET', 'categorias?order=orden_visual.asc');
 $categorias = $resCategorias['success'] ? $resCategorias['data'] : [];
+if (!empty($categorias)) {
+    foreach ($categorias as &$c) {
+        $c['nombre'] = $c['nombre_categoria'] ?? $c['nombre'] ?? 'Sin Categoría';
+    }
+    unset($c);
+}
 
 // 3. CONSULTAR PRODUCTOS DISPONIBLES
 $resProductos = supabase_request('GET', 'productos?disponible=eq.true&order=id.asc');
 $productos = $resProductos['success'] ? $resProductos['data'] : [];
+if (!empty($productos)) {
+    foreach ($productos as &$p) {
+        $p['nombre'] = $p['nombre'] ?? $p['nombre_producto'] ?? 'Sin Nombre';
+        $p['precio_usd'] = $p['precio_usd'] ?? $p['precio'] ?? 0;
+    }
+    unset($p);
+}
 
 // Agrupar productos por categoría
 $productosPorCategoria = [];
@@ -208,8 +221,11 @@ require_once __DIR__ . '/../includes/header.php';
 
                             {/* Categorías Deslizables */}
                             {categories.length > 0 && (
-                                <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
-                                    <nav className="flex space-x-2.5 overflow-x-auto no-scrollbar scroll-smooth">
+                                <div className="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white/95 backdrop-blur-sm sticky top-16 z-20 shadow-sm">
+                                    <nav 
+                                        className="flex overflow-x-auto no-scrollbar scroll-smooth"
+                                        style={{padding: '10px 16px', gap: '8px', scrollSnapType: 'x mandatory'}}
+                                    >
                                         {categories.map(cat => {
                                             const hasProducts = products.some(p => p.categoria_id === cat.id);
                                             if (!hasProducts) return null;
@@ -218,6 +234,7 @@ require_once __DIR__ . '/../includes/header.php';
                                                 <button
                                                     key={cat.id}
                                                     onClick={() => setSelectedCategory(cat.id)}
+                                                    style={{scrollSnapAlign: 'start', flexShrink: 0}}
                                                     className={`px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 ${
                                                         isActive 
                                                             ? 'bg-primary border-primary text-white shadow-sm' 
@@ -228,6 +245,8 @@ require_once __DIR__ . '/../includes/header.php';
                                                 </button>
                                             );
                                         })}
+                                        {/* Espaciador al final para que el último elemento sea accesible */}
+                                        <div style={{flexShrink: 0, width: '4px'}}></div>
                                     </nav>
                                 </div>
                             )}

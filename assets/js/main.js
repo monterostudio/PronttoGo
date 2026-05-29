@@ -239,9 +239,11 @@ function toggleCartDrawer(show) {
     if (!drawer) return;
     if (show) {
         drawer.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
         setTimeout(() => drawer.classList.add('opacity-100'), 10);
     } else {
         drawer.classList.remove('opacity-100');
+        document.body.style.overflow = '';
         setTimeout(() => drawer.classList.add('hidden'), 300);
     }
 }
@@ -399,6 +401,10 @@ function updateCartUI() {
 
         cartItemsContainer.appendChild(itemEl);
     });
+
+    // Actualizar badge en botón flotante
+    const cartBadge = document.getElementById('cart-badge');
+    if (cartBadge) cartBadge.textContent = totalItems > 99 ? '99+' : totalItems;
 
     floatingCart.classList.remove('hidden');
 }
