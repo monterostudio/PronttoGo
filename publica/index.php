@@ -172,7 +172,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
                             </p>
                             <div className="pt-2">
-                                <a href="/administrador/index.php" className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all shadow-sm">
+                                <a href="/admin" className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all shadow-sm">
                                     Ir al Panel <i className="bi bi-gear-fill"></i>
                                 </a>
                             </div>

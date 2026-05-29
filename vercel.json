@@ -18,6 +18,10 @@
       "destination": "/api/admin.php"
     },
     {
+      "source": "/administrador/index.php",
+      "destination": "/api/admin.php"
+    },
+    {
       "source": "/legal",
       "destination": "/api/legal.php"
     },

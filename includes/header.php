@@ -101,7 +101,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
-                <a href="/administrador/index.php" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
+                <a href="/admin" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
                     Iniciar Sesión
                 </a>
             </div>

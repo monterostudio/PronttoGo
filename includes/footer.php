@@ -15,7 +15,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 <span>&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
                 <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">Términos y Privacidad</a>
             </div>
-            <a href="/administrador/index.php" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+            <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
                 <span class="text-primary font-extrabold">Montero Studio</span>
             </a>
