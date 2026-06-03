@@ -310,9 +310,7 @@ function updateCartUI() {
     const tasaTipo = pronttogoConfig.tasaTipo;
     if (tasaDolar > 1) {
         const totalLocal = grandTotal * tasaDolar;
-        const formattedLocal = tasaTipo === 'trm' 
-            ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-            : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedLocal = totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         
         const cartTotalLocal = document.getElementById('cart-total-local');
         const drawerTotalLocal = document.getElementById('drawer-total-local');
@@ -530,9 +528,7 @@ function checkoutOrder() {
     let formattedLocal = "";
     if (tasaDolar > 1) {
         const totalLocal = grandTotal * tasaDolar;
-        formattedLocal = tasaTipo === 'trm' 
-            ? totalLocal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-            : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        formattedLocal = totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     const storeName = pronttogoConfig.nombre;

@@ -31,17 +31,7 @@ function fetch_bcv_rate() {
     return 0;
 }
 
-function fetch_trm_rate() {
-    $ctx = stream_context_create(['http' => ['timeout' => 3]]);
-    $res = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $ctx);
-    if ($res) {
-        $data = json_decode($res, true);
-        if (isset($data['rates']['COP'])) {
-            return floatval($data['rates']['COP']);
-        }
-    }
-    return 0;
-}
+
 
 // Manejo de peticiones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -76,12 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($tasa_tipo === 'bcv') {
                 $bcv = fetch_bcv_rate();
                 if ($bcv > 0) $tasa_dolar = $bcv;
-            } elseif ($tasa_tipo === 'trm') {
-                $trm = fetch_trm_rate();
-                if ($trm > 0) $tasa_dolar = $trm;
             }
 
             $tipo_negocio = $_POST['tipo_negocio'] ?? 'gastronomia';
+            
+            // OBTENER CONFIGURACIÓN ACTUAL ANTES DE ACTUALIZAR
+            $resConfigActual = supabase_request('GET', 'configuracion?id=eq.1');
+            $current_tipo_negocio = ($resConfigActual['success'] && !empty($resConfigActual['data'])) ? ($resConfigActual['data'][0]['tipo_negocio'] ?? 'gastronomia') : 'gastronomia';
 
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
@@ -100,38 +91,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
             supabase_request('PATCH', 'configuracion?id=eq.1', $data);
 
-            // AUTO-PRECARGAR CATEGORÍAS SI LA LISTA ESTÁ TOTALMENTE VACÍA
-            $resCat = supabase_request('GET', 'categorias?limit=1');
-            if ($resCat['success'] && empty($resCat['data'])) {
-                // Intentar obtener desde la base de datos (tabla categorias_predeterminadas)
+            // LÓGICA INTELIGENTE DE CATÁLOGOS AL CAMBIAR TIPO DE NEGOCIO O SI ESTÁ VACÍO
+            $resCat = supabase_request('GET', 'categorias');
+            $current_cats = $resCat['success'] ? $resCat['data'] : [];
+            
+            $categorias_defecto = [
+                'gastronomia' => ['Entradas', 'Platos Principales', 'Postres', 'Bebidas'],
+                'comida_rapida' => ['Hamburguesas', 'Perros Calientes', 'Pizzas', 'Bebidas y Combos'],
+                'minimarket' => ['Víveres y Alimentos', 'Charcutería y Lácteos', 'Bebidas y Licores', 'Limpieza y Hogar'],
+                'farmacia' => ['Medicamentos', 'Cuidado Personal', 'Bienestar y Suplementos', 'Bebés y Maternidad'],
+                'boutique' => ['Damas', 'Caballeros', 'Niños', 'Calzado', 'Accesorios'],
+                'ferreteria_repuestos' => ['Herramientas', 'Electricidad', 'Plomería', 'Repuestos y Tornillos'],
+                'belleza_estetica' => ['Cuidado Capilar', 'Maquillaje', 'Cuidado de la Piel', 'Perfumería'],
+                'otros' => ['Productos Generales', 'Ofertas Especiales', 'Nuevos Ingresos']
+            ];
+
+            $es_vacio = empty($current_cats);
+            $debe_cargar = $es_vacio;
+            
+            if (!$es_vacio && $tipo_negocio !== $current_tipo_negocio) {
+                // Verificar si las categorías actuales coinciden exactamente con las predeterminadas del negocio anterior
+                $old_defaults = [];
+                $resPredOld = supabase_request('GET', 'categorias_predeterminadas?tipo_negocio=eq.' . urlencode($current_tipo_negocio) . '&order=orden_visual.asc');
+                if ($resPredOld['success'] && !empty($resPredOld['data'])) {
+                    foreach ($resPredOld['data'] as $p) {
+                        $old_defaults[] = $p['nombre'];
+                    }
+                }
+                if (empty($old_defaults)) {
+                    $old_defaults = $categorias_defecto[$current_tipo_negocio] ?? [];
+                }
+
+                if (count($current_cats) === count($old_defaults)) {
+                    $current_names = array_map(function($c) { return $c['nombre_categoria'] ?? $c['nombre'] ?? ''; }, $current_cats);
+                    $son_iguales = true;
+                    foreach ($old_defaults as $od) {
+                        if (!in_array($od, $current_names)) {
+                            $son_iguales = false;
+                            break;
+                        }
+                    }
+                    if ($son_iguales) {
+                        $debe_cargar = true;
+                        // Borrar las categorías antiguas al cargar un nuevo catálogo inteligente
+                        foreach ($current_cats as $cat) {
+                            supabase_request('DELETE', 'categorias?id=eq.' . $cat['id']);
+                        }
+                    }
+                }
+            }
+
+            if ($debe_cargar) {
+                $new_cats = [];
                 $resPred = supabase_request('GET', 'categorias_predeterminadas?tipo_negocio=eq.' . urlencode($tipo_negocio) . '&order=orden_visual.asc');
-                
-                $cats = [];
                 if ($resPred['success'] && !empty($resPred['data'])) {
                     foreach ($resPred['data'] as $p) {
-                        $cats[] = $p['nombre'];
+                        $new_cats[] = $p['nombre'];
                     }
                 }
                 
-                // Fallback por si acaso no han corrido la migración de la tabla predeterminadas
-                if (empty($cats)) {
-                    $categorias_defecto = [
-                        'gastronomia' => ['Entradas', 'Platos Principales', 'Postres', 'Bebidas'],
-                        'comida_rapida' => ['Hamburguesas', 'Perros Calientes', 'Pizzas', 'Bebidas y Combos'],
-                        'minimarket' => ['Víveres y Alimentos', 'Charcutería y Lácteos', 'Bebidas y Licores', 'Limpieza y Hogar'],
-                        'farmacia' => ['Medicamentos', 'Cuidado Personal', 'Bienestar y Suplementos', 'Bebés y Maternidad'],
-                        'boutique' => ['Damas', 'Caballeros', 'Niños', 'Calzado', 'Accesorios'],
-                        'ferreteria_repuestos' => ['Herramientas', 'Electricidad', 'Plomería', 'Repuestos y Tornillos'],
-                        'belleza_estetica' => ['Cuidado Capilar', 'Maquillaje', 'Cuidado de la Piel', 'Perfumería'],
-                        'otros' => ['Productos Generales', 'Ofertas Especiales', 'Nuevos Ingresos']
-                    ];
-                    $cats = $categorias_defecto[$tipo_negocio] ?? $categorias_defecto['gastronomia'];
+                if (empty($new_cats)) {
+                    $new_cats = $categorias_defecto[$tipo_negocio] ?? $categorias_defecto['gastronomia'];
                 }
 
-                foreach ($cats as $idx => $catName) {
+                foreach ($new_cats as $idx => $catName) {
                     $catData = [
                         'nombre' => $catName,
-                        'nombre_categoria' => $catName, // Compatibilidad doble de nombre de columna
+                        'nombre_categoria' => $catName,
                         'orden_visual' => ($idx + 1) * 10
                     ];
                     supabase_request('POST', 'categorias', $catData);
@@ -448,9 +474,8 @@ if (!is_admin_logged_in()): ?>
                                                 <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
                                             </span>
                                             <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
-                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Manual (Ingresada por ti)</option>
-                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Automática BCV (Bolívares - Venezuela)</option>
-                                                <option value="trm" <?= ($config['tasa_tipo'] ?? '') === 'trm' ? 'selected' : '' ?>>Automática TRM (Pesos - Colombia)</option>
+                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Fija (Definida por el comercio)</option>
+                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Oficial (Banco Central de Venezuela)</option>
                                             </select>
                                             <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                                 <i class="bi bi-chevron-down text-slate-400"></i>

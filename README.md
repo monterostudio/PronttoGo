@@ -29,7 +29,7 @@ El cliente navega el catálogo, agrega productos al carrito, y con un solo clic 
 |---|---|
 | 🛒 **Carrito digital** | Acumulación de productos con contador de artículos y total en tiempo real |
 | 💬 **Pedido por WhatsApp** | Mensaje formateado y listo para recibir en el negocio |
-| 💱 **Tasa de cambio** | Soporte para moneda local (Bolívares / Pesos colombianos) con tasa manual o automática (BCV / TRM) |
+| 💱 **Tasa de cambio** | Soporte para moneda local (Bolívares) con tasa fija o automática (BCV) |
 | 🔐 **Panel de administración** | CRUD completo de productos y categorías, protegido con login, CSRF y bloqueo por fuerza bruta |
 | 🖼️ **Imágenes por URL** | Las fotos de productos se cargan desde cualquier URL pública |
 | 📱 **100% responsivo** | Diseño optimizado para móviles, tablets y escritorio |
@@ -81,7 +81,7 @@ Registro único (`id = 1`) con los datos del comercio.
 | `telefono_whatsapp` | TEXT | Número con código de país (ej: `584121234567`) |
 | `logo_url` | TEXT | URL del logotipo (NULL = usa el logo de PronttoGo) |
 | `tasa_dolar` | NUMERIC | Tasa de cambio activa (1 USD = X moneda local) |
-| `tasa_tipo` | TEXT | `manual` · `bcv` · `trm` |
+| `tasa_tipo` | TEXT | `manual` · `bcv` |
 | `admin_user` | TEXT | Usuario del panel de administración |
 | `admin_password` | TEXT | Contraseña (texto plano o hash bcrypt) |
 

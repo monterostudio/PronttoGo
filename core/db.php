@@ -54,7 +54,7 @@ function supabase_request(string $method, string $path, array $data = null) {
 }
 
 function fetch_automatic_rate(string $type): ?float {
-    if ($type === 'bcv' || $type === 'trm') {
+    if ($type === 'bcv') {
         $ch = curl_init('https://open.er-api.com/v6/latest/USD');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -63,8 +63,7 @@ function fetch_automatic_rate(string $type): ?float {
         curl_close($ch);
         if ($res) {
             $data = json_decode($res, true);
-            $key = $type === 'bcv' ? 'VES' : 'COP';
-            $rate = floatval($data['rates'][$key] ?? null);
+            $rate = floatval($data['rates']['VES'] ?? null);
             return $rate > 0 ? $rate : null;
         }
     }

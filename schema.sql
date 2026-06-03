@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.configuracion (
     logo_url            TEXT            NULL,
     tasa_dolar          NUMERIC(12, 2)  NOT NULL DEFAULT 1.00,
     tasa_tipo           TEXT            NOT NULL DEFAULT 'manual'
-                                        CHECK (tasa_tipo IN ('manual', 'bcv', 'trm')),
+                                        CHECK (tasa_tipo IN ('manual', 'bcv')),
     admin_user          TEXT            NOT NULL DEFAULT 'admin',
     admin_password      TEXT            NOT NULL DEFAULT 'admin123',
     tipo_negocio        TEXT            NOT NULL DEFAULT 'gastronomia'
@@ -37,7 +37,7 @@ COMMENT ON COLUMN public.configuracion.nombre           IS 'Nombre visible del c
 COMMENT ON COLUMN public.configuracion.telefono_whatsapp IS 'Número de WhatsApp completo con código de país (ej: 584121234567).';
 COMMENT ON COLUMN public.configuracion.logo_url         IS 'URL pública de la imagen del logotipo del comercio. NULL muestra el logo de PronttoGo.';
 COMMENT ON COLUMN public.configuracion.tasa_dolar       IS 'Tasa de cambio activa: cuántas unidades locales equivalen a 1 USD.';
-COMMENT ON COLUMN public.configuracion.tasa_tipo        IS 'Fuente de la tasa: manual (ingresada), bcv (Venezuela), trm (Colombia).';
+COMMENT ON COLUMN public.configuracion.tasa_tipo        IS 'Fuente de la tasa: manual (fija definida por comercio), bcv (Venezuela).';
 COMMENT ON COLUMN public.configuracion.admin_user       IS 'Usuario para acceder al panel de administración.';
 COMMENT ON COLUMN public.configuracion.admin_password   IS 'Contraseña en texto plano o hash bcrypt del administrador.';
 COMMENT ON COLUMN public.configuracion.tipo_negocio     IS 'Nicho o rubro del comercio local (gastronomia, boutique, etc).';

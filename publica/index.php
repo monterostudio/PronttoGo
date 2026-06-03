@@ -25,8 +25,8 @@ if ($response['success'] && !empty($response['data'])) {
 $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
 $tasa_dolar = floatval($config['tasa_dolar'] ?? 1.00);
 $tasa_tipo = $config['tasa_tipo'] ?? 'manual';
-$moneda_local_nombre = !empty($config['moneda_nombre']) ? $config['moneda_nombre'] : (($tasa_tipo === 'trm') ? 'COP' : 'Bs.');
-$moneda_local_simbolo = !empty($config['moneda_simbolo']) ? $config['moneda_simbolo'] : (($tasa_tipo === 'trm') ? '$' : 'Bs.');
+$moneda_local_nombre = !empty($config['moneda_nombre']) ? $config['moneda_nombre'] : 'Bs.';
+$moneda_local_simbolo = !empty($config['moneda_simbolo']) ? $config['moneda_simbolo'] : 'Bs.';
 $costo_delivery = floatval($config['costo_delivery'] ?? 0.00);
 $direccion_local = !empty($config['direccion']) ? $config['direccion'] : '';
 $horario_local = !empty($config['horario']) ? $config['horario'] : '';
@@ -267,9 +267,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     {filteredProducts.map(prod => {
                                         const formattedPrice = parseFloat(prod.precio_usd).toFixed(2);
                                         const totalLocal = prod.precio_usd * tasaDolar;
-                                        const formattedLocal = tasaTipo === 'trm' 
-                                            ? Math.round(totalLocal).toLocaleString('es-CO')
-                                            : totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                        const formattedLocal = totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                                         const isAgotado = prod.stock !== null && parseInt(prod.stock) <= 0;
                                         const isStockCritico = prod.stock !== null && parseInt(prod.stock) > 0 && parseInt(prod.stock) <= 5;
