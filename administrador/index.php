@@ -357,6 +357,10 @@ if (!is_admin_logged_in()): ?>
         <div class="absolute -top-32 -left-32 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div class="absolute top-1/2 -right-32 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-xl w-full max-w-md relative z-10 border border-white">
+            <!-- Icono de Información -->
+            <button type="button" onclick="toggleStoreInfoModal(true)" class="absolute top-5 right-5 text-slate-400 hover:text-indigo-600 transition-colors focus:outline-none" title="Información de la Tienda">
+                <i class="bi bi-info-circle-fill text-xl"></i>
+            </button>
             <div class="text-center mb-8">
                 <div class="max-w-[200px] sm:max-w-[240px] mx-auto mb-4 drop-shadow-sm">
                     <?= render_logo('login', $config) ?>
@@ -395,6 +399,158 @@ if (!is_admin_logged_in()): ?>
                 </button>
             </form>
         </div>
+
+        <!-- Modal de Información del Comercio -->
+        <div id="store-info-modal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <!-- Backdrop -->
+            <div onclick="toggleStoreInfoModal(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
+            
+            <!-- Modal Content (Centered Card) -->
+            <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-sm w-full p-6 relative z-10 flex flex-col items-center text-center transform scale-95 transition-transform duration-300">
+                <!-- Close Button -->
+                <button onclick="toggleStoreInfoModal(false)" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+                    <i class="bi bi-x-lg text-[10px]"></i>
+                </button>
+
+                <!-- Logo at the top -->
+                <div class="mb-2 shrink-0">
+                    <?= render_logo('login', $config) ?>
+                </div>
+
+                <!-- Store Name -->
+                <h3 class="font-extrabold text-base text-slate-800 mb-1">
+                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+                </h3>
+                
+                <hr class="w-12 border-t-2 border-slate-100 my-3">
+
+                <!-- Info Grid (Centrada) -->
+                <div class="space-y-3.5 w-full overflow-y-auto max-h-[60vh] pr-1">
+                    <!-- Teléfono / WhatsApp -->
+                    <?php if (!empty($config['telefono_whatsapp'])): ?>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-1 border border-emerald-100/50">
+                                <i class="bi bi-whatsapp text-sm"></i>
+                            </div>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Teléfono / WhatsApp</span>
+                            <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="text-xs font-bold text-slate-600 hover:text-emerald-600 transition-colors mt-1">
+                                <?= h($config['telefono_whatsapp']) ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Dirección -->
+                    <?php if (!empty($config['direccion'])): ?>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-1 border border-indigo-100/50">
+                                <i class="bi bi-geo-alt-fill text-sm"></i>
+                            </div>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Dirección</span>
+                            <span class="text-xs font-semibold text-slate-650 px-2 leading-relaxed mt-1 text-center break-words w-full"><?= h($config['direccion']) ?></span>
+                            <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="inline-flex items-center gap-1 text-[9px] font-bold text-primary hover:underline mt-1.5">
+                                Ver en mapa <i class="bi bi-arrow-up-right"></i>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Horario Laboral -->
+                    <?php if (!empty($config['horario'])): ?>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-1 border border-amber-100/50">
+                                <i class="bi bi-clock-fill text-sm"></i>
+                            </div>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Horario Laboral</span>
+                            <span class="text-xs font-semibold text-slate-650 mt-1 text-center"><?= h($config['horario']) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Redes Sociales -->
+                    <?php
+                    $has_socials = !empty($config['correo_electronico']) || 
+                                   !empty($config['social_instagram']) || 
+                                   !empty($config['social_tiktok']) || 
+                                   !empty($config['social_facebook']) || 
+                                   !empty($config['social_telegram']);
+                    ?>
+                    <?php if ($has_socials): ?>
+                        <div class="flex flex-col items-center pt-1.5">
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2 leading-none">Síguenos en Redes</span>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <?php if (!empty($config['correo_electronico'])): ?>
+                                    <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
+                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
+                                        <i class="bi bi-envelope-fill text-xs"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($config['social_instagram'])): ?>
+                                    <a href="<?= h($config['social_instagram']) ?>" target="_blank" title="Instagram" 
+                                       class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all border border-rose-100/50 hover:scale-[1.05]">
+                                        <i class="bi bi-instagram text-xs"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($config['social_tiktok'])): ?>
+                                    <a href="<?= h($config['social_tiktok']) ?>" target="_blank" title="TikTok" 
+                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
+                                        <i class="bi bi-tiktok text-xs"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($config['social_facebook'])): ?>
+                                    <a href="<?= h($config['social_facebook']) ?>" target="_blank" title="Facebook" 
+                                       class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition-all border border-blue-100/50 hover:scale-[1.05]">
+                                        <i class="bi bi-facebook text-xs"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($config['social_telegram'])): ?>
+                                    <?php 
+                                    $tg = $config['social_telegram'];
+                                    if (strpos($tg, 'http') === false) {
+                                        $tg = 'https://t.me/' . ltrim($tg, '@');
+                                    }
+                                    ?>
+                                    <a href="<?= h($tg) ?>" target="_blank" title="Telegram" 
+                                       class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center transition-all border border-sky-100/50 hover:scale-[1.05]">
+                                        <i class="bi bi-telegram text-xs"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Mini Footer of the App at the very end of the modal -->
+                <div class="mt-4 pt-3 border-t border-slate-150 w-full text-center">
+                    <span class="text-[9px] uppercase font-bold text-slate-400">Powered by</span>
+                    <span class="text-primary font-extrabold text-[10px] block mt-0.5">Montero Studio</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleStoreInfoModal(show) {
+                const modal = document.getElementById('store-info-modal');
+                if (!modal) return;
+                const card = modal.querySelector('.transform');
+                if (show) {
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }, 10);
+                } else {
+                    modal.classList.add('opacity-0');
+                    card.classList.remove('scale-100');
+                    card.classList.add('scale-95');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                    }, 300);
+                }
+            }
+        </script>
     </div>
 <?php else: ?>
     <!-- DASHBOARD -->

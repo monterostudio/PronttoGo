@@ -9,13 +9,13 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 </html>
 <?php else: ?>
     <!-- Footer Bar -->
-    <footer class="bg-slate-900 border-t border-slate-950 py-6 mt-auto text-slate-400">
-        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold">
+    <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
+        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
             <div class="flex items-center gap-4">
-                <span class="text-slate-300">&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-                <a href="/legal" class="text-slate-400 hover:text-white transition-colors">Términos y Privacidad</a>
+                <span>&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+                <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">Términos y Privacidad</a>
             </div>
-            <a href="/admin" class="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1">
+            <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
                 <span class="text-primary font-extrabold">Montero Studio</span>
             </a>
