@@ -74,9 +74,9 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
     <div class="relative w-full bg-gradient-to-br from-[var(--hero-bg-from)] via-[var(--hero-bg-via)] to-[var(--hero-bg-to)] text-slate-800 overflow-hidden border-b border-slate-200/80 shadow-sm">
-        <div class="absolute -right-10 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-primary/3 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-10 top-0 w-96 h-96 pointer-events-none" style="background: radial-gradient(circle, var(--hero-glow) 0%, transparent 70%);"></div>
+        <div class="absolute -left-10 bottom-0 w-96 h-96 pointer-events-none" style="background: radial-gradient(circle, rgba(42,53,67,0.03) 0%, transparent 70%);"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 pointer-events-none" style="background: radial-gradient(circle, var(--hero-glow) 0%, transparent 70%);"></div>
         
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 md:pt-16 md:pb-12 flex flex-col items-center text-center space-y-4 relative z-10">
             <?= render_logo('hero', $config) ?>
@@ -146,7 +146,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Categorías Deslizables -->
                 <?php if (!empty($categorias)): ?>
-                    <div class="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white/95 backdrop-blur-sm sticky top-16 z-20 shadow-sm">
+                    <div class="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
                         <nav class="flex overflow-x-auto no-scrollbar scroll-smooth" style="padding: 10px 16px; gap: 8px; scroll-snap-type: x mandatory;">
                             <?php 
                             // Encontrar la primera categoría activa con productos para marcarla como activa por defecto
@@ -209,7 +209,7 @@ require_once __DIR__ . '/../includes/header.php';
                         $prod_stock = $prod['stock'] !== null ? intval($prod['stock']) : 'null';
                     ?>
                         <div 
-                            class="product-card bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 flex items-stretch justify-between gap-4 relative group cursor-pointer hover:shadow-md hover:border-slate-200 <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
+                            class="product-card bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-[box-shadow,border-color] duration-300 flex items-stretch justify-between gap-4 relative group cursor-pointer hover:shadow-md hover:border-slate-200 <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
                             data-category-id="<?= $prod['categoria_id'] ?>"
                             data-name="<?= h(strtolower($prod['nombre'])) ?>"
                             data-description="<?= h(strtolower($prod['descripcion'] ?? '')) ?>"

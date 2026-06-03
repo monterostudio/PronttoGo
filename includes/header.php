@@ -38,6 +38,25 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
     <!-- Estilos Dinámicos -->
     <?php
+    if (!function_exists('adjust_brightness')) {
+        function adjust_brightness($hex, $percent) {
+            $hex = ltrim($hex, '#');
+            if (strlen($hex) == 3) {
+                $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+            }
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+
+            // Oscurecer multiplicando por (1 - percent)
+            $r = max(0, min(255, intval($r * (1 - $percent))));
+            $g = max(0, min(255, intval($g * (1 - $percent))));
+            $b = max(0, min(255, intval($b * (1 - $percent))));
+
+            return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT) . str_pad(dechex($g), 2, '0', STR_PAD_LEFT) . str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
+        }
+    }
+
     $color_niche = [
         'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#D5DEFF', 'hero-bg-to' => '#E8EDFF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
         'comida_rapida' => ['primary' => '#EF4444', 'primary-hover' => '#DC2626', 'soft' => '#FEF2F2', 'border-soft' => '#FEE2E2', 'hero-bg-from' => '#FFF1F1', 'hero-bg-via' => '#FDCFCF', 'hero-bg-to' => '#FFE4E4', 'hero-glow' => 'rgba(239,68,68,0.05)'],
@@ -54,7 +73,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     if (!empty($config['color_primario'])) {
         $custom_primary = $config['color_primario'];
         $colors['primary'] = $custom_primary;
-        $colors['primary-hover'] = $custom_primary;
+        $colors['primary-hover'] = adjust_brightness($custom_primary, 0.08);
         $colors['soft'] = $custom_primary . '0D'; // ~5% opacidad
         $colors['border-soft'] = $custom_primary . '26'; // ~15% opacidad
         $colors['hero-bg-from'] = $custom_primary . '0F'; // ~6% opacidad
@@ -77,10 +96,10 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             --hero-glow: <?= $colors['hero-glow'] ?>;
         }
         
-        /* Filtro de oscurecimiento automático para hovers con color personalizado */
+        /* Color de fondo hover dinámico nativo sin filtros lentos de repintado */
         .bg-primary:hover, .hover\:bg-primary:hover {
-            filter: brightness(0.92) !important;
-            transition: filter 0.2s ease-in-out;
+            background-color: var(--color-primary-hover) !important;
+            transition: background-color 0.2s ease-in-out;
         }
     </style>
 
@@ -102,7 +121,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             </div>
         <?php endif; ?>
         
-        <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
+        <header class="h-16 bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
             <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5 min-w-0">
                     <?= render_logo('header', $config) ?>
@@ -136,7 +155,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 <!-- Close Button -->
                 <button onclick="toggleStoreInfoModal(false)" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
                     <i class="bi bi-x-lg text-[10px]"></i>
-                <                <!-- Logo at the top -->
+                </button>
+                <!-- Logo at the top -->
                 <div class="mb-2 shrink-0">
                     <?php
                     $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
