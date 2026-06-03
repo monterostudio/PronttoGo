@@ -93,7 +93,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
                     <?= h($hero_subtitulo) ?>
                 </p>
-        <!-- Contenedor del Catálogo (Optimizado en PHP y Vanilla JS) -->
+            </div>
+        </div>
+    </div>
+    <!-- Contenedor del Catálogo (Optimizado en PHP y Vanilla JS) -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
         <div class="w-full space-y-6">
             <?php if (empty($productos)): ?>
