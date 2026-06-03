@@ -668,8 +668,8 @@ if (!is_admin_logged_in()): ?>
                                                         <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
                                                     </span>
                                                     <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
-                                                        <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Manual (Definida por el comercio)</option>
-                                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Tasa BCV (Banco Central de Venezuela)</option>
+                                                        <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Tasa Definida</option>
+                                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Tasa Banco (BCV)</option>
                                                     </select>
                                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                                         <i class="bi bi-chevron-down text-slate-400"></i>

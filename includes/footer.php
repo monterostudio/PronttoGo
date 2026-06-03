@@ -9,169 +9,20 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 </html>
 <?php else: ?>
     <!-- Footer Bar -->
-    <footer class="bg-white border-t border-slate-100 py-5 mt-auto">
-        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
+    <footer class="bg-slate-900 border-t border-slate-950 py-6 mt-auto text-slate-400">
+        <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold">
             <div class="flex items-center gap-4">
-                <span>&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
-                <a href="/legal" class="text-slate-400 hover:text-primary transition-colors">Términos y Privacidad</a>
+                <span class="text-slate-300">&copy; <?= date('Y') ?> <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?></span>
+                <a href="/legal" class="text-slate-400 hover:text-white transition-colors">Términos y Privacidad</a>
             </div>
-            <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+            <a href="/admin" class="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
                 <span class="text-primary font-extrabold">Montero Studio</span>
             </a>
         </div>
     </footer>
 
-    <!-- Drawer de Información del Local (Contacto, Redes, Dirección y Horario) -->
-    <div id="info-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
-        <div onclick="toggleInfoDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
-        
-        <!-- Panel de Información (Bottom Sheet en móvil, Right Sidebar en desktop) -->
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] w-full md:top-0 md:bottom-0 md:right-0 md:left-auto md:max-h-screen md:h-full md:w-[450px] bg-white rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl border-t md:border-t-0 md:border-l border-slate-100 flex flex-col overflow-hidden">
-            
-            <!-- Header del panel -->
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-shop text-primary text-sm"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-extrabold text-sm text-slate-800 leading-tight">Contacto e Info</h3>
-                        <p class="text-[10px] text-slate-400 leading-tight">Detalles y redes de la tienda</p>
-                    </div>
-                </div>
-                <button onclick="toggleInfoDrawer(false)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
-                    <i class="bi bi-x-lg text-xs"></i>
-                </button>
-            </div>
 
-            <!-- Contenido scrollable -->
-            <div class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- Branding -->
-                <div class="text-center space-y-3">
-                    <div class="flex justify-center">
-                        <?= render_logo('hero', $config) ?>
-                    </div>
-                    <?php if (!empty($config['telefono_whatsapp'])): ?>
-                        <div class="flex items-center justify-center gap-1.5 mt-2.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full text-[10px] font-bold w-fit mx-auto border border-emerald-100/50">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>Pedidos Activos por WhatsApp</span>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Ubicación y Horario -->
-                <?php if (!empty($config['direccion']) || !empty($config['horario'])): ?>
-                    <div class="space-y-3.5 pt-2">
-                        <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Atención y Ubicación</h5>
-                        <div class="grid grid-cols-1 gap-3">
-                            <?php if (!empty($config['direccion'])): ?>
-                                <div class="bg-slate-50/70 border border-slate-100 rounded-2xl p-4 flex gap-3.5 hover:border-slate-200 transition-colors">
-                                    <div class="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                                        <i class="bi bi-geo-alt-fill text-primary text-sm"></i>
-                                    </div>
-                                    <div class="space-y-1 text-left min-w-0 flex-1">
-                                        <span class="block font-bold text-slate-800 text-[10px] uppercase tracking-wider leading-none">Dirección física</span>
-                                        <span class="block text-xs text-slate-500 font-semibold leading-relaxed break-words"><?= h($config['direccion']) ?></span>
-                                        <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:underline mt-1.5">
-                                            Ver cómo llegar <i class="bi bi-arrow-up-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($config['horario'])): ?>
-                                <div class="bg-slate-50/70 border border-slate-100 rounded-2xl p-4 flex gap-3.5 hover:border-slate-200 transition-colors">
-                                    <div class="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                                        <i class="bi bi-clock-fill text-primary text-sm"></i>
-                                    </div>
-                                    <div class="space-y-1 text-left min-w-0 flex-1">
-                                        <span class="block font-bold text-slate-800 text-[10px] uppercase tracking-wider leading-none">Horario comercial</span>
-                                        <span class="block text-xs text-slate-500 font-semibold leading-relaxed"><?= h($config['horario']) ?></span>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Redes Sociales y Canales de Contacto -->
-                <div class="space-y-3.5 pt-4 border-t border-slate-100">
-                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Redes y Canales</h5>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <?php if (!empty($config['telefono_whatsapp'])): ?>
-                            <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="flex items-center gap-2.5 p-3 bg-emerald-50 hover:bg-emerald-100 border-emerald-100/70 text-emerald-700 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-whatsapp text-base"></i>
-                                <span>WhatsApp</span>
-                            </a>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($config['correo_electronico'])): ?>
-                            <a href="mailto:<?= h($config['correo_electronico']) ?>" class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100 border-slate-200/70 text-slate-700 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-envelope-fill text-base"></i>
-                                <span>Correo</span>
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if (!empty($config['social_instagram'])): ?>
-                            <a href="<?= h($config['social_instagram']) ?>" target="_blank" class="flex items-center gap-2.5 p-3 bg-rose-50 hover:bg-rose-100 border-rose-100/70 text-rose-700 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-instagram text-base"></i>
-                                <span>Instagram</span>
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if (!empty($config['social_tiktok'])): ?>
-                            <a href="<?= h($config['social_tiktok']) ?>" target="_blank" class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100 border-slate-200/70 text-slate-900 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-tiktok text-base"></i>
-                                <span>TikTok</span>
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if (!empty($config['social_facebook'])): ?>
-                            <a href="<?= h($config['social_facebook']) ?>" target="_blank" class="flex items-center gap-2.5 p-3 bg-blue-50 hover:bg-blue-100 border-blue-100/70 text-blue-700 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-facebook text-base"></i>
-                                <span>Facebook</span>
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if (!empty($config['social_telegram'])): ?>
-                            <?php 
-                            $telegram_url = $config['social_telegram'];
-                            if (strpos($telegram_url, 'http') === false) {
-                                $telegram_url = 'https://t.me/' . ltrim($telegram_url, '@');
-                            }
-                            ?>
-                            <a href="<?= h($telegram_url) ?>" target="_blank" class="flex items-center gap-2.5 p-3 bg-sky-50 hover:bg-sky-100 border-sky-100/70 text-sky-700 rounded-2xl border text-xs font-bold transition-all active:scale-[0.97] justify-center shadow-sm hover:shadow">
-                                <i class="bi bi-telegram text-base"></i>
-                                <span>Telegram</span>
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script de control del drawer de información -->
-    <script>
-        function toggleInfoDrawer(show) {
-            const drawer = document.getElementById('info-drawer');
-            if (!drawer) return;
-            if (show) {
-                drawer.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                setTimeout(() => {
-                    drawer.classList.add('opacity-100');
-                    drawer.classList.remove('opacity-0');
-                }, 10);
-            } else {
-                drawer.classList.add('opacity-0');
-                drawer.classList.remove('opacity-100');
-                document.body.style.overflow = '';
-                setTimeout(() => drawer.classList.add('hidden'), 300);
-            }
-        }
-    </script>
 
     <!-- Carrito Flotante (JS) -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-lg mx-auto z-40 hidden">

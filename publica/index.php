@@ -99,6 +99,116 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Contenedor del Catálogo (Optimizado en PHP y Vanilla JS) -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
         <div class="w-full space-y-6">
+            <?php
+            // Calcular columnas activas para la tarjeta de información
+            $has_direccion = !empty($config['direccion']);
+            $has_horario = !empty($config['horario']);
+            $has_redes = !empty($config['telefono_whatsapp']) || 
+                         !empty($config['correo_electronico']) || 
+                         !empty($config['social_instagram']) || 
+                         !empty($config['social_tiktok']) || 
+                         !empty($config['social_facebook']) || 
+                         !empty($config['social_telegram']);
+            
+            $cols_count = 0;
+            if ($has_direccion) $cols_count++;
+            if ($has_horario) $cols_count++;
+            if ($has_redes) $cols_count++;
+            ?>
+
+            <?php if ($cols_count > 0): ?>
+                <!-- Tarjeta de Información Fija Premium -->
+                <div class="bg-white border border-slate-100 rounded-3xl p-5 md:p-6 shadow-sm">
+                    <div class="grid grid-cols-1 <?= $cols_count === 3 ? 'md:grid-cols-3' : ($cols_count === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1') ?> gap-5 md:gap-0 divide-y md:divide-y-0 <?= $cols_count > 1 ? 'md:divide-x divide-slate-100' : '' ?>">
+                        
+                        <!-- Dirección -->
+                        <?php if ($has_direccion): ?>
+                            <div class="flex items-start gap-3.5 <?= $cols_count > 1 ? 'md:pr-5' : '' ?> py-3.5 md:py-0">
+                                <div class="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                                    <i class="bi bi-geo-alt-fill text-primary text-sm"></i>
+                                </div>
+                                <div class="space-y-1 text-left min-w-0 flex-1">
+                                    <span class="block font-bold text-slate-800 text-[9px] uppercase tracking-wider leading-none">Ubicación</span>
+                                    <span class="block text-xs text-slate-500 font-semibold leading-relaxed break-words"><?= h($config['direccion']) ?></span>
+                                    <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:underline mt-1">
+                                        Ver mapa <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Horario -->
+                        <?php if ($has_horario): ?>
+                            <div class="flex items-start gap-3.5 <?= $cols_count > 1 ? 'md:px-6' : '' ?> py-3.5 md:py-0">
+                                <div class="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                                    <i class="bi bi-clock-fill text-primary text-sm"></i>
+                                </div>
+                                <div class="space-y-1 text-left min-w-0 flex-1">
+                                    <span class="block font-bold text-slate-800 text-[9px] uppercase tracking-wider leading-none">Horario</span>
+                                    <span class="block text-xs text-slate-500 font-semibold leading-relaxed"><?= h($config['horario']) ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Redes Sociales -->
+                        <?php if ($has_redes): ?>
+                            <div class="flex flex-col justify-center gap-2 <?= $cols_count > 1 ? 'md:pl-6' : '' ?> py-3.5 md:py-0 text-left">
+                                <span class="block font-bold text-slate-800 text-[9px] uppercase tracking-wider leading-none mb-1">Redes y Contacto</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <?php if (!empty($config['telefono_whatsapp'])): ?>
+                                        <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" title="WhatsApp" 
+                                           class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-all border border-emerald-100/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-whatsapp text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($config['correo_electronico'])): ?>
+                                        <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
+                                           class="w-9 h-9 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-envelope-fill text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($config['social_instagram'])): ?>
+                                        <a href="<?= h($config['social_instagram']) ?>" target="_blank" title="Instagram" 
+                                           class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all border border-rose-100/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-instagram text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($config['social_tiktok'])): ?>
+                                        <a href="<?= h($config['social_tiktok']) ?>" target="_blank" title="TikTok" 
+                                           class="w-9 h-9 rounded-xl bg-slate-50 text-slate-800 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-tiktok text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($config['social_facebook'])): ?>
+                                        <a href="<?= h($config['social_facebook']) ?>" target="_blank" title="Facebook" 
+                                           class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition-all border border-blue-100/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-facebook text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($config['social_telegram'])): ?>
+                                        <?php 
+                                        $telegram_url = $config['social_telegram'];
+                                        if (strpos($telegram_url, 'http') === false) {
+                                            $telegram_url = 'https://t.me/' . ltrim($telegram_url, '@');
+                                        }
+                                        ?>
+                                        <a href="<?= h($telegram_url) ?>" target="_blank" title="Telegram" 
+                                           class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center transition-all border border-sky-100/50 hover:scale-[1.05] active:scale-95 shadow-sm">
+                                            <i class="bi bi-telegram text-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <?php if (empty($productos)): ?>
                 <?php
                 $placeholderIcon = 'bi-shop';
