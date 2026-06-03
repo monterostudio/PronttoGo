@@ -196,8 +196,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             tasaDolar: parseFloat(<?= json_encode($tasa_dolar ?? 1) ?>),
             monedaNombre: <?= json_encode($moneda_local_nombre ?? 'USD') ?>,
             tasaTipo: <?= json_encode($tasa_tipo ?? 'manual') ?>,
-            nombre: <?= json_encode(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>,
-            plantillaWhatsapp: <?= json_encode($config['plantilla_whatsapp'] ?? '') ?>
+            nombre: <?= json_encode(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
         };
     </script>
     <script src="/assets/js/main.js"></script>

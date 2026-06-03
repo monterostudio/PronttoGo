@@ -76,11 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $data = [
                 'nombre' => $_POST['nombre'] ?? '',
-                'telefono_whatsapp' => $_POST['telefono_whatsapp'] ?? '',
+                'telefono_whatsapp' => preg_replace('/[^0-9]/', '', $_POST['telefono_whatsapp'] ?? ''),
                 'logo_url' => empty($_POST['logo_url']) ? null : $_POST['logo_url'],
                 'color_primario' => $_POST['color_primario'] ?? '#4F46E5',
-                'plantilla_whatsapp' => empty($_POST['plantilla_whatsapp']) ? null : $_POST['plantilla_whatsapp'],
-                'tipo_negocio' => $tipo_negocio,
                 'tasa_dolar' => $tasa_dolar,
                 'tasa_tipo' => $tasa_tipo,
                 'moneda_nombre' => $_POST['moneda_nombre'] ?? 'USD',
@@ -306,6 +304,25 @@ if (is_admin_logged_in()) {
     }
 }
 
+// Cargar categorías sugeridas para el datalist si el admin está logueado
+$categorias_sugeridas = [];
+if (is_admin_logged_in() && !empty($config)) {
+    $resPred = supabase_request('GET', 'categorias_predeterminadas?tipo_negocio=eq.' . urlencode($config['tipo_negocio'] ?? 'gastronomia') . '&order=orden_visual.asc');
+    if ($resPred['success'] && !empty($resPred['data'])) {
+        foreach ($resPred['data'] as $p) {
+            $existe = false;
+            foreach ($categorias as $c) {
+                if (strtolower($c['nombre']) === strtolower($p['nombre'])) {
+                    $existe = true; break;
+                }
+            }
+            if (!$existe) {
+                $categorias_sugeridas[] = $p['nombre'];
+            }
+        }
+    }
+}
+
 $csrfField = csrf_input();
 
 // Incluir Cabecera HTML
@@ -410,7 +427,7 @@ if (!is_admin_logged_in()): ?>
                                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                 <i class="bi bi-whatsapp text-slate-400 text-lg"></i>
                                             </span>
-                                            <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required placeholder="Ej: 584121234567 (Código + Número sin + ni espacios)">
                                         </div>
                                     </div>
                                     <div>
@@ -532,33 +549,6 @@ if (!is_admin_logged_in()): ?>
                                                     <i class="bi bi-clock text-slate-400 text-lg"></i>
                                                 </span>
                                                 <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lun a Sáb: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <hr class="my-2 border-slate-100">
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Plantilla del Mensaje de WhatsApp</label>
-                                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                                            <div class="lg:col-span-2 relative">
-                                                <textarea name="plantilla_whatsapp" rows="8" placeholder="Escribe el formato de tu mensaje de WhatsApp aquí... (Vacío usa la plantilla por defecto)" class="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm leading-relaxed"><?= h($config['plantilla_whatsapp'] ?? '') ?></textarea>
-                                            </div>
-                                            <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-3">
-                                                <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1.5"><i class="bi bi-info-circle-fill"></i> Comodines Disponibles</h4>
-                                                <p class="text-slate-500 text-[11px] leading-relaxed">Copia y pega estos comodines en tu plantilla. Se reemplazarán automáticamente con los datos del pedido:</p>
-                                                <div class="grid grid-cols-1 gap-1.5 text-[10px] font-semibold text-slate-600 font-mono">
-                                                    <div><span class="text-indigo-600 font-bold">{nombre_comercio}</span>: Nombre local</div>
-                                                    <div><span class="text-indigo-600 font-bold">{nombre_cliente}</span>: Nombre cliente</div>
-                                                    <div><span class="text-indigo-600 font-bold">{tipo_despacho}</span>: Envío / Retiro</div>
-                                                    <div><span class="text-indigo-600 font-bold">{metodo_pago}</span>: Forma de pago</div>
-                                                    <div><span class="text-indigo-600 font-bold">{detalles_pedido}</span>: Lista de productos</div>
-                                                    <div><span class="text-indigo-600 font-bold">{subtotal_usd}</span>: Subtotal en USD</div>
-                                                    <div><span class="text-indigo-600 font-bold">{costo_envio}</span>: Costo delivery</div>
-                                                    <div><span class="text-indigo-600 font-bold">{total_usd}</span>: Total en USD</div>
-                                                    <div><span class="text-indigo-600 font-bold">{total_moneda_local}</span>: Total local</div>
-                                                </div>
-                                                <p class="text-slate-400 text-[9px] leading-relaxed italic pt-1 border-t border-slate-200/50">Si dejas el campo vacío, se usará la plantilla estándar de PronttoGo.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -797,7 +787,16 @@ if (!is_admin_logged_in()): ?>
                 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Nueva Categoría</h3><button @click="open = false" class="text-slate-400 hover:text-slate-600 text-xl"><i class="bi bi-x-lg"></i></button></div>
                 <form method="POST" action="admin.php" class="space-y-4">
                     <?= $csrfField ?><input type="hidden" name="action" value="create_category">
-                    <div><label class="block text-sm font-semibold mb-1">Nombre</label><input type="text" name="nombre" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Nombre</label>
+                        <input type="text" name="nombre" list="cat-sugeridas" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="Ej. Promociones">
+                        <p class="text-[10px] text-slate-500 mt-1">Puedes elegir una sugerida o escribir la tuya.</p>
+                        <datalist id="cat-sugeridas">
+                            <?php foreach($categorias_sugeridas as $sug): ?>
+                                <option value="<?= h($sug) ?>"></option>
+                            <?php endforeach; ?>
+                        </datalist>
+                    </div>
                     <div><label class="block text-sm font-semibold mb-1">Orden</label><input type="number" name="orden_visual" value="0" class="w-full border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" required></div>
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl">Guardar</button>
                 </form>

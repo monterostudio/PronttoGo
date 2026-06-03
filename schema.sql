@@ -110,22 +110,28 @@ ALTER TABLE public.categorias     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.productos      ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública (anon): necesaria para renderizar el catálogo sin autenticación
+DROP POLICY IF EXISTS "lectura_publica_configuracion" ON public.configuracion;
 CREATE POLICY "lectura_publica_configuracion" ON public.configuracion
     FOR SELECT TO anon USING (true);
 
+DROP POLICY IF EXISTS "lectura_publica_categorias" ON public.categorias;
 CREATE POLICY "lectura_publica_categorias" ON public.categorias
     FOR SELECT TO anon USING (true);
 
+DROP POLICY IF EXISTS "lectura_publica_productos" ON public.productos;
 CREATE POLICY "lectura_publica_productos" ON public.productos
     FOR SELECT TO anon USING (true);
 
 -- Escritura restringida al service_role (usado por el backend PHP en admin.php)
+DROP POLICY IF EXISTS "escritura_service_configuracion" ON public.configuracion;
 CREATE POLICY "escritura_service_configuracion" ON public.configuracion
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "escritura_service_categorias" ON public.categorias;
 CREATE POLICY "escritura_service_categorias" ON public.categorias
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "escritura_service_productos" ON public.productos;
 CREATE POLICY "escritura_service_productos" ON public.productos
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
@@ -143,9 +149,11 @@ CREATE TABLE IF NOT EXISTS public.categorias_predeterminadas (
 
 ALTER TABLE public.categorias_predeterminadas ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "lectura_publica_predeterminadas" ON public.categorias_predeterminadas;
 CREATE POLICY "lectura_publica_predeterminadas" ON public.categorias_predeterminadas
     FOR SELECT TO anon USING (true);
 
+DROP POLICY IF EXISTS "escritura_service_predeterminadas" ON public.categorias_predeterminadas;
 CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 

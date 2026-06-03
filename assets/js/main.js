@@ -548,35 +548,18 @@ function checkoutOrder() {
         deliveryText = `📦 *Despacho:* Retiro en local`;
     }
 
-    let message = pronttogoConfig.plantillaWhatsapp || "";
-    
-    if (!message) {
-        // Usar plantilla por defecto si está vacía
-        message = `*Pedido de {nombre_comercio}* 🛍️\n` +
+    let message = `*Pedido de ${storeName}* 🛍️\n` +
                   `--------------------------\n` +
-                  `👤 *Cliente:* {nombre_cliente}\n` +
-                  `{tipo_despacho}\n` +
-                  `💸 *Pago:* {metodo_pago}\n` +
+                  `👤 *Cliente:* ${clientName}\n` +
+                  `${deliveryText}\n` +
+                  `💸 *Pago:* ${clientPayment}\n` +
                   `--------------------------\n` +
-                  `{detalles_pedido}` +
+                  `${itemsText}` +
                   `--------------------------\n` +
-                  `*Subtotal:* {subtotal_usd}\n` +
-                  (deliveryFee > 0 ? `*Envío:* {costo_envio}\n` : '') +
-                  `*Total a pagar: {total_usd}*\n` +
+                  `*Subtotal:* ${subtotalUsd}\n` +
+                  (deliveryFee > 0 ? `*Envío:* ${costoEnvio}\n` : '') +
+                  `*Total a pagar: ${totalUsd}*\n` +
                   (totalMonedaLocal ? `${totalMonedaLocal}\n` : '');
-    }
-
-    // Reemplazar comodines
-    message = message
-        .replace(/{nombre_comercio}/g, storeName)
-        .replace(/{nombre_cliente}/g, clientName)
-        .replace(/{tipo_despacho}/g, deliveryText)
-        .replace(/{metodo_pago}/g, clientPayment)
-        .replace(/{detalles_pedido}/g, itemsText)
-        .replace(/{subtotal_usd}/g, subtotalUsd)
-        .replace(/{costo_envio}/g, costoEnvio)
-        .replace(/{total_usd}/g, totalUsd)
-        .replace(/{total_moneda_local}/g, totalMonedaLocal);
 
     const encodedText = encodeURIComponent(message);
     const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
