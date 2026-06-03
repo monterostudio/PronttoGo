@@ -161,6 +161,7 @@ ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_tiktok TEXT DEF
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_facebook TEXT DEFAULT '';
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_telegram TEXT DEFAULT '';
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS correo_electronico TEXT DEFAULT '';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS delivery_moneda TEXT DEFAULT 'USD';
 
 DROP POLICY IF EXISTS "escritura_service_predeterminadas" ON public.categorias_predeterminadas;
 CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas

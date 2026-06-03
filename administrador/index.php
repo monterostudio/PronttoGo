@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tasa_dolar' => $tasa_dolar,
                 'tasa_tipo' => $tasa_tipo,
                 'costo_delivery' => floatval($_POST['costo_delivery'] ?? 0.00),
+                'delivery_moneda' => $_POST['delivery_moneda'] ?? 'USD',
                 'direccion' => $_POST['direccion'] ?? '',
                 'horario' => $_POST['horario'] ?? '',
                 'social_instagram' => $_POST['social_instagram'] ?? '',
@@ -618,13 +619,25 @@ if (!is_admin_logged_in()): ?>
                                             </div>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery Fijo (USD)</label>
-                                            <div class="relative">
-                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <i class="bi bi-bicycle text-slate-400 text-lg"></i>
-                                                </span>
-                                                <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery Fijo</label>
+                                            <div class="flex gap-2">
+                                                <div class="relative w-1/3">
+                                                    <select name="delivery_moneda" class="w-full pl-3 pr-8 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none font-semibold text-slate-700">
+                                                        <option value="USD" <?= ($config['delivery_moneda'] ?? 'USD') === 'USD' ? 'selected' : '' ?>>USD ($)</option>
+                                                        <option value="VES" <?= ($config['delivery_moneda'] ?? '') === 'VES' ? 'selected' : '' ?>>VES (Bs.)</option>
+                                                    </select>
+                                                    <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                        <i class="bi bi-chevron-down text-slate-400 text-xs"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="relative flex-1">
+                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                        <i class="bi bi-bicycle text-slate-400 text-lg"></i>
+                                                    </span>
+                                                    <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required placeholder="0.00">
+                                                </div>
                                             </div>
+                                            <p class="text-[10px] text-slate-500 mt-1">Elige en qué moneda cobras el delivery.</p>
                                         </div>
                                         <div class="md:col-span-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
@@ -966,8 +979,6 @@ if (!is_admin_logged_in()): ?>
             document.addEventListener('DOMContentLoaded', () => {
                 const tasaTipoSelect = document.getElementById('tasa_tipo');
                 const tasaDolarInput = document.getElementById('tasa_dolar');
-                const monedaNombreInput = document.getElementById('moneda_nombre');
-                const monedaSimboloInput = document.getElementById('moneda_simbolo');
                 const btnFetchTasa = document.getElementById('btn-fetch-tasa');
                 const statusText = document.getElementById('tasa-status-text');
 
@@ -985,19 +996,15 @@ if (!is_admin_logged_in()): ?>
                     }
 
                     try {
-                        const response = await fetch(`/api/tasa.php?tipo=${tipo}`);
+                        const response = await fetch(`../api/tasa.php?tipo=${tipo}`);
                         if (!response.ok) throw new Error('Error al conectar con el servidor.');
                         const data = await response.json();
                         
                         if (data.success && data.rate > 0) {
                             tasaDolarInput.value = data.rate.toFixed(2);
                             if (tipo === 'bcv') {
-                                monedaNombreInput.value = 'Bs.';
-                                monedaSimboloInput.value = 'Bs.';
                                 statusText.innerText = 'Tasa BCV cargada automáticamente por el servidor.';
                             } else if (tipo === 'trm') {
-                                monedaNombreInput.value = 'COP';
-                                monedaSimboloInput.value = '$';
                                 statusText.innerText = 'Tasa TRM cargada automáticamente por el servidor.';
                             }
                             statusText.className = 'text-[11px] mt-1 text-emerald-600 font-semibold';
