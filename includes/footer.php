@@ -23,11 +23,11 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     </footer>
 
     <!-- Drawer de Información del Local (Contacto, Redes, Dirección y Horario) -->
-    <div id="info-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
+    <div id="info-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
         <div onclick="toggleInfoDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
         
-        <!-- Panel que desliza desde el lateral en escritorio o sube en móvil -->
-        <div class="absolute bottom-0 md:bottom-auto md:top-0 right-0 left-0 md:left-auto w-full md:w-96 max-h-[85vh] md:max-h-screen h-full bg-white rounded-t-3xl md:rounded-t-none md:rounded-l-3xl shadow-2xl border-t md:border-t-0 md:border-l border-slate-100 flex flex-col overflow-hidden transition-transform duration-300 translate-x-full">
+        <!-- Panel de Información (Bottom Sheet en móvil, Right Sidebar en desktop) -->
+        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] w-full md:top-0 md:bottom-0 md:right-0 md:left-auto md:max-h-screen md:h-full md:w-[450px] bg-white rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl border-t md:border-t-0 md:border-l border-slate-100 flex flex-col overflow-hidden">
             
             <!-- Header del panel -->
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
@@ -49,72 +49,68 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
                 <!-- Branding -->
                 <div class="text-center space-y-3">
-                    <div class="max-w-[120px] mx-auto">
+                    <div class="flex justify-center">
                         <?= render_logo('hero', $config) ?>
                     </div>
-                    <?php if (!empty($config['logo_url'])): ?>
-                        <h4 class="font-extrabold text-base text-slate-800"><?= h($config['nombre']) ?></h4>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Ubicación y Horario -->
-                <div class="space-y-4 pt-2 border-t border-slate-50">
-                    <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Atención y Ubicación</h5>
-                    <div class="space-y-3 text-xs font-medium text-slate-600">
-                        <?php if (!empty($config['direccion'])): ?>
-                            <div class="flex items-start gap-2.5">
-                                <span class="text-primary text-sm mt-0.5"><i class="bi bi-geo-alt-fill"></i></span>
-                                <div class="space-y-1">
-                                    <span class="block font-bold text-slate-800">Dirección</span>
-                                    <span class="leading-relaxed"><?= h($config['direccion']) ?></span>
+                <?php if (!empty($config['direccion']) || !empty($config['horario'])): ?>
+                    <div class="space-y-4 pt-2 border-t border-slate-100">
+                        <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Atención y Ubicación</h5>
+                        <div class="space-y-3.5 text-xs font-semibold text-slate-600">
+                            <?php if (!empty($config['direccion'])): ?>
+                                <div class="flex items-start gap-2.5">
+                                    <span class="text-primary text-sm mt-0.5"><i class="bi bi-geo-alt-fill"></i></span>
+                                    <div class="space-y-0.5 text-left">
+                                        <span class="block font-bold text-slate-800 text-[10px] uppercase tracking-wider">Dirección</span>
+                                        <span class="leading-relaxed text-slate-500 font-semibold"><?= h($config['direccion']) ?></span>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($config['horario'])): ?>
-                            <div class="flex items-start gap-2.5">
-                                <span class="text-primary text-sm mt-0.5"><i class="bi bi-clock-fill"></i></span>
-                                <div class="space-y-1">
-                                    <span class="block font-bold text-slate-800">Horario de Atención</span>
-                                    <span><?= h($config['horario']) ?></span>
+                            <?php endif; ?>
+                            <?php if (!empty($config['horario'])): ?>
+                                <div class="flex items-start gap-2.5">
+                                    <span class="text-primary text-sm mt-0.5"><i class="bi bi-clock-fill"></i></span>
+                                    <div class="space-y-0.5 text-left">
+                                        <span class="block font-bold text-slate-800 text-[10px] uppercase tracking-wider">Horario de Atención</span>
+                                        <span class="text-slate-500 font-semibold"><?= h($config['horario']) ?></span>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (empty($config['direccion']) && empty($config['horario'])): ?>
-                            <p class="text-slate-400 italic">No se ha configurado dirección ni horario de atención.</p>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
 
                 <!-- Redes Sociales y Canales de Contacto -->
-                <div class="space-y-4 pt-4 border-t border-slate-50">
+                <div class="space-y-4 pt-4 border-t border-slate-100">
                     <h5 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Redes y Canales</h5>
                     <div class="grid grid-cols-2 gap-2.5">
                         <?php if (!empty($config['telefono_whatsapp'])): ?>
-                            <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-2xl border border-emerald-100/50 text-emerald-700 text-xs font-bold transition-all">
+                            <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-emerald-50 hover:bg-emerald-100 rounded-2xl border border-emerald-100/50 text-emerald-700 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-whatsapp text-sm"></i>
                                 <span>WhatsApp</span>
                             </a>
                         <?php endif; ?>
                         <?php if (!empty($config['correo_electronico'])): ?>
-                            <a href="mailto:<?= h($config['correo_electronico']) ?>" class="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200/50 text-slate-700 text-xs font-bold transition-all">
+                            <a href="mailto:<?= h($config['correo_electronico']) ?>" class="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200/50 text-slate-700 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-envelope-at text-sm"></i>
                                 <span>Correo</span>
                             </a>
                         <?php endif; ?>
                         <?php if (!empty($config['social_instagram'])): ?>
-                            <a href="<?= h($config['social_instagram']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-rose-50 hover:bg-rose-100 rounded-2xl border border-rose-100/50 text-rose-700 text-xs font-bold transition-all">
+                            <a href="<?= h($config['social_instagram']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-rose-50 hover:bg-rose-100 rounded-2xl border border-rose-100/50 text-rose-700 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-instagram text-sm"></i>
                                 <span>Instagram</span>
                             </a>
                         <?php endif; ?>
                         <?php if (!empty($config['social_tiktok'])): ?>
-                            <a href="<?= h($config['social_tiktok']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200/50 text-slate-800 text-xs font-bold transition-all">
+                            <a href="<?= h($config['social_tiktok']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200/50 text-slate-800 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-tiktok text-sm"></i>
                                 <span>TikTok</span>
                             </a>
                         <?php endif; ?>
                         <?php if (!empty($config['social_facebook'])): ?>
-                            <a href="<?= h($config['social_facebook']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-blue-50 hover:bg-blue-100 rounded-2xl border border-blue-100/50 text-blue-700 text-xs font-bold transition-all">
+                            <a href="<?= h($config['social_facebook']) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-blue-50 hover:bg-blue-100 rounded-2xl border border-blue-100/50 text-blue-700 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-facebook text-sm"></i>
                                 <span>Facebook</span>
                             </a>
@@ -126,7 +122,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                                 $telegram_url = 'https://t.me/' . ltrim($telegram_url, '@');
                             }
                             ?>
-                            <a href="<?= h($telegram_url) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-sky-50 hover:bg-sky-100 rounded-2xl border border-sky-100/50 text-sky-700 text-xs font-bold transition-all">
+                            <a href="<?= h($telegram_url) ?>" target="_blank" class="flex items-center gap-2 p-2.5 bg-sky-50 hover:bg-sky-100 rounded-2xl border border-sky-100/50 text-sky-700 text-xs font-bold transition-all justify-center">
                                 <i class="bi bi-telegram text-sm"></i>
                                 <span>Telegram</span>
                             </a>
@@ -141,19 +137,19 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <script>
         function toggleInfoDrawer(show) {
             const drawer = document.getElementById('info-drawer');
-            if (drawer) {
-                const panel = drawer.querySelector('.absolute.bottom-0, .absolute.top-0');
-                if (show) {
-                    drawer.classList.remove('hidden');
-                    setTimeout(() => {
-                        panel.classList.remove('translate-x-full');
-                    }, 50);
-                } else {
-                    panel.classList.add('translate-x-full');
-                    setTimeout(() => {
-                        drawer.classList.add('hidden');
-                    }, 300);
-                }
+            if (!drawer) return;
+            if (show) {
+                drawer.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => {
+                    drawer.classList.add('opacity-100');
+                    drawer.classList.remove('opacity-0');
+                }, 10);
+            } else {
+                drawer.classList.add('opacity-0');
+                drawer.classList.remove('opacity-100');
+                document.body.style.overflow = '';
+                setTimeout(() => drawer.classList.add('hidden'), 300);
             }
         }
     </script>
@@ -177,12 +173,12 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         </button>
     </div>
 
-    <!-- Drawer del Carrito (Bottom Sheet) -->
-    <div id="cart-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
+    <!-- Drawer del Carrito (Bottom Sheet en móvil, Right Sidebar en desktop) -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
         <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
         
-        <!-- Panel que sube desde abajo -->
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-100 flex flex-col max-w-lg mx-auto overflow-hidden">
+        <!-- Panel del Carrito (Bottom Sheet en móvil, Right Sidebar en desktop) -->
+        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] w-full md:top-0 md:bottom-0 md:right-0 md:left-auto md:max-h-screen md:h-full md:w-[450px] bg-white rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl border-t md:border-t-0 md:border-l border-slate-100 flex flex-col overflow-hidden">
             
             <!-- Header del panel -->
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">

@@ -151,8 +151,8 @@ function render_logo(string $context, array $config, bool $darkMode = false): st
                 }
             case 'hero':
                 if ($es_default_brand) {
-                    return '<div class="rounded-2xl shadow-md bg-white px-6 py-4 inline-flex items-center justify-center border border-slate-100 hover:scale-[1.02] transition-transform duration-300">' .
-                           get_logo_svg('h-12 w-auto', $darkMode) .
+                    return '<div class="rounded-2xl shadow-md bg-white px-6 py-4 inline-flex items-center justify-center border border-slate-100 hover:scale-[1.02] transition-transform duration-300 w-fit max-w-[240px] mx-auto">' .
+                           get_logo_svg('h-12 w-auto max-w-full', $darkMode) .
                            '</div>';
                 } else {
                     return '<span class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-800">' . $safe_nombre . '</span>';

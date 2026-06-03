@@ -240,8 +240,12 @@ function toggleCartDrawer(show) {
     if (show) {
         drawer.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-        setTimeout(() => drawer.classList.add('opacity-100'), 10);
+        setTimeout(() => {
+            drawer.classList.add('opacity-100');
+            drawer.classList.remove('opacity-0');
+        }, 10);
     } else {
+        drawer.classList.add('opacity-0');
         drawer.classList.remove('opacity-100');
         document.body.style.overflow = '';
         setTimeout(() => drawer.classList.add('hidden'), 300);
