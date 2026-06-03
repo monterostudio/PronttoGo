@@ -21,9 +21,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS v3 Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Compiled Tailwind CSS -->
+    <link rel="stylesheet" href="/assets/css/tailwind.css">
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -37,70 +36,58 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <link rel="shortcut icon" href="/assets/img/favicon.svg?v=2">
     <link rel="apple-touch-icon" href="/assets/img/favicon.svg?v=2">
 
+    <!-- Estilos Dinámicos -->
+    <?php
+    $color_niche = [
+        'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#D5DEFF', 'hero-bg-to' => '#E8EDFF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
+        'comida_rapida' => ['primary' => '#EF4444', 'primary-hover' => '#DC2626', 'soft' => '#FEF2F2', 'border-soft' => '#FEE2E2', 'hero-bg-from' => '#FFF1F1', 'hero-bg-via' => '#FDCFCF', 'hero-bg-to' => '#FFE4E4', 'hero-glow' => 'rgba(239,68,68,0.05)'],
+        'minimarket' => ['primary' => '#10B981', 'primary-hover' => '#059669', 'soft' => '#ECFDF5', 'border-soft' => '#D1FAE5', 'hero-bg-from' => '#E6FDF0', 'hero-bg-via' => '#C2F5DB', 'hero-bg-to' => '#EBFDFF', 'hero-glow' => 'rgba(16,185,129,0.05)'],
+        'farmacia' => ['primary' => '#06B6D4', 'primary-hover' => '#0891B2', 'soft' => '#ECFEFF', 'border-soft' => '#CFFAFE', 'hero-bg-from' => '#E6FCFF', 'hero-bg-via' => '#BFF6FD', 'hero-bg-to' => '#EBFDFF', 'hero-glow' => 'rgba(6,182,212,0.05)'],
+        'boutique' => ['primary' => '#8B5CF6', 'primary-hover' => '#7C3AED', 'soft' => '#F5F3FF', 'border-soft' => '#DDD6FE', 'hero-bg-from' => '#F8F0FF', 'hero-bg-via' => '#EBD5FF', 'hero-bg-to' => '#FAF0FF', 'hero-glow' => 'rgba(139,92,246,0.05)'],
+        'ferreteria_repuestos' => ['primary' => '#F59E0B', 'primary-hover' => '#D97706', 'soft' => '#FFFBEB', 'border-soft' => '#FDE68A', 'hero-bg-from' => '#FFFCEB', 'hero-bg-via' => '#FDE69A', 'hero-bg-to' => '#FFF5D1', 'hero-glow' => 'rgba(245,158,11,0.05)'],
+        'belleza_estetica' => ['primary' => '#EC4899', 'primary-hover' => '#DB2777', 'soft' => '#FDF2F8', 'border-soft' => '#FBCFE8', 'hero-bg-from' => '#FDF0F7', 'hero-bg-via' => '#FBD5EC', 'hero-bg-to' => '#FDF0F7', 'hero-glow' => 'rgba(236,72,153,0.05)'],
+        'otros' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#D5DEFF', 'hero-bg-to' => '#E8EDFF', 'hero-glow' => 'rgba(79,70,229,0.05)']
+    ];
+    $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
+    $colors = $color_niche[$tipo_negocio] ?? $color_niche['gastronomia'];
+
+    if (!empty($config['color_primario'])) {
+        $custom_primary = $config['color_primario'];
+        $colors['primary'] = $custom_primary;
+        $colors['primary-hover'] = $custom_primary;
+        $colors['soft'] = $custom_primary . '0D'; // ~5% opacidad
+        $colors['border-soft'] = $custom_primary . '26'; // ~15% opacidad
+        $colors['hero-bg-from'] = $custom_primary . '0F'; // ~6% opacidad
+        $colors['hero-bg-via'] = $custom_primary . '20'; // ~12.5% opacidad
+        $colors['hero-bg-to'] = $custom_primary . '0C';  // ~5% opacidad
+        $colors['hero-glow'] = $custom_primary . '0D';
+    }
+    ?>
+    <meta name="theme-color" content="<?= h($colors['primary']) ?>">
+    <style type="text/css">
+        :root {
+            --color-primary: <?= $colors['primary'] ?>;
+            --color-primary-hover: <?= $colors['primary-hover'] ?>;
+            --color-soft: <?= $colors['soft'] ?>;
+            --color-border-soft: <?= $colors['border-soft'] ?>;
+            
+            --hero-bg-from: <?= $colors['hero-bg-from'] ?>;
+            --hero-bg-via: <?= $colors['hero-bg-via'] ?>;
+            --hero-bg-to: <?= $colors['hero-bg-to'] ?>;
+            --hero-glow: <?= $colors['hero-glow'] ?>;
+        }
+        
+        /* Filtro de oscurecimiento automático para hovers con color personalizado */
+        .bg-primary:hover, .hover\:bg-primary:hover {
+            filter: brightness(0.92) !important;
+            transition: filter 0.2s ease-in-out;
+        }
+    </style>
+
     <?php if ($es_admin): ?>
         <!-- Alpine.js (Solo Admin) -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <?php else: ?>
-        <!-- Estilos Dinámicos (Solo Público) -->
-        <?php
-        $color_niche = [
-            'gastronomia' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#D5DEFF', 'hero-bg-to' => '#E8EDFF', 'hero-glow' => 'rgba(79,70,229,0.05)'],
-            'comida_rapida' => ['primary' => '#EF4444', 'primary-hover' => '#DC2626', 'soft' => '#FEF2F2', 'border-soft' => '#FEE2E2', 'hero-bg-from' => '#FFF1F1', 'hero-bg-via' => '#FDCFCF', 'hero-bg-to' => '#FFE4E4', 'hero-glow' => 'rgba(239,68,68,0.05)'],
-            'minimarket' => ['primary' => '#10B981', 'primary-hover' => '#059669', 'soft' => '#ECFDF5', 'border-soft' => '#D1FAE5', 'hero-bg-from' => '#E6FDF0', 'hero-bg-via' => '#C2F5DB', 'hero-bg-to' => '#EBFDF3', 'hero-glow' => 'rgba(16,185,129,0.05)'],
-            'farmacia' => ['primary' => '#06B6D4', 'primary-hover' => '#0891B2', 'soft' => '#ECFEFF', 'border-soft' => '#CFFAFE', 'hero-bg-from' => '#E6FCFF', 'hero-bg-via' => '#BFF6FD', 'hero-bg-to' => '#EBFDFF', 'hero-glow' => 'rgba(6,182,212,0.05)'],
-            'boutique' => ['primary' => '#8B5CF6', 'primary-hover' => '#7C3AED', 'soft' => '#F5F3FF', 'border-soft' => '#DDD6FE', 'hero-bg-from' => '#F8F0FF', 'hero-bg-via' => '#EBD5FF', 'hero-bg-to' => '#FAF0FF', 'hero-glow' => 'rgba(139,92,246,0.05)'],
-            'ferreteria_repuestos' => ['primary' => '#F59E0B', 'primary-hover' => '#D97706', 'soft' => '#FFFBEB', 'border-soft' => '#FDE68A', 'hero-bg-from' => '#FFFCEB', 'hero-bg-via' => '#FDE69A', 'hero-bg-to' => '#FFF5D1', 'hero-glow' => 'rgba(245,158,11,0.05)'],
-            'belleza_estetica' => ['primary' => '#EC4899', 'primary-hover' => '#DB2777', 'soft' => '#FDF2F8', 'border-soft' => '#FBCFE8', 'hero-bg-from' => '#FDF0F7', 'hero-bg-via' => '#FBD5EC', 'hero-bg-to' => '#FDF0F7', 'hero-glow' => 'rgba(236,72,153,0.05)'],
-            'otros' => ['primary' => '#4F46E5', 'primary-hover' => '#4338CA', 'soft' => '#EEF2FF', 'border-soft' => '#C7D2FE', 'hero-bg-from' => '#EEF2FF', 'hero-bg-via' => '#D5DEFF', 'hero-bg-to' => '#E8EDFF', 'hero-glow' => 'rgba(79,70,229,0.05)']
-        ];
-        $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
-        $colors = $color_niche[$tipo_negocio] ?? $color_niche['gastronomia'];
-
-        // Color personalizado de marca desde configuracion si existe
-        if (!empty($config['color_primario'])) {
-            $custom_primary = $config['color_primario'];
-            $colors['primary'] = $custom_primary;
-            $colors['primary-hover'] = $custom_primary;
-            $colors['soft'] = $custom_primary . '0D'; // ~5% opacidad
-            $colors['border-soft'] = $custom_primary . '26'; // ~15% opacidad
-            $colors['hero-bg-from'] = $custom_primary . '0F'; // ~6% opacidad
-            $colors['hero-bg-via'] = $custom_primary . '20'; // ~12.5% opacidad
-            $colors['hero-bg-to'] = $custom_primary . '0C';  // ~5% opacidad
-            $colors['hero-glow'] = $custom_primary . '0D';
-        }
-        ?>
-        <meta name="theme-color" content="<?= h($colors['primary']) ?>">
-        
-        <!-- Configuración de Tema Personalizado para Tailwind CSS v3 -->
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            primary: '<?= $colors['primary'] ?>',
-                            'primary-hover': '<?= $colors['primary-hover'] ?>',
-                            soft: '<?= $colors['soft'] ?>',
-                            'border-soft': '<?= $colors['border-soft'] ?>',
-                        }
-                    }
-                }
-            }
-        </script>
-        <style type="text/css">
-            :root {
-                --hero-bg-from: <?= $colors['hero-bg-from'] ?>;
-                --hero-bg-via: <?= $colors['hero-bg-via'] ?>;
-                --hero-bg-to: <?= $colors['hero-bg-to'] ?>;
-                --hero-glow: <?= $colors['hero-glow'] ?>;
-            }
-            
-            /* Filtro de oscurecimiento automático para hovers con color personalizado */
-            .bg-primary:hover, .hover\:bg-primary:hover {
-                filter: brightness(0.92) !important;
-                transition: filter 0.2s ease-in-out;
-            }
-        </style>
-        
         <script>
             localStorage.removeItem('theme'); document.documentElement.classList.remove('dark');
         </script>
@@ -149,16 +136,40 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 <!-- Close Button -->
                 <button onclick="toggleStoreInfoModal(false)" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
                     <i class="bi bi-x-lg text-[10px]"></i>
-                </button>
-
-                <!-- Logo at the top -->
+                <                <!-- Logo at the top -->
                 <div class="mb-2 shrink-0">
-                    <?= render_logo('login', $config) ?>
+                    <?php
+                    $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
+                    $es_default_brand = (strtolower($nombre) === 'pronttogo' || $nombre === 'Mi Tienda');
+                    $is_customized = !empty($config['logo_url']) || !$es_default_brand;
+                    $powered_text = $is_customized ? 'PronttoGo' : 'Montero Studio';
+                    ?>
+                    <?php if (!empty($config['logo_url'])): ?>
+                        <?= render_logo('login', $config) ?>
+                    <?php elseif ($es_default_brand): ?>
+                        <?= render_logo('login', $config) ?>
+                    <?php else: ?>
+                        <!-- Icono premium según el tipo de negocio en lugar del logo de PronttoGo -->
+                        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/10 mb-4">
+                            <?php
+                            $biz_icon = 'bi-shop-window';
+                            $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
+                            if ($tipo_negocio === 'gastronomia') $biz_icon = 'bi-egg-fried';
+                            elseif ($tipo_negocio === 'comida_rapida') $biz_icon = 'bi-fire';
+                            elseif ($tipo_negocio === 'minimarket') $biz_icon = 'bi-cart-fill';
+                            elseif ($tipo_negocio === 'farmacia') $biz_icon = 'bi-heart-pulse-fill';
+                            elseif ($tipo_negocio === 'boutique') $biz_icon = 'bi-handbag-fill';
+                            elseif ($tipo_negocio === 'ferreteria_repuestos') $biz_icon = 'bi-tools';
+                            elseif ($tipo_negocio === 'belleza_estetica') $biz_icon = 'bi-stars';
+                            ?>
+                            <i class="bi <?= $biz_icon ?> text-3xl"></i>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Store Name -->
                 <h3 class="font-extrabold text-base text-slate-800 mb-1">
-                    <?= h(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
+                    <?= h($nombre) ?>
                 </h3>
                 
                 <hr class="w-12 border-t-2 border-slate-100 my-3">
@@ -263,7 +274,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 <!-- Mini Footer of the App at the very end of the modal -->
                 <div class="mt-4 pt-3 border-t border-slate-150 w-full text-center">
                     <span class="text-[9px] uppercase font-bold text-slate-400">Powered by</span>
-                    <span class="text-primary font-extrabold text-[10px] block mt-0.5">Montero Studio</span>
+                    <span class="text-primary font-extrabold text-[10px] block mt-0.5"><?= $powered_text ?></span>
                 </div>
             </div>
         </div>

@@ -17,7 +17,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             </div>
             <a href="/admin" class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
                 <span>Powered by</span>
-                <span class="text-primary font-extrabold">Montero Studio</span>
+                <span class="text-primary font-extrabold"><?= !empty($config['logo_url']) || (!empty($config['nombre']) && !in_array(strtolower($config['nombre']), ['pronttogo', 'mi tienda'])) ? 'PronttoGo' : 'Montero Studio' ?></span>
             </a>
         </div>
     </footer>
@@ -47,8 +47,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <div id="cart-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
         <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
         
-        <!-- Panel del Carrito (Bottom Sheet en móvil, Right Sidebar en desktop) -->
-        <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] w-full md:top-0 md:bottom-0 md:right-0 md:left-auto md:max-h-screen md:h-full md:w-[450px] bg-white rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none shadow-2xl border-t md:border-t-0 md:border-l border-slate-100 flex flex-col overflow-hidden">
+        <!-- Panel del Carrito (Bottom Sheet Centrado en Pantalla) -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg md:max-w-xl max-h-[80vh] md:max-h-[75vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-200/60 flex flex-col overflow-hidden transition-all duration-300">
             
             <!-- Header del panel -->
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">

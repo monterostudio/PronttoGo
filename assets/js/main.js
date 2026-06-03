@@ -391,7 +391,7 @@ function updateCartUI() {
 
         const notesInput = document.createElement('input');
         notesInput.type = "text";
-        notesInput.placeholder = "Indica aquí la talla, color, modelo o detalles...";
+        notesInput.placeholder = "Detalles o notas adicionales...";
         notesInput.value = item.notes || '';
         notesInput.className = "w-full px-3 py-1.5 bg-slate-50 border border-slate-200/60 rounded-xl text-[11px] text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all";
         notesInput.onchange = (e) => {
