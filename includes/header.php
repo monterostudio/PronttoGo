@@ -122,17 +122,9 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <header class="h-16 bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
             <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5 min-w-0">
+                    <?= render_logo('header', $config) ?>
                     <?php if (!empty($config['logo_url'])): ?>
-                        <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-8 w-auto object-contain rounded-lg shrink-0">
                         <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
-                    <?php else: ?>
-                        <?php if (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                            <div class="max-w-[120px] sm:max-w-[140px] shrink-0">
-                                <?= get_logo_svg('w-full h-auto block') ?>
-                            </div>
-                        <?php else: ?>
-                            <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
-                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 <a href="/admin" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">

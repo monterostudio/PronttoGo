@@ -177,3 +177,11 @@ ul {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+/* Adaptabilidad y normalización de logotipos */
+.logo-adaptable {
+    object-fit: contain !important;
+    max-height: 100%;
+    max-width: 100%;
+    transition: transform 0.2s ease-in-out;
+}

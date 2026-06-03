@@ -79,43 +79,20 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-primary/3 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 md:pt-16 md:pb-12 flex flex-col items-center text-center space-y-4 relative z-10">
-            <?php if (!empty($config['logo_url'])): ?>
-                <img src="<?= h($config['logo_url']) ?>" alt="<?= h($config['nombre']) ?>" class="h-20 w-auto object-contain rounded-2xl shadow-md bg-white p-2.5 border border-slate-100">
-            <?php elseif (strtolower($config['nombre'] ?? 'pronttogo') === 'pronttogo' || ($config['nombre'] ?? 'Mi Tienda') === 'Mi Tienda'): ?>
-                <div class="rounded-2xl shadow-md bg-white px-6 py-4 inline-flex items-center justify-center border border-slate-100 hover:scale-[1.02] transition-transform duration-300">
-                    <?= get_logo_svg('h-12 w-auto') ?>
-                </div>
-            <?php else: ?>
-                <span class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-800">
-                    <?= h($config['nombre']) ?>
-                </span>
-            <?php endif; ?>
+            <?= render_logo('hero', $config) ?>
 
-            <div class="space-y-1.5 max-w-lg pt-1">
-                <p class="text-xl md:text-2xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
-                    Tu catálogo digital,
-                    <span class="bg-primary bg-clip-text text-transparent">siempre disponible</span>
-                </p>
+            <?php
+            $hero_titulo = !empty($config['hero_titulo']) ? $config['hero_titulo'] : 'Tu catálogo digital, siempre disponible';
+            $hero_subtitulo = !empty($config['hero_subtitulo']) ? $config['hero_subtitulo'] : 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.';
+            ?>
+
+            <div class="space-y-2 max-w-2xl pt-1">
+                <h1 class="text-xl md:text-3xl font-extrabold text-[#2A3543] tracking-tight leading-snug">
+                    <?= h($hero_titulo) ?>
+                </h1>
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                    Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.
+                    <?= h($hero_subtitulo) ?>
                 </p>
-
-                <?php if (!empty($direccion_local) || !empty($horario_local)): ?>
-                    <div class="flex flex-wrap items-center justify-center gap-2 pt-3 text-[11px] text-slate-600 font-semibold max-w-lg mx-auto">
-                        <?php if (!empty($direccion_local)): ?>
-                            <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span><i class="bi bi-geo-alt-fill text-primary"></i></span>
-                                <span class="truncate max-w-[220px] sm:max-w-xs" title="<?= h($direccion_local) ?>"><?= h($direccion_local) ?></span>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($horario_local)): ?>
-                            <div class="flex items-center space-x-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-slate-100/80 shadow-sm hover:shadow transition-shadow">
-                                <span><i class="bi bi-clock-fill text-primary"></i></span>
-                                <span><?= h($horario_local) ?></span>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>    <!-- Contenedor del Catálogo React -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">

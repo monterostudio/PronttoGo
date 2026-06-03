@@ -99,7 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'social_tiktok' => $_POST['social_tiktok'] ?? '',
                 'social_facebook' => $_POST['social_facebook'] ?? '',
                 'social_telegram' => $_POST['social_telegram'] ?? '',
-                'correo_electronico' => $_POST['correo_electronico'] ?? ''
+                'correo_electronico' => $_POST['correo_electronico'] ?? '',
+                'hero_titulo' => $_POST['hero_titulo'] ?? '',
+                'hero_subtitulo' => $_POST['hero_subtitulo'] ?? ''
             ];
             
             // Procesar moneda
@@ -300,9 +302,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $config = []; $categorias = []; $productos = [];
 $currentTab = $_GET['tab'] ?? 'config';
 
+$resConfig = supabase_request('GET', 'configuracion?id=eq.1');
+$config = ($resConfig['success'] && !empty($resConfig['data'])) ? $resConfig['data'][0] : [];
+
 if (is_admin_logged_in()) {
-    $resConfig = supabase_request('GET', 'configuracion?id=eq.1');
-    $config = ($resConfig['success'] && !empty($resConfig['data'])) ? $resConfig['data'][0] : [];
     
     $resCat = supabase_request('GET', 'categorias?order=orden_visual.asc');
     $categorias = $resCat['success'] ? $resCat['data'] : [];
@@ -356,7 +359,7 @@ if (!is_admin_logged_in()): ?>
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-xl w-full max-w-md relative z-10 border border-white">
             <div class="text-center mb-8">
                 <div class="max-w-[200px] sm:max-w-[240px] mx-auto mb-4 drop-shadow-sm">
-                    <?= get_logo_svg('w-full h-auto block') ?>
+                    <?= render_logo('login', $config) ?>
                 </div>
                 <p class="text-slate-500 mt-2">Panel de Administración</p>
             </div>
@@ -401,7 +404,7 @@ if (!is_admin_logged_in()): ?>
         <main class="flex-1 flex flex-col h-full overflow-hidden">
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:hidden shrink-0 relative z-50">
                 <div class="flex items-center gap-2">
-                    <?= get_logo_svg('h-8 w-auto') ?>
+                    <?= render_logo('admin', $config, false) ?>
                 </div>
                 <button @click="sidebarOpen = true" class="text-slate-500 hover:text-slate-800 text-2xl">
                     <i class="bi bi-list"></i>
@@ -501,6 +504,24 @@ if (!is_admin_logged_in()): ?>
                                                     document.getElementById('color_text').value = hex;
                                                 }
                                             </script>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Título del Hero (Cabecera Pública)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-fonts text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="text" name="hero_titulo" value="<?= h($config['hero_titulo'] ?? 'Tu catálogo digital, siempre disponible') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: Tu catálogo digital, siempre disponible">
+                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Subtítulo del Hero (Cabecera Pública)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-text-paragraph text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="text" name="hero_subtitulo" value="<?= h($config['hero_subtitulo'] ?? 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: Explora nuestros productos...">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

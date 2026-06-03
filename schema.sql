@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS public.configuracion (
     horario             TEXT            NOT NULL DEFAULT '',
     color_primario      TEXT            NOT NULL DEFAULT '#4F46E5',
     plantilla_whatsapp  TEXT            NULL,
+    hero_titulo         TEXT            NOT NULL DEFAULT 'Tu catálogo digital, siempre disponible',
+    hero_subtitulo      TEXT            NOT NULL DEFAULT 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.',
     created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
@@ -162,6 +164,8 @@ ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_facebook TEXT D
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_telegram TEXT DEFAULT '';
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS correo_electronico TEXT DEFAULT '';
 ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS delivery_moneda TEXT DEFAULT 'USD';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS hero_titulo TEXT DEFAULT 'Tu catálogo digital, siempre disponible';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS hero_subtitulo TEXT DEFAULT 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.';
 
 DROP POLICY IF EXISTS "escritura_service_predeterminadas" ON public.categorias_predeterminadas;
 CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas
@@ -225,6 +229,8 @@ ON CONFLICT DO NOTHING;
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS direccion TEXT NOT NULL DEFAULT '';
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS horario TEXT NOT NULL DEFAULT '';
 -- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS plantilla_whatsapp TEXT NULL;
+-- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS hero_titulo TEXT DEFAULT 'Tu catálogo digital, siempre disponible';
+-- ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS hero_subtitulo TEXT DEFAULT 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.';
 --
 -- ALTER TABLE public.productos ADD COLUMN IF NOT EXISTS stock INTEGER NULL DEFAULT NULL;
 -- ALTER TABLE public.productos DROP CONSTRAINT IF EXISTS productos_stock_check;
