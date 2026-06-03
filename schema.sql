@@ -150,8 +150,17 @@ CREATE TABLE IF NOT EXISTS public.categorias_predeterminadas (
 ALTER TABLE public.categorias_predeterminadas ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "lectura_publica_predeterminadas" ON public.categorias_predeterminadas;
-CREATE POLICY "lectura_publica_predeterminadas" ON public.categorias_predeterminadas
-    FOR SELECT TO anon USING (true);
+CREATE POLICY "lectura_publica_predeterminadas" 
+    ON public.categorias_predeterminadas FOR SELECT USING (true);
+
+-- ============================================================
+-- MIGRACIONES POSTERIORES
+-- ============================================================
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_instagram TEXT DEFAULT '';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_tiktok TEXT DEFAULT '';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_facebook TEXT DEFAULT '';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS social_telegram TEXT DEFAULT '';
+ALTER TABLE public.configuracion ADD COLUMN IF NOT EXISTS correo_electronico TEXT DEFAULT '';
 
 DROP POLICY IF EXISTS "escritura_service_predeterminadas" ON public.categorias_predeterminadas;
 CREATE POLICY "escritura_service_predeterminadas" ON public.categorias_predeterminadas

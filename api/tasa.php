@@ -9,21 +9,30 @@ $tipo = $_GET['tipo'] ?? 'manual';
 $rate = 0;
 
 function fetch_bcv_rate() {
-    $ctx = stream_context_create(['http' => ['timeout' => 3]]);
-    $res = @file_get_contents('https://s3.amazonaws.com/dolartoday/data.json', false, $ctx);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://ve.dolarapi.com/v1/dolares/oficial');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    $res = curl_exec($ch);
+    curl_close($ch);
     if ($res) {
         $data = json_decode($res, true);
-        if (isset($data['USD']['bcv'])) {
-            return floatval($data['USD']['bcv']);
-        }
+        if (isset($data['promedio'])) return floatval($data['promedio']);
     }
-    $res = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $ctx);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://s3.amazonaws.com/dolartoday/data.json');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    $res = curl_exec($ch);
+    curl_close($ch);
     if ($res) {
         $data = json_decode($res, true);
-        if (isset($data['rates']['VES'])) {
-            return floatval($data['rates']['VES']);
-        }
+        if (isset($data['USD']['bcv'])) return floatval($data['USD']['bcv']);
     }
+    
     return 0;
 }
 

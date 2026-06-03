@@ -13,21 +13,30 @@ $error = '';
 $success = isset($_GET['success']) ? 'Operación realizada con éxito.' : '';
 
 function fetch_bcv_rate() {
-    $ctx = stream_context_create(['http' => ['timeout' => 3]]);
-    $res = @file_get_contents('https://s3.amazonaws.com/dolartoday/data.json', false, $ctx);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://ve.dolarapi.com/v1/dolares/oficial');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    $res = curl_exec($ch);
+    curl_close($ch);
     if ($res) {
         $data = json_decode($res, true);
-        if (isset($data['USD']['bcv'])) {
-            return floatval($data['USD']['bcv']);
-        }
+        if (isset($data['promedio'])) return floatval($data['promedio']);
     }
-    $res = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $ctx);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://s3.amazonaws.com/dolartoday/data.json');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    $res = curl_exec($ch);
+    curl_close($ch);
     if ($res) {
         $data = json_decode($res, true);
-        if (isset($data['rates']['VES'])) {
-            return floatval($data['rates']['VES']);
-        }
+        if (isset($data['USD']['bcv'])) return floatval($data['USD']['bcv']);
     }
+    
     return 0;
 }
 
@@ -84,7 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tasa_tipo' => $tasa_tipo,
                 'costo_delivery' => floatval($_POST['costo_delivery'] ?? 0.00),
                 'direccion' => $_POST['direccion'] ?? '',
-                'horario' => $_POST['horario'] ?? ''
+                'horario' => $_POST['horario'] ?? '',
+                'social_instagram' => $_POST['social_instagram'] ?? '',
+                'social_tiktok' => $_POST['social_tiktok'] ?? '',
+                'social_facebook' => $_POST['social_facebook'] ?? '',
+                'social_telegram' => $_POST['social_telegram'] ?? '',
+                'correo_electronico' => $_POST['correo_electronico'] ?? ''
             ];
             
             // Procesar moneda
@@ -416,144 +430,146 @@ if (!is_admin_logged_in()): ?>
                                 <?= $csrfField ?>
                                 <input type="hidden" name="action" value="update_config">
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Comercial</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-shop text-slate-400 text-lg"></i>
-                                            </span>
-                                            <input type="text" name="nombre" value="<?= h($config['nombre'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">WhatsApp para Pedidos</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-whatsapp text-slate-400 text-lg"></i>
-                                            </span>
-                                            <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required placeholder="Ej: 584121234567 (Código + Número sin + ni espacios)">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">URL del Logotipo (Imagen)</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-image text-slate-400 text-lg"></i>
-                                            </span>
-                                            <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png (Vacío usa PronttoGo)" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Temas)</label>
-                                        <div class="flex gap-2 mb-3">
-                                            <div class="relative flex-1">
-                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <i class="bi bi-palette text-slate-400 text-lg"></i>
-                                                </span>
-                                                <input type="text" id="color_text" name="color_primario" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" placeholder="#4F46E5" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-mono">
-                                            </div>
-                                            <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
-                                        </div>
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <button type="button" onclick="setColor('#4F46E5')" class="w-6 h-6 rounded-full bg-[#4F46E5] shadow-sm hover:scale-110 transition-transform" title="Índigo"></button>
-                                            <button type="button" onclick="setColor('#E11D48')" class="w-6 h-6 rounded-full bg-[#E11D48] shadow-sm hover:scale-110 transition-transform" title="Rosa"></button>
-                                            <button type="button" onclick="setColor('#10B981')" class="w-6 h-6 rounded-full bg-[#10B981] shadow-sm hover:scale-110 transition-transform" title="Esmeralda"></button>
-                                            <button type="button" onclick="setColor('#F59E0B')" class="w-6 h-6 rounded-full bg-[#F59E0B] shadow-sm hover:scale-110 transition-transform" title="Ámbar"></button>
-                                            <button type="button" onclick="setColor('#3B82F6')" class="w-6 h-6 rounded-full bg-[#3B82F6] shadow-sm hover:scale-110 transition-transform" title="Azul"></button>
-                                            <button type="button" onclick="setColor('#8B5CF6')" class="w-6 h-6 rounded-full bg-[#8B5CF6] shadow-sm hover:scale-110 transition-transform" title="Violeta"></button>
-                                            <button type="button" onclick="setColor('#111827')" class="w-6 h-6 rounded-full bg-[#111827] shadow-sm hover:scale-110 transition-transform" title="Oscuro"></button>
-                                        </div>
-                                        <script>
-                                            function setColor(hex) {
-                                                document.getElementById('color_picker').value = hex;
-                                                document.getElementById('color_text').value = hex;
-                                            }
-                                        </script>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-briefcase text-slate-400 text-lg"></i>
-                                            </span>
-                                            <select name="tipo_negocio" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white">
-                                                <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía / Restaurante</option>
-                                                <option value="comida_rapida" <?= ($config['tipo_negocio'] ?? '') === 'comida_rapida' ? 'selected' : '' ?>>Comida Rápida / Callejera</option>
-                                                <option value="minimarket" <?= ($config['tipo_negocio'] ?? '') === 'minimarket' ? 'selected' : '' ?>>Minimarket / Supermercado</option>
-                                                <option value="farmacia" <?= ($config['tipo_negocio'] ?? '') === 'farmacia' ? 'selected' : '' ?>>Farmacia / Salud</option>
-                                                <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>Boutique / Tienda de Ropa</option>
-                                                <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>Ferretería y Repuestos</option>
-                                                <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>Belleza y Estética</option>
-                                                <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>Otros Negocios (General)</option>
-                                            </select>
-                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <i class="bi bi-chevron-down text-slate-400"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery (USD)</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-bicycle text-slate-400 text-lg"></i>
-                                            </span>
-                                            <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                        </div>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <hr class="my-2 border-slate-100">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Modo de Tasa de Cambio</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
-                                            </span>
-                                            <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
-                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>(Definida por el comercio)</option>
-                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>(Banco Central de Venezuela)</option>
-                                            </select>
-                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <i class="bi bi-chevron-down text-slate-400"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa</label>
-                                        <div class="relative flex gap-2">
-                                            <div class="relative flex-1">
-                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <i class="bi bi-currency-exchange text-slate-400 text-lg"></i>
-                                                </span>
-                                                <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                            </div>
-                                            <button type="button" id="btn-fetch-tasa" class="bg-indigo-50 border border-indigo-200 text-indigo-600 hover:bg-indigo-100 px-3.5 rounded-xl transition-all flex items-center justify-center shrink-0" title="Consultar tasa ahora por internet">
-                                                <i class="bi bi-arrow-clockwise text-lg"></i>
-                                            </button>
-                                        </div>
-                                        <p id="tasa-status-text" class="text-[11px] mt-1 text-slate-400 font-semibold"></p>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Moneda Principal del Catálogo</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-cash-stack text-slate-400 text-lg"></i>
-                                            </span>
-                                            <select name="moneda_principal" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
-                                                <?php $moneda_actual = ($config['moneda_nombre'] ?? 'USD') . '|' . ($config['moneda_simbolo'] ?? '$'); ?>
-                                                <option value="USD|$" <?= strpos($moneda_actual, 'USD') !== false ? 'selected' : '' ?>>Dólares (USD - $)</option>
-                                                <option value="VES|Bs." <?= strpos($moneda_actual, 'VES') !== false || strpos($moneda_actual, 'Bs.') !== false ? 'selected' : '' ?>>Bolívares (VES - Bs.)</option>
-                                                <option value="COP|$" <?= strpos($moneda_actual, 'COP') !== false ? 'selected' : '' ?>>Pesos Colombianos (COP - $)</option>
-                                            </select>
-                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <i class="bi bi-chevron-down text-slate-400"></i>
-                                            </span>
-                                        </div>
-                                        <p class="text-[10px] text-slate-500 mt-1">Los precios de tus productos se mostrarán en esta moneda. El total también se mostrará en la moneda local convertida si configuras una tasa de cambio.</p>
-                                    </div>
-                                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- SECCIÓN: Identidad y Datos Principales -->
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2 mb-5 flex items-center gap-2"><i class="bi bi-shop-window text-indigo-500"></i> Identidad y Negocio</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Comercial</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-shop text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="text" name="nombre" value="<?= h($config['nombre'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">URL del Logotipo (Imagen)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-image text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png (Vacío usa PronttoGo)" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-briefcase text-slate-400 text-lg"></i>
+                                                </span>
+                                                <select name="tipo_negocio" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white">
+                                                    <option value="gastronomia" <?= ($config['tipo_negocio'] ?? '') === 'gastronomia' ? 'selected' : '' ?>>Gastronomía / Restaurante</option>
+                                                    <option value="comida_rapida" <?= ($config['tipo_negocio'] ?? '') === 'comida_rapida' ? 'selected' : '' ?>>Comida Rápida / Callejera</option>
+                                                    <option value="minimarket" <?= ($config['tipo_negocio'] ?? '') === 'minimarket' ? 'selected' : '' ?>>Minimarket / Supermercado</option>
+                                                    <option value="farmacia" <?= ($config['tipo_negocio'] ?? '') === 'farmacia' ? 'selected' : '' ?>>Farmacia / Salud</option>
+                                                    <option value="boutique" <?= ($config['tipo_negocio'] ?? '') === 'boutique' ? 'selected' : '' ?>>Boutique / Tienda de Ropa</option>
+                                                    <option value="ferreteria_repuestos" <?= ($config['tipo_negocio'] ?? '') === 'ferreteria_repuestos' ? 'selected' : '' ?>>Ferretería y Repuestos</option>
+                                                    <option value="belleza_estetica" <?= ($config['tipo_negocio'] ?? '') === 'belleza_estetica' ? 'selected' : '' ?>>Belleza y Estética</option>
+                                                    <option value="otros" <?= ($config['tipo_negocio'] ?? '') === 'otros' ? 'selected' : '' ?>>Otros Negocios (General)</option>
+                                                </select>
+                                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                    <i class="bi bi-chevron-down text-slate-400"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Temas)</label>
+                                            <div class="flex gap-2 mb-3">
+                                                <div class="relative flex-1">
+                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                        <i class="bi bi-palette text-slate-400 text-lg"></i>
+                                                    </span>
+                                                    <input type="text" id="color_text" name="color_primario" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" placeholder="#4F46E5" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-mono">
+                                                </div>
+                                                <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
+                                            </div>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <button type="button" onclick="setColor('#4F46E5')" class="w-6 h-6 rounded-full bg-[#4F46E5] shadow-sm hover:scale-110 transition-transform" title="Índigo"></button>
+                                                <button type="button" onclick="setColor('#E11D48')" class="w-6 h-6 rounded-full bg-[#E11D48] shadow-sm hover:scale-110 transition-transform" title="Rosa"></button>
+                                                <button type="button" onclick="setColor('#10B981')" class="w-6 h-6 rounded-full bg-[#10B981] shadow-sm hover:scale-110 transition-transform" title="Esmeralda"></button>
+                                                <button type="button" onclick="setColor('#F59E0B')" class="w-6 h-6 rounded-full bg-[#F59E0B] shadow-sm hover:scale-110 transition-transform" title="Ámbar"></button>
+                                                <button type="button" onclick="setColor('#3B82F6')" class="w-6 h-6 rounded-full bg-[#3B82F6] shadow-sm hover:scale-110 transition-transform" title="Azul"></button>
+                                                <button type="button" onclick="setColor('#8B5CF6')" class="w-6 h-6 rounded-full bg-[#8B5CF6] shadow-sm hover:scale-110 transition-transform" title="Violeta"></button>
+                                                <button type="button" onclick="setColor('#111827')" class="w-6 h-6 rounded-full bg-[#111827] shadow-sm hover:scale-110 transition-transform" title="Oscuro"></button>
+                                            </div>
+                                            <script>
+                                                function setColor(hex) {
+                                                    document.getElementById('color_picker').value = hex;
+                                                    document.getElementById('color_text').value = hex;
+                                                }
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SECCIÓN: Redes Sociales y Contacto -->
+                                <div class="mb-8 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
+                                    <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2 mb-5 flex items-center gap-2"><i class="bi bi-link-45deg text-indigo-500"></i> Redes Sociales y Contacto</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">WhatsApp para Pedidos <span class="text-red-500">*</span></label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-whatsapp text-emerald-500 text-lg"></i>
+                                                </span>
+                                                <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required placeholder="Ej: 584121234567 (Código + Número)">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-envelope-at text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="email" name="correo_electronico" value="<?= h($config['correo_electronico'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="contacto@mitienda.com">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Instagram (Enlace)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-instagram text-rose-500 text-lg"></i>
+                                                </span>
+                                                <input type="url" name="social_instagram" value="<?= h($config['social_instagram'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="https://instagram.com/tu_cuenta">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">TikTok (Enlace)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-tiktok text-slate-800 text-lg"></i>
+                                                </span>
+                                                <input type="url" name="social_tiktok" value="<?= h($config['social_tiktok'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="https://tiktok.com/@tu_cuenta">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Facebook (Enlace)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-facebook text-blue-600 text-lg"></i>
+                                                </span>
+                                                <input type="url" name="social_facebook" value="<?= h($config['social_facebook'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="https://facebook.com/tu_pagina">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Telegram (Enlace o Usuario)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-telegram text-sky-500 text-lg"></i>
+                                                </span>
+                                                <input type="text" name="social_telegram" value="<?= h($config['social_telegram'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="https://t.me/tu_usuario">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SECCIÓN: Ubicación y Atención -->
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2 mb-5 flex items-center gap-2"><i class="bi bi-geo-alt text-indigo-500"></i> Ubicación y Atención</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
                                             <div class="relative">
                                                 <span class="absolute top-3 left-3 pointer-events-none">
@@ -562,7 +578,7 @@ if (!is_admin_logged_in()): ?>
                                                 <textarea name="direccion" rows="2" placeholder="Ej. Calle Principal, Edificio Torre Sur, Planta Baja, Caracas" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm resize-none"><?= h($config['direccion'] ?? '') ?></textarea>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div class="md:col-span-2">
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Horario de Atención</label>
                                             <div class="relative">
                                                 <span class="absolute top-3 left-3 pointer-events-none">
@@ -576,6 +592,70 @@ if (!is_admin_logged_in()): ?>
                                                     <option value="Abierto 24 Horas"></option>
                                                 </datalist>
                                                 <p class="text-[10px] text-slate-500 mt-2 ml-1">Puedes elegir una sugerencia o escribir tu horario personalizado.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SECCIÓN: Finanzas y Despacho -->
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2 mb-5 flex items-center gap-2"><i class="bi bi-wallet2 text-indigo-500"></i> Finanzas y Despacho</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Moneda Principal del Catálogo</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-cash-stack text-slate-400 text-lg"></i>
+                                                </span>
+                                                <select name="moneda_principal" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
+                                                    <?php $moneda_actual = ($config['moneda_nombre'] ?? 'USD') . '|' . ($config['moneda_simbolo'] ?? '$'); ?>
+                                                    <option value="USD|$" <?= strpos($moneda_actual, 'USD') !== false ? 'selected' : '' ?>>Dólares (USD - $)</option>
+                                                    <option value="VES|Bs." <?= strpos($moneda_actual, 'VES') !== false || strpos($moneda_actual, 'Bs.') !== false ? 'selected' : '' ?>>Bolívares (VES - Bs.)</option>
+                                                </select>
+                                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                    <i class="bi bi-chevron-down text-slate-400"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Costo Delivery Fijo (USD)</label>
+                                            <div class="relative">
+                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                    <i class="bi bi-bicycle text-slate-400 text-lg"></i>
+                                                </span>
+                                                <input type="number" step="0.01" name="costo_delivery" value="<?= h($config['costo_delivery'] ?? '0') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-slate-700 mb-2">Modo de Tasa de Cambio</label>
+                                                <div class="relative">
+                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                        <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
+                                                    </span>
+                                                    <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
+                                                        <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>(Definida por el comercio)</option>
+                                                        <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>(Banco Central de Venezuela)</option>
+                                                    </select>
+                                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                        <i class="bi bi-chevron-down text-slate-400"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa</label>
+                                                <div class="relative flex gap-2">
+                                                    <div class="relative flex-1">
+                                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                            <i class="bi bi-currency-exchange text-slate-400 text-lg"></i>
+                                                        </span>
+                                                        <input type="number" step="0.01" name="tasa_dolar" id="tasa_dolar" value="<?= h($config['tasa_dolar'] ?? '1') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                                                    </div>
+                                                    <button type="button" id="btn-fetch-tasa" class="bg-indigo-100 border border-indigo-200 text-indigo-700 hover:bg-indigo-200 px-3.5 rounded-xl transition-all flex items-center justify-center shrink-0" title="Consultar tasa ahora por internet">
+                                                        <i class="bi bi-arrow-clockwise text-lg"></i>
+                                                    </button>
+                                                </div>
+                                                <p id="tasa-status-text" class="text-[11px] mt-1 text-slate-400 font-semibold"></p>
                                             </div>
                                         </div>
                                     </div>
