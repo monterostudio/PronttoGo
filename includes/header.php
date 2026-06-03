@@ -110,7 +110,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         </script>
     <?php endif; ?>
 </head>
-<body class="<?= $es_admin ? 'bg-slate-50 text-slate-900 h-full flex flex-col' : 'bg-[#F8FAFC] text-[#0F172A] min-h-screen flex flex-col overflow-x-hidden' ?>">
+<body class="<?= $es_admin ? 'bg-slate-50 text-slate-900 h-full flex flex-col' : 'bg-[#F1F5F9] text-[#0F172A] min-h-screen flex flex-col overflow-x-hidden' ?>">
 
     <?php if (!$es_admin): ?>
         <?php if (isset($dbError) && $dbError): ?>

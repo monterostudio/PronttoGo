@@ -73,7 +73,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
     <!-- Full Hero Section (Presentación de Ancho Completo Premium en Blanco) -->
-    <div class="relative w-full bg-gradient-to-br from-[var(--hero-bg-from)] via-[var(--hero-bg-via)] to-[var(--hero-bg-to)] text-slate-800 overflow-hidden border-b border-primary/15">
+    <div class="relative w-full bg-gradient-to-br from-[var(--hero-bg-from)] via-[var(--hero-bg-via)] to-[var(--hero-bg-to)] text-slate-800 overflow-hidden border-b border-slate-200/80 shadow-sm">
         <div class="absolute -right-10 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 bottom-0 w-96 h-96 bg-[#2A3543]/4 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-40 bg-primary/3 rounded-full blur-3xl pointer-events-none"></div>
