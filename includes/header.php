@@ -127,9 +127,15 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
                 </div>
-                <a href="/admin" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm shrink-0">
-                    Iniciar Sesión
-                </a>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <button onclick="toggleInfoDrawer(true)" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <i class="bi bi-info-circle text-sm text-primary"></i>
+                        <span class="hidden sm:inline">Información</span>
+                    </button>
+                    <a href="/admin" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
+                        Iniciar Sesión
+                    </a>
+                </div>
             </div>
         </header>
     <?php endif; ?>
