@@ -31,10 +31,6 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <!-- Custom style.css -->
     <link rel="stylesheet" href="/assets/css/style.css">
 
-    <!-- React + Babel Standalone (Sin Node.js/terminal) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Favicons (Compatibles con Caché Búster) -->
     <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg?v=2">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.svg?v=2">

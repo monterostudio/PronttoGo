@@ -93,255 +93,301 @@ require_once __DIR__ . '/../includes/header.php';
                 <p class="text-sm text-slate-500 leading-relaxed font-medium">
                     <?= h($hero_subtitulo) ?>
                 </p>
-            </div>
-        </div>    <!-- Contenedor del Catálogo React -->
+        <!-- Contenedor del Catálogo (Optimizado en PHP y Vanilla JS) -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 pb-24 md:pb-12">
-        <div id="react-catalog-root"></div>
-    </main>
+        <div class="w-full space-y-6">
+            <?php if (empty($productos)): ?>
+                <?php
+                $placeholderIcon = 'bi-shop';
+                if ($tipo_negocio === 'boutique') $placeholderIcon = 'bi-handbag';
+                elseif ($tipo_negocio === 'ferreteria_repuestos') $placeholderIcon = 'bi-tools';
+                elseif ($tipo_negocio === 'belleza_estetica') $placeholderIcon = 'bi-scissors';
+                elseif ($tipo_negocio === 'otros') $placeholderIcon = 'bi-bag';
+                ?>
+                <!-- Catálogo Vacío -->
+                <div class="text-center py-20 max-w-sm mx-auto space-y-3">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
+                        <i class="bi <?= $placeholderIcon ?>"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
+                    <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
+                        Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
+                    </p>
+                    <div class="pt-2">
+                        <a href="/admin" class="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all shadow-sm">
+                            Ir al Panel <i class="bi bi-gear-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <!-- Buscador de Productos -->
+                <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
+                    <div class="pl-3.5 text-slate-400">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="catalog-search"
+                        placeholder="Buscar productos..." 
+                        class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5"
+                        autocomplete="off"
+                    />
+                    <button 
+                        id="clear-search" 
+                        class="pr-3 text-slate-400 hover:text-slate-600 font-bold text-sm transition-colors hidden"
+                    >
+                        <i class="bi bi-x-lg text-xs"></i>
+                    </button>
+                </div>
 
-    <script type="text/babel">
-        // Inyección de variables de PHP a React
-        const categories = <?= json_encode($categorias) ?>;
-        const products = <?= json_encode($productos) ?>;
-        const tasaDolar = <?= json_encode($tasa_dolar) ?>;
-        const tasaTipo = <?= json_encode($tasa_tipo) ?>;
-        const monedaLocalSimbolo = <?= json_encode($moneda_local_simbolo) ?>;
-        const monedaLocalNombre = <?= json_encode($moneda_local_nombre) ?>;
-        const tipoNegocio = <?= json_encode($tipo_negocio) ?>;
+                <!-- Categorías Deslizables -->
+                <?php if (!empty($categorias)): ?>
+                    <div class="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white/95 backdrop-blur-sm sticky top-16 z-20 shadow-sm">
+                        <nav class="flex overflow-x-auto no-scrollbar scroll-smooth" style="padding: 10px 16px; gap: 8px; scroll-snap-type: x mandatory;">
+                            <?php 
+                            // Encontrar la primera categoría activa con productos para marcarla como activa por defecto
+                            $active_cat_id = null;
+                            foreach ($categorias as $cat) {
+                                $hasProducts = false;
+                                foreach ($productos as $p) {
+                                    if (strval($p['categoria_id']) === strval($cat['id'])) {
+                                        $hasProducts = true;
+                                        break;
+                                    }
+                                }
+                                if ($hasProducts) {
+                                    $active_cat_id = $cat['id'];
+                                    break;
+                                }
+                            }
+                            
+                            foreach ($categorias as $cat): 
+                                $hasProducts = false;
+                                foreach ($productos as $p) {
+                                    if (strval($p['categoria_id']) === strval($cat['id'])) {
+                                        $hasProducts = true;
+                                        break;
+                                    }
+                                }
+                                if (!$hasProducts) continue;
+                                $isActive = strval($active_cat_id) === strval($cat['id']);
+                                $btnClass = $isActive 
+                                    ? 'bg-primary border-primary text-white shadow-sm' 
+                                    : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100';
+                            ?>
+                                <button
+                                    type="button"
+                                    class="category-btn px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 <?= $btnClass ?>"
+                                    data-category-id="<?= $cat['id'] ?>"
+                                    style="scroll-snap-align: start; flex-shrink: 0;"
+                                >
+                                    <?= h($cat['nombre']) ?>
+                                </button>
+                            <?php endforeach; ?>
+                            <div style="flex-shrink: 0; width: 4px;"></div>
+                        </nav>
+                    </div>
+                <?php endif; ?>
 
-        const CatalogApp = () => {
-            const [search, setSearch] = React.useState('');
-            const [selectedCategory, setSelectedCategory] = React.useState(null);
-
-            // Seleccionar por defecto la primera categoría que tenga productos
-            React.useEffect(() => {
-                const firstCat = categories.find(cat => products.some(p => String(p.categoria_id) === String(cat.id)));
-                if (firstCat) {
-                    setSelectedCategory(firstCat.id);
-                }
-            }, []);
-
-            // Filtrar productos por categoría y por buscador
-            const filteredProducts = products.filter(prod => {
-                const matchesCategory = selectedCategory ? String(prod.categoria_id) === String(selectedCategory) : true;
-                const matchesSearch = search 
-                    ? prod.nombre.toLowerCase().includes(search.toLowerCase()) || 
-                      (prod.descripcion && prod.descripcion.toLowerCase().includes(search.toLowerCase()))
-                    : true;
-                return matchesCategory && matchesSearch;
-            });
-
-            const handleAdd = (prod, e) => {
-                if (prod.stock !== null && parseInt(prod.stock) <= 0) {
-                    return;
-                }
-                if (window.addToCart) {
-                    window.addToCart({
-                        id: prod.id,
-                        nombre: prod.nombre,
-                        precio: parseFloat(prod.precio_usd),
-                        stock: prod.stock !== null ? parseInt(prod.stock) : null
-                    }, e);
-                }
-            };
-
-            const placeholderIconClass = () => {
-                if (tipoNegocio === 'boutique') return 'bi-handbag';
-                if (tipoNegocio === 'ferreteria_repuestos') return 'bi-tools';
-                if (tipoNegocio === 'belleza_estetica') return 'bi-scissors';
-                if (tipoNegocio === 'otros') return 'bi-bag';
-                return 'bi-shop'; // gastronomia / default
-            };
-
-            return (
-                <div className="w-full space-y-6">
-                    {products.length === 0 ? (
-                        /* Catálogo Vacío */
-                        <div className="text-center py-20 max-w-sm mx-auto space-y-3">
-                            <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                                <i className={`bi ${placeholderIconClass()}`}></i>
+                <!-- Listado de Productos -->
+                <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <?php 
+                    foreach ($productos as $prod): 
+                        $formattedPrice = number_format($prod['precio_usd'], 2);
+                        $totalLocal = $prod['precio_usd'] * $tasa_dolar;
+                        $formattedLocal = number_format($totalLocal, 2, ',', '.');
+                        $isAgotado = $prod['stock'] !== null && intval($prod['stock']) <= 0;
+                        $isStockCritico = $prod['stock'] !== null && intval($prod['stock']) > 0 && intval($prod['stock']) <= 5;
+                        
+                        $prod_id = intval($prod['id']);
+                        $prod_nombre = $prod['nombre'];
+                        $prod_precio = floatval($prod['precio_usd']);
+                        $prod_stock = $prod['stock'] !== null ? intval($prod['stock']) : 'null';
+                    ?>
+                        <div 
+                            class="product-card bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 flex items-stretch justify-between gap-4 relative group cursor-pointer hover:shadow-md hover:border-slate-200 <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
+                            data-category-id="<?= $prod['categoria_id'] ?>"
+                            data-name="<?= h(strtolower($prod['nombre'])) ?>"
+                            data-description="<?= h(strtolower($prod['descripcion'] ?? '')) ?>"
+                            onclick="handleProductClick(event, <?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>)"
+                        >
+                            <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+                                <div class="space-y-1">
+                                    <h3 class="product-title font-extrabold text-slate-900 text-sm md:text-base leading-snug transition-colors <?= !$isAgotado ? 'group-hover:text-primary' : '' ?>">
+                                        <?= h($prod['nombre']) ?>
+                                    </h3>
+                                    <?php if (!empty($prod['descripcion'])): ?>
+                                        <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed">
+                                            <?= h($prod['descripcion']) ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <span class="block font-black text-sm md:text-base text-slate-900 mt-2">
+                                        $<?= $formattedPrice ?>
+                                    </span>
+                                    <?php if ($tasa_dolar > 1): ?>
+                                        <span class="block text-xs font-bold text-slate-500 mt-0.5">
+                                            <?= $moneda_local_simbolo ?> <?= $formattedLocal ?> <?= $moneda_local_nombre ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if ($isAgotado): ?>
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-500 mt-1.5 bg-red-50 px-2 py-0.5 rounded-md">
+                                            <i class="bi bi-x-circle-fill"></i> Agotado
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if ($isStockCritico): ?>
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-1.5 bg-amber-50 px-2 py-0.5 rounded-md">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> ¡Solo quedan <?= $prod['stock'] ?>!
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <h3 className="font-bold text-slate-800 text-sm">El catálogo está vacío</h3>
-                            <p className="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                                Aún no se han añadido productos. Inicia sesión en el panel para comenzar a cargar tu catálogo.
-                            </p>
-                            <div className="pt-2">
-                                <a href="/admin" className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold text-xs transition-all shadow-sm">
-                                    Ir al Panel <i className="bi bi-gear-fill"></i>
-                                </a>
+
+                            <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
+                                <?php if (!empty($prod['imagen_url'])): ?>
+                                    <img 
+                                        src="<?= h($prod['imagen_url']) ?>" 
+                                        alt="<?= h($prod['nombre']) ?>" 
+                                        class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300"
+                                    />
+                                <?php else: ?>
+                                    <div class="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-350">
+                                        <i class="bi bi-image text-xl"></i>
+                                    </div>
+                                <?php endif; ?>
+                                <button 
+                                    type="button"
+                                    class="w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap <?= $isAgotado ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary-hover text-white' ?>"
+                                    <?= $isAgotado ? 'disabled' : '' ?>
+                                    onclick="event.stopPropagation(); handleAddClick(<?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>, event)"
+                                >
+                                    <?= $isAgotado ? 'Agotado' : '+ Agregar' ?>
+                                </button>
                             </div>
                         </div>
-                    ) : (
-                        <>
-                            {/* Buscador de Productos */}
-                            <div className="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
-                                <div className="pl-3.5 text-slate-400">
-                                    <i className="bi bi-search"></i>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar productos..." 
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5"
-                                    autoComplete="off"
-                                />
-                                {search && (
-                                    <button 
-                                        onClick={() => setSearch('')} 
-                                        className="pr-3 text-slate-400 hover:text-slate-600 font-bold text-sm transition-colors"
-                                    >
-                                        <i className="bi bi-x-lg text-xs"></i>
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Categorías Deslizables */}
-                            {categories.length > 0 && (
-                                <div className="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white/95 backdrop-blur-sm sticky top-16 z-20 shadow-sm">
-                                    <nav 
-                                        className="flex overflow-x-auto no-scrollbar scroll-smooth"
-                                        style={{padding: '10px 16px', gap: '8px', scrollSnapType: 'x mandatory'}}
-                                    >
-                                        {categories.map(cat => {
-                                            const hasProducts = products.some(p => String(p.categoria_id) === String(cat.id));
-                                            if (!hasProducts) return null;
-                                            const isActive = String(selectedCategory) === String(cat.id);
-                                            return (
-                                                <button
-                                                    key={cat.id}
-                                                    onClick={() => setSelectedCategory(cat.id)}
-                                                    style={{scrollSnapAlign: 'start', flexShrink: 0}}
-                                                    className={`px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 ${
-                                                        isActive 
-                                                            ? 'bg-primary border-primary text-white shadow-sm' 
-                                                            : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100'
-                                                    }`}
-                                                >
-                                                    {cat.nombre}
-                                                </button>
-                                            );
-                                        })}
-                                        {/* Espaciador al final para que el último elemento sea accesible */}
-                                        <div style={{flexShrink: 0, width: '4px'}}></div>
-                                    </nav>
-                                </div>
-                            )}
-
-                            {/* Listado de Productos */}
-                            {filteredProducts.length === 0 ? (
-                                <div className="text-center py-16 space-y-3">
-                                    <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
-                                        <i className="bi bi-search text-slate-350 text-xl"></i>
-                                    </div>
-                                    <h3 className="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
-                                    <p className="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
-                                        Intenta con otra palabra clave o explora las categorías del catálogo.
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredProducts.map(prod => {
-                                        const formattedPrice = parseFloat(prod.precio_usd).toFixed(2);
-                                        const totalLocal = prod.precio_usd * tasaDolar;
-                                        const formattedLocal = totalLocal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-                                        const isAgotado = prod.stock !== null && parseInt(prod.stock) <= 0;
-                                        const isStockCritico = prod.stock !== null && parseInt(prod.stock) > 0 && parseInt(prod.stock) <= 5;
-
-                                        return (
-                                            <div 
-                                                key={prod.id}
-                                                onClick={(e) => !isAgotado && handleAdd(prod, e)}
-                                                className={`bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 flex items-stretch justify-between gap-4 relative group ${
-                                                    isAgotado 
-                                                        ? 'opacity-65 cursor-not-allowed' 
-                                                        : 'cursor-pointer hover:shadow-md hover:border-slate-200'
-                                                }`}
-                                            >
-                                                <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
-                                                    <div className="space-y-1">
-                                                        <h3 className={`font-extrabold text-slate-900 text-sm md:text-base leading-snug transition-colors ${!isAgotado ? 'group-hover:text-primary' : ''}`}>
-                                                            {prod.nombre}
-                                                        </h3>
-                                                        {prod.descripcion && (
-                                                            <p className="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed">
-                                                                {prod.descripcion}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <span className="block font-black text-sm md:text-base text-slate-900 mt-2">
-                                                            ${formattedPrice}
-                                                        </span>
-                                                        {tasaDolar > 1 && (
-                                                            <span className="block text-xs font-bold text-slate-500 mt-0.5">
-                                                                {monedaLocalSimbolo} {formattedLocal} {monedaLocalNombre}
-                                                            </span>
-                                                        )}
-                                                        {isAgotado && (
-                                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-500 mt-1.5 bg-red-50 px-2 py-0.5 rounded-md">
-                                                                <i className="bi bi-x-circle-fill"></i> Agotado
-                                                            </span>
-                                                        )}
-                                                        {isStockCritico && (
-                                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-1.5 bg-amber-50 px-2 py-0.5 rounded-md">
-                                                                <i className="bi bi-exclamation-triangle-fill"></i> ¡Solo quedan {prod.stock}!
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {prod.imagen_url ? (
-                                                    <div className="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
-                                                        <img 
-                                                            src={prod.imagen_url} 
-                                                            alt={prod.nombre} 
-                                                            className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300"
-                                                        />
-                                                        <button 
-                                                            onClick={(e) => { e.stopPropagation(); !isAgotado && handleAdd(prod, e); }}
-                                                            disabled={isAgotado}
-                                                            className={`w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap ${
-                                                                isAgotado 
-                                                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
-                                                                    : 'bg-primary hover:bg-primary-hover text-white'
-                                                            }`}
-                                                        >
-                                                            {isAgotado ? 'Agotado' : '+ Agregar'}
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-end justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
-                                                        <div className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-350">
-                                                            <i className="bi bi-image text-xl"></i>
-                                                        </div>
-                                                        <button 
-                                                            onClick={(e) => { e.stopPropagation(); !isAgotado && handleAdd(prod, e); }}
-                                                            disabled={isAgotado}
-                                                            className={`w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap ${
-                                                                isAgotado 
-                                                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
-                                                                    : 'bg-primary hover:bg-primary-hover text-white'
-                                                            }`}
-                                                        >
-                                                            {isAgotado ? 'Agotado' : '+ Agregar'}
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </>
-                    )}
+                    <?php endforeach; ?>
                 </div>
-            );
-        };
 
-        const root = ReactDOM.createRoot(document.getElementById('react-catalog-root'));
-        root.render(<CatalogApp />);
+                <!-- Búsqueda sin Resultados -->
+                <div id="empty-state" class="text-center py-16 space-y-3 hidden">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto text-xl">
+                        <i class="bi bi-search text-slate-350 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">No se encontraron productos</h3>
+                    <p class="text-slate-400 text-xs max-w-xs mx-auto leading-relaxed">
+                        Intenta con otra palabra clave o explora las categorías del catálogo.
+                    </p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </main>
+
+    <!-- Script de control de catálogo (Vanilla JS, súper ligero) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let activeCategoryId = null;
+            let searchQuery = '';
+
+            // Obtener categoría activa inicial de PHP
+            const initialActiveBtn = document.querySelector('.category-btn.bg-primary');
+            if (initialActiveBtn) {
+                activeCategoryId = initialActiveBtn.getAttribute('data-category-id');
+            }
+
+            function filterCatalog() {
+                const cards = document.querySelectorAll('#products-grid .product-card');
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const catId = card.getAttribute('data-category-id');
+                    const name = card.getAttribute('data-name');
+                    const desc = card.getAttribute('data-description');
+
+                    const matchesCategory = !activeCategoryId || String(catId) === String(activeCategoryId);
+                    const matchesSearch = !searchQuery || name.includes(searchQuery) || desc.includes(searchQuery);
+
+                    if (matchesCategory && matchesSearch) {
+                        card.classList.remove('hidden');
+                        card.classList.add('flex');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                        card.classList.remove('flex');
+                    }
+                });
+
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) {
+                    if (visibleCount === 0 && cards.length > 0) {
+                        emptyState.classList.remove('hidden');
+                    } else {
+                        emptyState.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Manejadores de eventos para los botones de categorías
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => {
+                        b.className = 'category-btn px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100';
+                    });
+                    btn.className = 'category-btn px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 bg-primary border-primary text-white shadow-sm';
+                    activeCategoryId = btn.getAttribute('data-category-id');
+                    filterCatalog();
+                });
+            });
+
+            // Manejo del Buscador
+            const searchInput = document.getElementById('catalog-search');
+            const clearBtn = document.getElementById('clear-search');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.toLowerCase().trim();
+                    if (clearBtn) {
+                        if (searchQuery) {
+                            clearBtn.classList.remove('hidden');
+                        } else {
+                            clearBtn.classList.add('hidden');
+                        }
+                    }
+                    filterCatalog();
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (searchInput) {
+                        searchInput.value = '';
+                    }
+                    searchQuery = '';
+                    clearBtn.classList.add('hidden');
+                    filterCatalog();
+                });
+            }
+
+            // Inicializar filtros al cargar
+            filterCatalog();
+        });
+
+        // Controladores globales de clics de productos
+        function handleProductClick(event, id, nombre, precio, stock, isAgotado) {
+            if (isAgotado) return;
+            // Solo agregar si el clic no viene directamente del botón (para evitar doble llamada)
+            if (!event.target.closest('button')) {
+                handleAddClick(id, nombre, precio, stock, isAgotado, event);
+            }
+        }
+
+        function handleAddClick(id, nombre, precio, stock, isAgotado, event) {
+            if (isAgotado) return;
+            if (window.addToCart) {
+                window.addToCart({ id, nombre, precio, stock }, event);
+            }
+        }
     </script>
 
 <?php
