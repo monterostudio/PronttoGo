@@ -79,14 +79,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'telefono_whatsapp' => preg_replace('/[^0-9]/', '', $_POST['telefono_whatsapp'] ?? ''),
                 'logo_url' => empty($_POST['logo_url']) ? null : $_POST['logo_url'],
                 'color_primario' => $_POST['color_primario'] ?? '#4F46E5',
+                'tipo_negocio' => $tipo_negocio,
                 'tasa_dolar' => $tasa_dolar,
                 'tasa_tipo' => $tasa_tipo,
-                'moneda_nombre' => $_POST['moneda_nombre'] ?? 'USD',
-                'moneda_simbolo' => $_POST['moneda_simbolo'] ?? '$',
                 'costo_delivery' => floatval($_POST['costo_delivery'] ?? 0.00),
                 'direccion' => $_POST['direccion'] ?? '',
                 'horario' => $_POST['horario'] ?? ''
             ];
+            
+            // Procesar moneda
+            $moneda_parts = explode('|', $_POST['moneda_principal'] ?? 'USD|$');
+            $data['moneda_nombre'] = $moneda_parts[0] ?? 'USD';
+            $data['moneda_simbolo'] = $moneda_parts[1] ?? '$';
+            
             supabase_request('PATCH', 'configuracion?id=eq.1', $data);
 
             // LÓGICA INTELIGENTE DE CATÁLOGOS AL CAMBIAR TIPO DE NEGOCIO O SI ESTÁ VACÍO
@@ -440,8 +445,8 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Personalizado)</label>
-                                        <div class="flex gap-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Color de Marca (Temas)</label>
+                                        <div class="flex gap-2 mb-3">
                                             <div class="relative flex-1">
                                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                     <i class="bi bi-palette text-slate-400 text-lg"></i>
@@ -450,6 +455,21 @@ if (!is_admin_logged_in()): ?>
                                             </div>
                                             <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
                                         </div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <button type="button" onclick="setColor('#4F46E5')" class="w-6 h-6 rounded-full bg-[#4F46E5] shadow-sm hover:scale-110 transition-transform" title="Índigo"></button>
+                                            <button type="button" onclick="setColor('#E11D48')" class="w-6 h-6 rounded-full bg-[#E11D48] shadow-sm hover:scale-110 transition-transform" title="Rosa"></button>
+                                            <button type="button" onclick="setColor('#10B981')" class="w-6 h-6 rounded-full bg-[#10B981] shadow-sm hover:scale-110 transition-transform" title="Esmeralda"></button>
+                                            <button type="button" onclick="setColor('#F59E0B')" class="w-6 h-6 rounded-full bg-[#F59E0B] shadow-sm hover:scale-110 transition-transform" title="Ámbar"></button>
+                                            <button type="button" onclick="setColor('#3B82F6')" class="w-6 h-6 rounded-full bg-[#3B82F6] shadow-sm hover:scale-110 transition-transform" title="Azul"></button>
+                                            <button type="button" onclick="setColor('#8B5CF6')" class="w-6 h-6 rounded-full bg-[#8B5CF6] shadow-sm hover:scale-110 transition-transform" title="Violeta"></button>
+                                            <button type="button" onclick="setColor('#111827')" class="w-6 h-6 rounded-full bg-[#111827] shadow-sm hover:scale-110 transition-transform" title="Oscuro"></button>
+                                        </div>
+                                        <script>
+                                            function setColor(hex) {
+                                                document.getElementById('color_picker').value = hex;
+                                                document.getElementById('color_text').value = hex;
+                                            }
+                                        </script>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Negocio</label>
@@ -491,8 +511,8 @@ if (!is_admin_logged_in()): ?>
                                                 <i class="bi bi-gear-wide-connected text-slate-400 text-lg"></i>
                                             </span>
                                             <select name="tasa_tipo" id="tasa_tipo" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
-                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>Fija (Definida por el comercio)</option>
-                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>Oficial (Banco Central de Venezuela)</option>
+                                                <option value="manual" <?= ($config['tasa_tipo'] ?? 'manual') === 'manual' ? 'selected' : '' ?>>(Definida por el comercio)</option>
+                                                <option value="bcv" <?= ($config['tasa_tipo'] ?? '') === 'bcv' ? 'selected' : '' ?>>(Banco Central de Venezuela)</option>
                                             </select>
                                             <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                                 <i class="bi bi-chevron-down text-slate-400"></i>
@@ -500,7 +520,7 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa (USD a Local)</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Valor de la Tasa</label>
                                         <div class="relative flex gap-2">
                                             <div class="relative flex-1">
                                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -514,41 +534,48 @@ if (!is_admin_logged_in()): ?>
                                         </div>
                                         <p id="tasa-status-text" class="text-[11px] mt-1 text-slate-400 font-semibold"></p>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nombre Moneda Local</label>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Moneda Principal del Catálogo</label>
                                         <div class="relative">
                                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                 <i class="bi bi-cash-stack text-slate-400 text-lg"></i>
                                             </span>
-                                            <input type="text" name="moneda_nombre" id="moneda_nombre" value="<?= h($config['moneda_nombre'] ?? 'USD') ?>" placeholder="Ej. Bs., COP, USD" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Símbolo Moneda Local</label>
-                                        <div class="relative">
-                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="bi bi-coin text-slate-400 text-lg"></i>
+                                            <select name="moneda_principal" class="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white appearance-none">
+                                                <?php $moneda_actual = ($config['moneda_nombre'] ?? 'USD') . '|' . ($config['moneda_simbolo'] ?? '$'); ?>
+                                                <option value="USD|$" <?= strpos($moneda_actual, 'USD') !== false ? 'selected' : '' ?>>Dólares (USD - $)</option>
+                                                <option value="VES|Bs." <?= strpos($moneda_actual, 'VES') !== false || strpos($moneda_actual, 'Bs.') !== false ? 'selected' : '' ?>>Bolívares (VES - Bs.)</option>
+                                                <option value="COP|$" <?= strpos($moneda_actual, 'COP') !== false ? 'selected' : '' ?>>Pesos Colombianos (COP - $)</option>
+                                            </select>
+                                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                <i class="bi bi-chevron-down text-slate-400"></i>
                                             </span>
-                                            <input type="text" name="moneda_simbolo" id="moneda_simbolo" value="<?= h($config['moneda_simbolo'] ?? '$') ?>" placeholder="Ej. $, Bs., COP" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required>
                                         </div>
+                                        <p class="text-[10px] text-slate-500 mt-1">Los precios de tus productos se mostrarán en esta moneda. El total también se mostrará en la moneda local convertida si configuras una tasa de cambio.</p>
                                     </div>
                                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Dirección del Local</label>
                                             <div class="relative">
-                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="absolute top-3 left-3 pointer-events-none">
                                                     <i class="bi bi-geo-alt text-slate-400 text-lg"></i>
                                                 </span>
-                                                <input type="text" name="direccion" value="<?= h($config['direccion'] ?? '') ?>" placeholder="Ej. Calle Falsa 123, Ciudad" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                                <textarea name="direccion" rows="2" placeholder="Ej. Calle Principal, Edificio Torre Sur, Planta Baja, Caracas" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm resize-none"><?= h($config['direccion'] ?? '') ?></textarea>
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Horario de Atención</label>
                                             <div class="relative">
-                                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="absolute top-3 left-3 pointer-events-none">
                                                     <i class="bi bi-clock text-slate-400 text-lg"></i>
                                                 </span>
-                                                <input type="text" name="horario" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lun a Sáb: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                                <input type="text" name="horario" list="horarios-sugeridos" value="<?= h($config['horario'] ?? '') ?>" placeholder="Ej. Lunes a Sábado: 9:00 AM - 8:00 PM" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                                                <datalist id="horarios-sugeridos">
+                                                    <option value="Lunes a Sábado: 8:00 AM - 5:00 PM"></option>
+                                                    <option value="Lunes a Sábado: 9:00 AM - 6:00 PM"></option>
+                                                    <option value="Lunes a Domingo: 8:00 AM - 10:00 PM"></option>
+                                                    <option value="Abierto 24 Horas"></option>
+                                                </datalist>
+                                                <p class="text-[10px] text-slate-500 mt-2 ml-1">Puedes elegir una sugerencia o escribir tu horario personalizado.</p>
                                             </div>
                                         </div>
                                     </div>
