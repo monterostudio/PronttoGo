@@ -153,63 +153,67 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <?php
             $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
             ?>
-            <div class="bg-white rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100 w-full max-w-[390px] aspect-square p-5 sm:p-6 relative z-10 flex flex-col justify-between items-center text-center transform scale-95 transition-transform duration-300 overflow-hidden">
+            <div class="bg-white rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100 w-full max-w-sm aspect-square p-6 sm:p-8 relative z-10 flex flex-col justify-between items-center text-center transform scale-95 transition-transform duration-300 overflow-hidden">
                 
                 <!-- Store Name & Header -->
                 <div class="w-full flex flex-col items-center">
-                    <span class="text-[8px] font-extrabold text-primary uppercase tracking-widest mb-1 leading-none">Información</span>
-                    <h3 class="font-extrabold text-base sm:text-lg text-slate-800 tracking-tight leading-tight">
+                    <span class="text-[9px] font-extrabold text-primary uppercase tracking-widest mb-1.5 leading-none">Información</span>
+                    <h3 class="font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight leading-tight">
                         <?= h($nombre) ?>
                     </h3>
-                    <div class="h-0.5 w-6 bg-primary/20 mx-auto mt-2 rounded-full"></div>
+                    <div class="h-0.5 w-8 bg-primary mx-auto mt-2.5 rounded-full"></div>
                 </div>
 
-                <!-- Info Grid (Professional Compact Layout) -->
-                <div class="grid grid-cols-2 gap-3 w-full my-auto text-left">
+                <!-- Info List (Single Column, Left Aligned) -->
+                <div class="flex flex-col gap-4 w-full flex-1 justify-center py-5">
                     <!-- WhatsApp -->
                     <?php if (!empty($config['telefono_whatsapp'])): ?>
-                        <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" 
-                           class="col-span-1 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-200 transition-all duration-300 flex items-center gap-2.5 group">
-                            <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all">
-                                <i class="bi bi-whatsapp text-sm"></i>
+                        <div class="flex items-center gap-4 w-full group">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-emerald-100 group-hover:scale-105 transition-all duration-300">
+                                <i class="bi bi-whatsapp text-lg"></i>
                             </div>
-                            <div class="min-w-0">
-                                <span class="block text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">WhatsApp</span>
-                                <span class="block text-[11px] font-bold text-slate-700 truncate"><?= h($config['telefono_whatsapp']) ?></span>
+                            <div class="flex flex-col text-left min-w-0 flex-1">
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">WhatsApp</span>
+                                <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="text-sm font-bold text-slate-700 hover:text-emerald-600 truncate transition-colors">
+                                    <?= h($config['telefono_whatsapp']) ?>
+                                </a>
                             </div>
-                        </a>
+                        </div>
                     <?php endif; ?>
 
                     <!-- Horario -->
                     <?php if (!empty($config['horario'])): ?>
-                        <div class="col-span-1 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-amber-200 transition-all duration-300 flex items-center gap-2.5 group">
-                            <div class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all">
-                                <i class="bi bi-clock-fill text-sm"></i>
+                        <div class="flex items-center gap-4 w-full group">
+                            <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-amber-100 group-hover:scale-105 transition-all duration-300">
+                                <i class="bi bi-clock-fill text-lg"></i>
                             </div>
-                            <div class="min-w-0">
-                                <span class="block text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">Horario</span>
-                                <span class="block text-[10px] font-semibold text-slate-650 leading-tight" title="<?= h($config['horario']) ?>"><?= h($config['horario']) ?></span>
+                            <div class="flex flex-col text-left min-w-0 flex-1">
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">Horario Laboral</span>
+                                <span class="text-xs font-semibold text-slate-600 leading-snug break-words">
+                                    <?= h($config['horario']) ?>
+                                </span>
                             </div>
                         </div>
                     <?php endif; ?>
 
                     <!-- Dirección -->
                     <?php if (!empty($config['direccion'])): ?>
-                        <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank"
-                           class="col-span-2 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-indigo-200 transition-all duration-300 flex items-start gap-2.5 group">
-                            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-all">
-                                <i class="bi bi-geo-alt-fill text-sm"></i>
+                        <div class="flex items-start gap-4 w-full group">
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-indigo-100 group-hover:scale-105 transition-all duration-300">
+                                <i class="bi bi-geo-alt-fill text-lg"></i>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">Dirección</span>
-                                    <span class="text-[8px] font-bold text-primary group-hover:underline flex items-center gap-0.5 leading-none">
-                                        Mapa <i class="bi bi-arrow-up-right text-[7px]"></i>
-                                    </span>
+                            <div class="flex flex-col text-left min-w-0 flex-1">
+                                <div class="flex items-center justify-between w-full mb-0.5">
+                                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Dirección</span>
+                                    <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5">
+                                        Mapa <i class="bi bi-arrow-up-right"></i>
+                                    </a>
                                 </div>
-                                <span class="block text-[10px] sm:text-[11px] font-semibold text-slate-650 leading-normal line-clamp-2"><?= h($config['direccion']) ?></span>
+                                <span class="text-xs font-semibold text-slate-600 leading-snug line-clamp-2">
+                                    <?= h($config['direccion']) ?>
+                                </span>
                             </div>
-                        </a>
+                        </div>
                     <?php endif; ?>
                 </div>
 
@@ -222,8 +226,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                                !empty($config['social_telegram']);
                 ?>
                 <?php if ($has_socials): ?>
-                    <div class="w-full pt-3 border-t border-slate-100 flex flex-col items-center">
-                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 leading-none">Síguenos en Redes</span>
+                    <div class="w-full pt-4 border-t border-slate-100 flex flex-col items-center">
+                        <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 leading-none">Síguenos en Redes</span>
                         <div class="flex flex-wrap justify-center gap-2">
                             <?php if (!empty($config['correo_electronico'])): ?>
                                 <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
