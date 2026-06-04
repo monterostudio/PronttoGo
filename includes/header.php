@@ -153,110 +153,121 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <?php
             $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
             ?>
-            <div class="bg-white rounded-none shadow-2xl border border-slate-100 max-w-sm w-full p-6 relative z-10 flex flex-col items-center text-center transform scale-95 transition-transform duration-300">
-                <!-- Store Name -->
-                <h3 class="font-extrabold text-base text-slate-800 mb-1">
-                    <?= h($nombre) ?>
-                </h3>
+            <div class="bg-white rounded-none shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100 w-full max-w-[390px] aspect-square p-5 sm:p-6 relative z-10 flex flex-col justify-between items-center text-center transform scale-95 transition-transform duration-300 overflow-hidden">
                 
-                <hr class="w-12 border-t-2 border-slate-100 my-3">
+                <!-- Store Name & Header -->
+                <div class="w-full flex flex-col items-center">
+                    <span class="text-[8px] font-extrabold text-primary uppercase tracking-widest mb-1 leading-none">Información</span>
+                    <h3 class="font-extrabold text-base sm:text-lg text-slate-800 tracking-tight leading-tight">
+                        <?= h($nombre) ?>
+                    </h3>
+                    <div class="h-0.5 w-6 bg-primary/20 mx-auto mt-2 rounded-full"></div>
+                </div>
 
-                <!-- Info Grid (Centrada) -->
-                <div class="space-y-3.5 w-full overflow-y-auto max-h-[60vh] pr-1">
-                    <!-- Teléfono / WhatsApp -->
+                <!-- Info Grid (Professional Compact Layout) -->
+                <div class="grid grid-cols-2 gap-3 w-full my-auto text-left">
+                    <!-- WhatsApp -->
                     <?php if (!empty($config['telefono_whatsapp'])): ?>
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-1 border border-emerald-100/50">
+                        <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" 
+                           class="col-span-1 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-200 transition-all duration-300 flex items-center gap-2.5 group">
+                            <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all">
                                 <i class="bi bi-whatsapp text-sm"></i>
                             </div>
-                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Teléfono / WhatsApp</span>
-                            <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="text-xs font-bold text-slate-650 hover:text-emerald-600 transition-colors mt-1">
-                                <?= h($config['telefono_whatsapp']) ?>
-                            </a>
+                            <div class="min-w-0">
+                                <span class="block text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">WhatsApp</span>
+                                <span class="block text-[11px] font-bold text-slate-700 truncate"><?= h($config['telefono_whatsapp']) ?></span>
+                            </div>
+                        </a>
+                    <?php endif; ?>
+
+                    <!-- Horario -->
+                    <?php if (!empty($config['horario'])): ?>
+                        <div class="col-span-1 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-amber-200 transition-all duration-300 flex items-center gap-2.5 group">
+                            <div class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all">
+                                <i class="bi bi-clock-fill text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">Horario</span>
+                                <span class="block text-[10px] font-semibold text-slate-650 leading-tight" title="<?= h($config['horario']) ?>"><?= h($config['horario']) ?></span>
+                            </div>
                         </div>
                     <?php endif; ?>
 
                     <!-- Dirección -->
                     <?php if (!empty($config['direccion'])): ?>
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-indigo-50 text-indigo-650 rounded-xl flex items-center justify-center mb-1 border border-indigo-100/50">
+                        <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank"
+                           class="col-span-2 p-2.5 bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-indigo-200 transition-all duration-300 flex items-start gap-2.5 group">
+                            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-all">
                                 <i class="bi bi-geo-alt-fill text-sm"></i>
                             </div>
-                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Dirección</span>
-                            <span class="text-xs font-semibold text-slate-650 px-2 leading-relaxed mt-1 text-center break-words w-full"><?= h($config['direccion']) ?></span>
-                            <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="inline-flex items-center gap-1 text-[9px] font-bold text-primary hover:underline mt-1.5">
-                                Ver en mapa <i class="bi bi-arrow-up-right"></i>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Horario Laboral -->
-                    <?php if (!empty($config['horario'])): ?>
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-amber-50 text-amber-650 rounded-xl flex items-center justify-center mb-1 border border-amber-100/50">
-                                <i class="bi bi-clock-fill text-sm"></i>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-extrabold text-slate-405 uppercase tracking-wider leading-none mb-0.5">Dirección</span>
+                                    <span class="text-[8px] font-bold text-primary group-hover:underline flex items-center gap-0.5 leading-none">
+                                        Mapa <i class="bi bi-arrow-up-right text-[7px]"></i>
+                                    </span>
+                                </div>
+                                <span class="block text-[10px] sm:text-[11px] font-semibold text-slate-650 leading-normal line-clamp-2"><?= h($config['direccion']) ?></span>
                             </div>
-                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Horario Laboral</span>
-                            <span class="text-xs font-semibold text-slate-650 mt-1 text-center"><?= h($config['horario']) ?></span>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Redes Sociales -->
-                    <?php
-                    $has_socials = !empty($config['correo_electronico']) || 
-                                   !empty($config['social_instagram']) || 
-                                   !empty($config['social_tiktok']) || 
-                                   !empty($config['social_facebook']) || 
-                                   !empty($config['social_telegram']);
-                    ?>
-                    <?php if ($has_socials): ?>
-                        <div class="flex flex-col items-center pt-1.5">
-                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2 leading-none">Síguenos en Redes</span>
-                            <div class="flex flex-wrap justify-center gap-2">
-                                <?php if (!empty($config['correo_electronico'])): ?>
-                                    <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
-                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-650 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
-                                        <i class="bi bi-envelope-fill text-xs"></i>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (!empty($config['social_instagram'])): ?>
-                                    <a href="<?= h($config['social_instagram']) ?>" target="_blank" title="Instagram" 
-                                       class="w-8 h-8 rounded-lg bg-rose-50 text-rose-650 hover:bg-rose-100 flex items-center justify-center transition-all border border-rose-100/50 hover:scale-[1.05]">
-                                        <i class="bi bi-instagram text-xs"></i>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (!empty($config['social_tiktok'])): ?>
-                                    <a href="<?= h($config['social_tiktok']) ?>" target="_blank" title="TikTok" 
-                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
-                                        <i class="bi bi-tiktok text-xs"></i>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (!empty($config['social_facebook'])): ?>
-                                    <a href="<?= h($config['social_facebook']) ?>" target="_blank" title="Facebook" 
-                                       class="w-8 h-8 rounded-lg bg-blue-50 text-blue-650 hover:bg-blue-100 flex items-center justify-center transition-all border border-blue-100/50 hover:scale-[1.05]">
-                                        <i class="bi bi-facebook text-xs"></i>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (!empty($config['social_telegram'])): ?>
-                                    <?php 
-                                    $tg = $config['social_telegram'];
-                                    if (strpos($tg, 'http') === false) {
-                                        $tg = 'https://t.me/' . ltrim($tg, '@');
-                                    }
-                                    ?>
-                                    <a href="<?= h($tg) ?>" target="_blank" title="Telegram" 
-                                       class="w-8 h-8 rounded-lg bg-sky-50 text-sky-650 hover:bg-sky-100 flex items-center justify-center transition-all border border-sky-100/50 hover:scale-[1.05]">
-                                        <i class="bi bi-telegram text-xs"></i>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                        </a>
                     <?php endif; ?>
                 </div>
+
+                <!-- Redes Sociales -->
+                <?php
+                $has_socials = !empty($config['correo_electronico']) || 
+                               !empty($config['social_instagram']) || 
+                               !empty($config['social_tiktok']) || 
+                               !empty($config['social_facebook']) || 
+                               !empty($config['social_telegram']);
+                ?>
+                <?php if ($has_socials): ?>
+                    <div class="w-full pt-3 border-t border-slate-100 flex flex-col items-center">
+                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 leading-none">Síguenos en Redes</span>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <?php if (!empty($config['correo_electronico'])): ?>
+                                <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
+                                   class="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 hover:text-white hover:bg-slate-700 border border-slate-200/50 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5">
+                                    <i class="bi bi-envelope-fill text-xs"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (!empty($config['social_instagram'])): ?>
+                                <a href="<?= h($config['social_instagram']) ?>" target="_blank" title="Instagram" 
+                                   class="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 hover:text-white hover:bg-rose-500 border border-slate-200/50 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5">
+                                    <i class="bi bi-instagram text-xs"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (!empty($config['social_tiktok'])): ?>
+                                <a href="<?= h($config['social_tiktok']) ?>" target="_blank" title="TikTok" 
+                                   class="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 hover:text-white hover:bg-black border border-slate-200/50 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5">
+                                    <i class="bi bi-tiktok text-xs"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (!empty($config['social_facebook'])): ?>
+                                <a href="<?= h($config['social_facebook']) ?>" target="_blank" title="Facebook" 
+                                   class="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 hover:text-white hover:bg-blue-600 border border-slate-200/50 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5">
+                                    <i class="bi bi-facebook text-xs"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (!empty($config['social_telegram'])): ?>
+                                <?php 
+                                $tg = $config['social_telegram'];
+                                if (strpos($tg, 'http') === false) {
+                                    $tg = 'https://t.me/' . ltrim($tg, '@');
+                                }
+                                ?>
+                                <a href="<?= h($tg) ?>" target="_blank" title="Telegram" 
+                                   class="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 hover:text-white hover:bg-sky-500 border border-slate-200/50 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5">
+                                    <i class="bi bi-telegram text-xs"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
