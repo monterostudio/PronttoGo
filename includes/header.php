@@ -149,44 +149,11 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         <div id="store-info-modal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
             <!-- Backdrop -->
             <div onclick="toggleStoreInfoModal(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
-            
             <!-- Modal Content (Centered Card) -->
-            <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-sm w-full p-6 relative z-10 flex flex-col items-center text-center transform scale-95 transition-transform duration-300">
-                <!-- Close Button -->
-                <button onclick="toggleStoreInfoModal(false)" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
-                    <i class="bi bi-x-lg text-[10px]"></i>
-                </button>
-                <!-- Logo at the top -->
-                <div class="mb-2 shrink-0">
-                    <?php
-                    $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
-                    $es_default_brand = (strtolower($nombre) === 'pronttogo' || $nombre === 'Mi Tienda');
-                    $is_customized = !empty($config['logo_url']) || !$es_default_brand;
-                    $powered_text = $is_customized ? 'PronttoGo' : 'Montero Studio';
-                    ?>
-                    <?php if (!empty($config['logo_url'])): ?>
-                        <?= render_logo('login', $config) ?>
-                    <?php elseif ($es_default_brand): ?>
-                        <?= render_logo('login', $config) ?>
-                    <?php else: ?>
-                        <!-- Icono premium según el tipo de negocio en lugar del logo de PronttoGo -->
-                        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner border border-primary/10 mb-4">
-                            <?php
-                            $biz_icon = 'bi-shop-window';
-                            $tipo_negocio = $config['tipo_negocio'] ?? 'gastronomia';
-                            if ($tipo_negocio === 'gastronomia') $biz_icon = 'bi-egg-fried';
-                            elseif ($tipo_negocio === 'comida_rapida') $biz_icon = 'bi-fire';
-                            elseif ($tipo_negocio === 'minimarket') $biz_icon = 'bi-cart-fill';
-                            elseif ($tipo_negocio === 'farmacia') $biz_icon = 'bi-heart-pulse-fill';
-                            elseif ($tipo_negocio === 'boutique') $biz_icon = 'bi-handbag-fill';
-                            elseif ($tipo_negocio === 'ferreteria_repuestos') $biz_icon = 'bi-tools';
-                            elseif ($tipo_negocio === 'belleza_estetica') $biz_icon = 'bi-stars';
-                            ?>
-                            <i class="bi <?= $biz_icon ?> text-3xl"></i>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
+            <?php
+            $nombre = !empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo';
+            ?>
+            <div class="bg-white rounded-none shadow-2xl border border-slate-100 max-w-sm w-full p-6 relative z-10 flex flex-col items-center text-center transform scale-95 transition-transform duration-300">
                 <!-- Store Name -->
                 <h3 class="font-extrabold text-base text-slate-800 mb-1">
                     <?= h($nombre) ?>
@@ -212,7 +179,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     <!-- Dirección -->
                     <?php if (!empty($config['direccion'])): ?>
                         <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-1 border border-indigo-100/50">
+                            <div class="w-8 h-8 bg-indigo-50 text-indigo-650 rounded-xl flex items-center justify-center mb-1 border border-indigo-100/50">
                                 <i class="bi bi-geo-alt-fill text-sm"></i>
                             </div>
                             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Dirección</span>
@@ -226,7 +193,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     <!-- Horario Laboral -->
                     <?php if (!empty($config['horario'])): ?>
                         <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-1 border border-amber-100/50">
+                            <div class="w-8 h-8 bg-amber-50 text-amber-650 rounded-xl flex items-center justify-center mb-1 border border-amber-100/50">
                                 <i class="bi bi-clock-fill text-sm"></i>
                             </div>
                             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Horario Laboral</span>
@@ -248,14 +215,14 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                             <div class="flex flex-wrap justify-center gap-2">
                                 <?php if (!empty($config['correo_electronico'])): ?>
                                     <a href="mailto:<?= h($config['correo_electronico']) ?>" title="Correo Electrónico" 
-                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
+                                       class="w-8 h-8 rounded-lg bg-slate-50 text-slate-650 hover:bg-slate-100 flex items-center justify-center transition-all border border-slate-200/50 hover:scale-[1.05]">
                                         <i class="bi bi-envelope-fill text-xs"></i>
                                     </a>
                                 <?php endif; ?>
 
                                 <?php if (!empty($config['social_instagram'])): ?>
                                     <a href="<?= h($config['social_instagram']) ?>" target="_blank" title="Instagram" 
-                                       class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all border border-rose-100/50 hover:scale-[1.05]">
+                                       class="w-8 h-8 rounded-lg bg-rose-50 text-rose-650 hover:bg-rose-100 flex items-center justify-center transition-all border border-rose-100/50 hover:scale-[1.05]">
                                         <i class="bi bi-instagram text-xs"></i>
                                     </a>
                                 <?php endif; ?>
@@ -269,7 +236,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
                                 <?php if (!empty($config['social_facebook'])): ?>
                                     <a href="<?= h($config['social_facebook']) ?>" target="_blank" title="Facebook" 
-                                       class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition-all border border-blue-100/50 hover:scale-[1.05]">
+                                       class="w-8 h-8 rounded-lg bg-blue-50 text-blue-650 hover:bg-blue-100 flex items-center justify-center transition-all border border-blue-100/50 hover:scale-[1.05]">
                                         <i class="bi bi-facebook text-xs"></i>
                                     </a>
                                 <?php endif; ?>
@@ -282,19 +249,13 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                                     }
                                     ?>
                                     <a href="<?= h($tg) ?>" target="_blank" title="Telegram" 
-                                       class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center transition-all border border-sky-100/50 hover:scale-[1.05]">
+                                       class="w-8 h-8 rounded-lg bg-sky-50 text-sky-650 hover:bg-sky-100 flex items-center justify-center transition-all border border-sky-100/50 hover:scale-[1.05]">
                                         <i class="bi bi-telegram text-xs"></i>
                                     </a>
                                 <?php endif; ?>
                             </div>
                         </div>
                     <?php endif; ?>
-                </div>
-
-                <!-- Mini Footer of the App at the very end of the modal -->
-                <div class="mt-4 pt-3 border-t border-slate-150 w-full text-center">
-                    <span class="text-[9px] uppercase font-bold text-slate-400">Powered by</span>
-                    <span class="text-primary font-extrabold text-[10px] block mt-0.5"><?= $powered_text ?></span>
                 </div>
             </div>
         </div>
