@@ -95,11 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'delivery_moneda' => $_POST['delivery_moneda'] ?? 'USD',
                 'direccion' => $_POST['direccion'] ?? '',
                 'horario' => $_POST['horario'] ?? '',
-                'social_instagram' => $_POST['social_instagram'] ?? '',
-                'social_tiktok' => $_POST['social_tiktok'] ?? '',
-                'social_facebook' => $_POST['social_facebook'] ?? '',
-                'social_telegram' => $_POST['social_telegram'] ?? '',
-                'correo_electronico' => $_POST['correo_electronico'] ?? '',
+                'social_instagram' => '',
+                'social_tiktok' => '',
+                'social_facebook' => '',
+                'social_telegram' => '',
+                'correo_electronico' => '',
                 'hero_titulo' => $_POST['hero_titulo'] ?? '',
                 'hero_subtitulo' => $_POST['hero_subtitulo'] ?? ''
             ];
@@ -435,12 +435,12 @@ if (!is_admin_logged_in()): ?>
                                 <input type="hidden" name="action" value="update_config">
                                 
                                 
-                                <!-- SECCIÓN: Identidad y Datos Principales -->
+                                <!-- SECCIÓN: Configuración Principal -->
                                 <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
                                     <button type="button" @click="activeSection = (activeSection === 'identidad' ? '' : 'identidad')" class="w-full flex items-center justify-between p-3.5 sm:p-5 text-left bg-slate-50 hover:bg-slate-100/60 transition-colors focus:outline-none">
                                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2.5">
                                             <i class="bi bi-shop-window text-indigo-650 text-lg"></i>
-                                            <span>Identidad y Negocio</span>
+                                            <span>Información del Negocio</span>
                                         </h3>
                                         <i class="bi bi-chevron-down text-slate-400 transition-transform duration-200" :class="activeSection === 'identidad' ? 'rotate-180 text-indigo-650' : ''"></i>
                                     </button>
@@ -456,12 +456,21 @@ if (!is_admin_logged_in()): ?>
                                                 </div>
                                             </div>
                                             <div>
+                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">WhatsApp para Pedidos <span class="text-red-500">*</span></label>
+                                                <div class="relative">
+                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                        <i class="bi bi-whatsapp text-emerald-500 text-lg"></i>
+                                                    </span>
+                                                    <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" required placeholder="Ej: 584121234567 (Código + Número)">
+                                                </div>
+                                            </div>
+                                            <div>
                                                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">URL del Logotipo (Imagen)</label>
                                                 <div class="relative">
                                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                                         <i class="bi bi-image text-slate-400 text-lg"></i>
                                                     </span>
-                                                    <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png (Vacío usa PronttoGo)" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                                                    <input type="url" name="logo_url" value="<?= h($config['logo_url'] ?? '') ?>" placeholder="https://ejemplo.com/logo.png" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                                                 </div>
                                             </div>
                                             <div>
@@ -486,7 +495,7 @@ if (!is_admin_logged_in()): ?>
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Color de Marca (Temas)</label>
+                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Color de Marca</label>
                                                 <div class="flex gap-2 mb-3">
                                                     <div class="relative flex-1">
                                                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -496,21 +505,6 @@ if (!is_admin_logged_in()): ?>
                                                     </div>
                                                     <input type="color" id="color_picker" value="<?= h($config['color_primario'] ?? '#4F46E5') ?>" class="w-12 h-11 p-0.5 border border-slate-200 rounded-xl cursor-pointer bg-white" oninput="document.getElementById('color_text').value = this.value.toUpperCase()">
                                                 </div>
-                                                <div class="flex items-center gap-2 flex-wrap">
-                                                    <button type="button" onclick="setColor('#4F46E5')" class="w-6 h-6 rounded-full bg-[#4F46E5] shadow-sm hover:scale-110 transition-transform" title="Índigo"></button>
-                                                    <button type="button" onclick="setColor('#E11D48')" class="w-6 h-6 rounded-full bg-[#E11D48] shadow-sm hover:scale-110 transition-transform" title="Rosa"></button>
-                                                    <button type="button" onclick="setColor('#10B981')" class="w-6 h-6 rounded-full bg-[#10B981] shadow-sm hover:scale-110 transition-transform" title="Esmeralda"></button>
-                                                    <button type="button" onclick="setColor('#F59E0B')" class="w-6 h-6 rounded-full bg-[#F59E0B] shadow-sm hover:scale-110 transition-transform" title="Ámbar"></button>
-                                                    <button type="button" onclick="setColor('#3B82F6')" class="w-6 h-6 rounded-full bg-[#3B82F6] shadow-sm hover:scale-110 transition-transform" title="Azul"></button>
-                                                    <button type="button" onclick="setColor('#8B5CF6')" class="w-6 h-6 rounded-full bg-[#8B5CF6] shadow-sm hover:scale-110 transition-transform" title="Violeta"></button>
-                                                    <button type="button" onclick="setColor('#111827')" class="w-6 h-6 rounded-full bg-[#111827] shadow-sm hover:scale-110 transition-transform" title="Oscuro"></button>
-                                                </div>
-                                                <script>
-                                                    function setColor(hex) {
-                                                        document.getElementById('color_picker').value = hex;
-                                                        document.getElementById('color_text').value = hex;
-                                                    }
-                                                </script>
                                             </div>
                                             <div class="md:col-span-2">
                                                 <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Título del Hero (Cabecera Pública)</label>
@@ -528,75 +522,6 @@ if (!is_admin_logged_in()): ?>
                                                         <i class="bi bi-text-paragraph text-slate-400 text-lg"></i>
                                                     </span>
                                                     <input type="text" name="hero_subtitulo" value="<?= h($config['hero_subtitulo'] ?? 'Explora nuestros productos, arma tu pedido y envíalo directo por WhatsApp en segundos.') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="Ej: Explora nuestros productos...">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- SECCIÓN: Redes Sociales y Contacto -->
-                                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
-                                    <button type="button" @click="activeSection = (activeSection === 'contacto' ? '' : 'contacto')" class="w-full flex items-center justify-between p-3.5 sm:p-5 text-left bg-slate-50 hover:bg-slate-100/60 transition-colors focus:outline-none">
-                                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2.5">
-                                            <i class="bi bi-link-45deg text-indigo-650 text-lg"></i>
-                                            <span>Redes Sociales y Contacto</span>
-                                        </h3>
-                                        <i class="bi bi-chevron-down text-slate-400 transition-transform duration-200" :class="activeSection === 'contacto' ? 'rotate-180 text-indigo-650' : ''"></i>
-                                    </button>
-                                    <div x-show="activeSection === 'contacto'" class="p-4 sm:p-6 border-t border-slate-100 bg-white">
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">WhatsApp para Pedidos <span class="text-red-500">*</span></label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-whatsapp text-emerald-500 text-lg"></i>
-                                                    </span>
-                                                    <input type="text" name="telefono_whatsapp" value="<?= h($config['telefono_whatsapp'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" required placeholder="Ej: 584121234567 (Código + Número)">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Correo Electrónico</label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-envelope-at text-slate-400 text-lg"></i>
-                                                    </span>
-                                                    <input type="email" name="correo_electronico" value="<?= h($config['correo_electronico'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="contacto@mitienda.com">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Instagram (Enlace)</label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-instagram text-rose-500 text-lg"></i>
-                                                    </span>
-                                                    <input type="url" name="social_instagram" value="<?= h($config['social_instagram'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="https://instagram.com/tu_cuenta">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">TikTok (Enlace)</label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-tiktok text-slate-800 text-lg"></i>
-                                                    </span>
-                                                    <input type="url" name="social_tiktok" value="<?= h($config['social_tiktok'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="https://tiktok.com/@tu_cuenta">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Facebook (Enlace)</label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-facebook text-blue-600 text-lg"></i>
-                                                    </span>
-                                                    <input type="url" name="social_facebook" value="<?= h($config['social_facebook'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="https://facebook.com/tu_pagina">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Telegram (Enlace o Usuario)</label>
-                                                <div class="relative">
-                                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                        <i class="bi bi-telegram text-sky-500 text-lg"></i>
-                                                    </span>
-                                                    <input type="text" name="social_telegram" value="<?= h($config['social_telegram'] ?? '') ?>" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="https://t.me/tu_usuario">
                                                 </div>
                                             </div>
                                         </div>

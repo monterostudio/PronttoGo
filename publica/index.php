@@ -125,7 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             <?php else: ?>
                 <!-- Buscador de Productos -->
-                <div class="relative w-full shadow-sm rounded-2xl bg-white border border-slate-100 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
+                <div class="relative w-full shadow-sm rounded-xl bg-white border border-slate-200 p-2 flex items-center space-x-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary mb-6">
                     <div class="pl-3.5 text-slate-400">
                         <i class="bi bi-search"></i>
                     </div>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/../includes/header.php';
                         type="text" 
                         id="catalog-search"
                         placeholder="Buscar productos..." 
-                        class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-1.5"
+                        class="w-full bg-transparent border-0 outline-none text-slate-800 text-sm placeholder-slate-400 pr-4 py-2"
                         autocomplete="off"
                     />
                     <button 
@@ -144,54 +144,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </button>
                 </div>
 
-                <!-- Categorías Deslizables -->
-                <?php if (!empty($categorias)): ?>
-                    <div class="-mx-4 sm:-mx-6 border-y border-slate-100 bg-white sticky top-16 z-20 shadow-sm">
-                        <nav class="flex overflow-x-auto no-scrollbar scroll-smooth" style="padding: 10px 16px; gap: 8px; scroll-snap-type: x mandatory;">
-                            <?php 
-                            // Encontrar la primera categoría activa con productos para marcarla como activa por defecto
-                            $active_cat_id = null;
-                            foreach ($categorias as $cat) {
-                                $hasProducts = false;
-                                foreach ($productos as $p) {
-                                    if (strval($p['categoria_id']) === strval($cat['id'])) {
-                                        $hasProducts = true;
-                                        break;
-                                    }
-                                }
-                                if ($hasProducts) {
-                                    $active_cat_id = $cat['id'];
-                                    break;
-                                }
-                            }
-                            
-                            foreach ($categorias as $cat): 
-                                $hasProducts = false;
-                                foreach ($productos as $p) {
-                                    if (strval($p['categoria_id']) === strval($cat['id'])) {
-                                        $hasProducts = true;
-                                        break;
-                                    }
-                                }
-                                if (!$hasProducts) continue;
-                                $isActive = strval($active_cat_id) === strval($cat['id']);
-                                $btnClass = $isActive 
-                                    ? 'bg-primary border-primary text-white shadow-sm' 
-                                    : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100';
-                            ?>
-                                <button
-                                    type="button"
-                                    class="category-btn px-4 py-2 border rounded-xl font-bold text-xs whitespace-nowrap transition-all duration-200 active:scale-95 <?= $btnClass ?>"
-                                    data-category-id="<?= $cat['id'] ?>"
-                                    style="scroll-snap-align: start; flex-shrink: 0;"
-                                >
-                                    <?= h($cat['nombre']) ?>
-                                </button>
-                            <?php endforeach; ?>
-                            <div style="flex-shrink: 0; width: 4px;"></div>
-                        </nav>
-                    </div>
-                <?php endif; ?>
+
 
                 <!-- Listado de Productos -->
                 <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -209,65 +162,97 @@ require_once __DIR__ . '/../includes/header.php';
                         $prod_stock = $prod['stock'] !== null ? intval($prod['stock']) : 'null';
                     ?>
                         <div 
-                            class="product-card bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm transition-[box-shadow,border-color] duration-300 flex items-stretch justify-between gap-4 relative group cursor-pointer hover:shadow-md hover:border-slate-200 <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
+                            class="product-card bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 overflow-hidden flex flex-col relative group <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
                             data-category-id="<?= $prod['categoria_id'] ?>"
+                            data-product-id="<?= $prod_id ?>"
                             data-name="<?= h(strtolower($prod['nombre'])) ?>"
                             data-description="<?= h(strtolower($prod['descripcion'] ?? '')) ?>"
                             onclick="handleProductClick(event, <?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>)"
                         >
-                            <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
-                                <div class="space-y-1">
-                                    <h3 class="product-title font-extrabold text-slate-900 text-sm md:text-base leading-snug transition-colors <?= !$isAgotado ? 'group-hover:text-primary' : '' ?>">
-                                        <?= h($prod['nombre']) ?>
-                                    </h3>
-                                    <?php if (!empty($prod['descripcion'])): ?>
-                                        <p class="text-xs text-slate-500 line-clamp-2 md:line-clamp-3 leading-relaxed">
-                                            <?= h($prod['descripcion']) ?>
-                                        </p>
-                                    <?php endif; ?>
-                                </div>
-                                <div>
-                                    <span class="block font-black text-sm md:text-base text-slate-900 mt-2">
-                                        $<?= $formattedPrice ?>
-                                    </span>
-                                    <?php if ($tasa_dolar > 1): ?>
-                                        <span class="block text-xs font-bold text-slate-500 mt-0.5">
-                                            <?= $moneda_local_simbolo ?> <?= $formattedLocal ?> <?= $moneda_local_nombre ?>
-                                        </span>
-                                    <?php endif; ?>
+                            <!-- Imagen Superior -->
+                            <div class="w-full aspect-[4/3] bg-slate-50 relative overflow-hidden">
+                                <?php if (!empty($prod['imagen_url'])): ?>
+                                    <img 
+                                        src="<?= h($prod['imagen_url']) ?>" 
+                                        alt="<?= h($prod['nombre']) ?>" 
+                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                    />
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300">
+                                        <i class="bi bi-image text-3xl"></i>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <!-- Etiquetas Superpuestas -->
+                                <div class="absolute top-2 left-2 flex flex-col gap-1">
                                     <?php if ($isAgotado): ?>
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-500 mt-1.5 bg-red-50 px-2 py-0.5 rounded-md">
-                                            <i class="bi bi-x-circle-fill"></i> Agotado
+                                        <span class="bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
+                                            Agotado
                                         </span>
-                                    <?php endif; ?>
-                                    <?php if ($isStockCritico): ?>
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-1.5 bg-amber-50 px-2 py-0.5 rounded-md">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> ¡Solo quedan <?= $prod['stock'] ?>!
+                                    <?php elseif ($isStockCritico): ?>
+                                        <span class="bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
+                                            ¡Quedan <?= $prod['stock'] ?>!
                                         </span>
                                     <?php endif; ?>
                                 </div>
                             </div>
 
-                            <div class="flex flex-col items-center justify-between shrink-0 gap-3 w-16 sm:w-20 md:w-24">
-                                <?php if (!empty($prod['imagen_url'])): ?>
-                                    <img 
-                                        src="<?= h($prod['imagen_url']) ?>" 
-                                        alt="<?= h($prod['nombre']) ?>" 
-                                        class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl bg-slate-50 border border-slate-100 shadow-sm group-hover:scale-[1.02] transition-transform duration-300"
-                                    />
-                                <?php else: ?>
-                                    <div class="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-350">
-                                        <i class="bi bi-image text-xl"></i>
+                            <!-- Contenido Inferior -->
+                            <div class="p-4 flex flex-col flex-1">
+                                <div class="flex-1 space-y-1 mb-3">
+                                    <h3 class="product-title font-extrabold text-slate-800 text-sm md:text-base leading-snug group-hover:text-primary transition-colors">
+                                        <?= h($prod['nombre']) ?>
+                                    </h3>
+                                    <?php if (!empty($prod['descripcion'])): ?>
+                                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                            <?= h($prod['descripcion']) ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="flex items-end justify-between mt-auto">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-base text-slate-900 leading-none">
+                                            $<?= $formattedPrice ?>
+                                        </span>
+                                        <?php if ($tasa_dolar > 1): ?>
+                                            <span class="text-[10px] font-bold text-slate-400 mt-1">
+                                                <?= $moneda_local_simbolo ?> <?= $formattedLocal ?> <?= $moneda_local_nombre ?>
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
-                                <?php endif; ?>
-                                <button 
-                                    type="button"
-                                    class="w-full font-bold text-center text-[10px] md:text-xs py-1.5 rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap <?= $isAgotado ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-primary hover:bg-primary-hover text-white' ?>"
-                                    <?= $isAgotado ? 'disabled' : '' ?>
-                                    onclick="event.stopPropagation(); handleAddClick(<?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>, event)"
-                                >
-                                    <?= $isAgotado ? 'Agotado' : '+ Agregar' ?>
-                                </button>
+
+                                    <!-- Controles de Agregar / Cantidad -->
+                                    <div class="relative min-w-[90px] flex justify-end">
+                                        <?php if (!$isAgotado): ?>
+                                            <!-- Botón Agregar (Visible por defecto) -->
+                                            <button 
+                                                type="button"
+                                                class="btn-add w-9 h-9 rounded-xl bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-md shadow-primary/20 transition-all active:scale-95"
+                                                onclick="event.stopPropagation(); handleAddClick(<?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>, event)"
+                                                title="Agregar al pedido"
+                                            >
+                                                <i class="bi bi-plus-lg text-sm font-bold"></i>
+                                            </button>
+
+                                            <!-- Controles de Cantidad (Ocultos por defecto) -->
+                                            <div class="qty-controls hidden items-center justify-between bg-slate-100 rounded-xl p-1 w-24 border border-slate-200">
+                                                <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, -1, '')">
+                                                    <i class="bi bi-dash font-bold"></i>
+                                                </button>
+                                                <span class="qty-value text-xs font-black text-slate-800 w-6 text-center">1</span>
+                                                <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, 1, '')">
+                                                    <i class="bi bi-plus font-bold"></i>
+                                                </button>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 cursor-not-allowed">
+                                                <i class="bi bi-slash-circle text-sm"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>

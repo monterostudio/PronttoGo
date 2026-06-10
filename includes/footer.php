@@ -72,24 +72,28 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                 </div>
             </div>
 
-            <!-- Contenedor scrollable principal -->
-            <div class="flex-1 overflow-y-auto">
-                <div class="p-5 space-y-5">
-                    <!-- Listado de Productos -->
-                    <div id="cart-items" class="space-y-1 divide-y divide-slate-100">
-                        <!-- Se rellena por JS de forma segura -->
+            <!-- Contenedor scrollable principal con Pasos -->
+            <div class="flex-1 overflow-y-auto relative overflow-x-hidden">
+                <!-- PASO 1: Listado de Productos -->
+                <div id="cart-step-1" class="absolute inset-0 w-full transition-transform duration-300 transform translate-x-0 bg-white">
+                    <div class="p-5 space-y-5">
+                        <div id="cart-items" class="space-y-1 divide-y divide-slate-100 pb-20">
+                            <!-- Se rellena por JS -->
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Formulario de Datos del Cliente -->
-                    <div id="customer-data-form" class="border-t border-slate-100 pt-4 space-y-3.5">
+                <!-- PASO 2: Datos de Envío -->
+                <div id="cart-step-2" class="absolute inset-0 w-full transition-transform duration-300 transform translate-x-full bg-white hidden">
+                    <div class="p-5 space-y-5">
                         <div class="pb-1">
-                            <h4 class="font-extrabold text-sm text-slate-800">Datos del Cliente</h4>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Completa esta información para tu pedido.</p>
+                            <h4 class="font-extrabold text-sm text-slate-800">Datos de Entrega</h4>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Por favor, indícanos cómo y a quién entregaremos tu pedido.</p>
                         </div>
 
                         <!-- Nombre -->
                         <div class="space-y-1">
-                            <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre</label>
+                            <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre *</label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <i class="bi bi-person-fill text-slate-400 text-xs"></i>
@@ -123,32 +127,11 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
                         <!-- Dirección -->
                         <div id="delivery-address-container" class="space-y-1 transition-all duration-300">
-                            <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega</label>
+                            <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega *</label>
                             <div class="relative">
                                 <i class="bi bi-geo-alt-fill absolute left-3 top-2.5 text-slate-400 text-xs pointer-events-none"></i>
                                 <textarea id="cust-address" placeholder="Calle, edificio, número, referencias..." rows="2" required
                                           class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Método de pago -->
-                        <div class="space-y-1">
-                            <label for="cust-payment" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Método de Pago</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i class="bi bi-credit-card-fill text-slate-400 text-xs"></i>
-                                </span>
-                                <select id="cust-payment" 
-                                        class="w-full pl-8 pr-8 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none">
-                                    <option value="Pago Móvil">Pago Móvil (Bolívares - VES)</option>
-                                    <option value="Efectivo Divisas">Efectivo Divisas (USD)</option>
-                                    <option value="Zelle">Zelle (USD)</option>
-                                    <option value="Efectivo Bs.">Efectivo Bolívares (VES)</option>
-                                    <option value="Tarjeta / Punto de Venta">Tarjeta / Punto de Venta</option>
-                                </select>
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <i class="bi bi-chevron-down text-slate-400 text-[10px]"></i>
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -156,7 +139,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             </div>
 
             <!-- Footer del panel (Total + Enviar) -->
-            <div class="p-5 border-t border-slate-100 space-y-3 bg-slate-50/80 shrink-0">
+            <div class="p-5 border-t border-slate-100 space-y-3 bg-slate-50/80 shrink-0 relative z-10">
                 <!-- Desglose de Pedido -->
                 <div class="space-y-1 text-xs text-slate-500">
                     <div class="flex justify-between">
@@ -169,7 +152,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center font-extrabold text-slate-800 border-t border-slate-200/70 pt-2">
+                <div class="flex justify-between items-center font-extrabold text-slate-800 border-t border-slate-200/70 pt-2 pb-2">
                     <span class="text-sm">Total a pagar</span>
                     <div class="text-right">
                         <span id="drawer-total" class="text-lg block text-slate-800">$0.00</span>
@@ -179,13 +162,24 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     </div>
                 </div>
 
-                <button onclick="checkoutOrder()" class="w-full py-3.5 px-5 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-between items-center active:scale-95 gap-2">
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-whatsapp text-base"></i>
-                        <span>Enviar por WhatsApp</span>
-                    </div>
-                    <i class="bi bi-arrow-right font-bold"></i>
-                </button>
+                <!-- Botones Paso 1 -->
+                <div id="cart-buttons-step1" class="w-full">
+                    <button onclick="goToCartStep(2)" class="w-full py-3.5 px-5 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-center items-center active:scale-95 gap-2">
+                        <span>Continuar Compra</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Botones Paso 2 -->
+                <div id="cart-buttons-step2" class="w-full hidden flex gap-2">
+                    <button onclick="goToCartStep(1)" class="w-12 h-[50px] shrink-0 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl shadow-sm transition-all flex justify-center items-center active:scale-95">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <button onclick="checkoutOrder()" class="flex-1 h-[50px] bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/30 transition-all flex justify-center items-center active:scale-95 gap-2">
+                        <i class="bi bi-whatsapp text-lg"></i>
+                        <span>Enviar Pedido</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

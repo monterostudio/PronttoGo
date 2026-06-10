@@ -123,13 +123,29 @@ $es_admin = isset($es_admin) ? $es_admin : false;
         
         <header class="h-16 bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm flex items-center">
             <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+                <!-- Logo -->
                 <div class="flex items-center space-x-2.5 min-w-0">
                     <?= render_logo('header', $config) ?>
                     <?php if (!empty($config['logo_url'])): ?>
                         <span class="font-extrabold text-lg tracking-tight text-slate-800 truncate max-w-[140px] sm:max-w-none block"><?= h($config['nombre']) ?></span>
                     <?php endif; ?>
                 </div>
-                <div class="flex items-center space-x-2 shrink-0">
+
+                <!-- Navegación de Escritorio (Oculta en móvil) -->
+                <?php if (isset($categorias) && !empty($categorias)): ?>
+                <nav class="hidden md:flex flex-1 items-center justify-center px-8">
+                    <div class="flex items-center gap-6 overflow-x-auto no-scrollbar">
+                        <?php foreach ($categorias as $cat): ?>
+                            <a href="#cat-<?= $cat['id'] ?>" class="category-btn text-sm font-bold text-slate-500 hover:text-primary transition-colors whitespace-nowrap" data-category-id="<?= $cat['id'] ?>">
+                                <?= h($cat['nombre']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </nav>
+                <?php endif; ?>
+
+                <!-- Iconos de Acción -->
+                <div class="flex items-center gap-2 shrink-0 ml-auto md:ml-0">
                     <?php
                     $has_info = !empty($config['telefono_whatsapp']) || !empty($config['direccion']) || !empty($config['horario']);
                     if ($has_info): 
@@ -138,12 +154,70 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                             <i class="bi bi-info-circle-fill text-lg"></i>
                         </button>
                     <?php endif; ?>
-                    <a href="/admin" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-350 rounded-xl px-4 py-2 transition-all bg-white shadow-sm">
-                        Iniciar Sesión
-                    </a>
+
+                    <!-- Menú Hamburguesa Móvil (Visible solo en móvil) -->
+                    <?php if (isset($categorias) && !empty($categorias)): ?>
+                    <button type="button" onclick="toggleMobileMenu(true)" class="md:hidden w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-all shadow-sm ml-1">
+                        <i class="bi bi-list text-xl"></i>
+                    </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </header>
+
+        <!-- Sidebar Menú Móvil -->
+        <?php if (isset($categorias) && !empty($categorias)): ?>
+        <div id="mobile-menu-overlay" class="fixed inset-0 z-[60] hidden opacity-0 transition-opacity duration-300">
+            <!-- Backdrop -->
+            <div onclick="toggleMobileMenu(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
+            
+            <!-- Panel Lateral (Aparece desde la derecha) -->
+            <div id="mobile-menu-panel" class="absolute top-0 right-0 h-full w-4/5 max-w-sm bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <span class="font-extrabold text-base text-slate-800 tracking-tight">Categorías</span>
+                    <button onclick="toggleMobileMenu(false)" class="w-8 h-8 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 transition-colors shadow-sm">
+                        <i class="bi bi-x-lg text-xs"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                    <?php foreach ($categorias as $cat): ?>
+                        <a href="#cat-<?= $cat['id'] ?>" onclick="toggleMobileMenu(false)" class="mobile-category-link block px-4 py-3 rounded-xl font-bold text-sm text-slate-600 bg-slate-50 border border-transparent hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-all" data-category-id="<?= $cat['id'] ?>">
+                            <?= h($cat['nombre']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+                <div class="p-5 border-t border-slate-100">
+                    <a href="/admin" class="flex items-center justify-center w-full py-3 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition-all shadow-sm">
+                        Acceso Administrador <i class="bi bi-box-arrow-in-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleMobileMenu(show) {
+                const overlay = document.getElementById('mobile-menu-overlay');
+                const panel = document.getElementById('mobile-menu-panel');
+                if (!overlay || !panel) return;
+
+                if (show) {
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                        panel.classList.remove('translate-x-full');
+                    }, 10);
+                } else {
+                    overlay.classList.add('opacity-0');
+                    panel.classList.add('translate-x-full');
+                    document.body.style.overflow = '';
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                }
+            }
+        </script>
+        <?php endif; ?>
 
         <!-- Modal de Información del Comercio (Accesible al Cliente) -->
         <div id="store-info-modal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
@@ -168,26 +242,25 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     <!-- WhatsApp -->
                     <?php if (!empty($config['telefono_whatsapp'])): ?>
                         <a href="https://wa.me/<?= h(preg_replace('/[^0-9]/', '', $config['telefono_whatsapp'])) ?>" target="_blank" class="flex items-center px-6 py-4 hover:bg-slate-50 transition-colors group">
-                            <div class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-none flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-none flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300" style="min-width: 40px; min-height: 40px;">
                                 <i class="bi bi-whatsapp text-xl"></i>
                             </div>
-                            <div class="ml-4 flex flex-col text-left min-w-0 flex-1">
+                            <div class="ml-4 flex flex-col text-left">
                                 <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">WhatsApp</span>
-                                <span class="text-sm font-bold text-slate-800 group-hover:text-emerald-600 truncate transition-colors">
+                                <span class="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
                                     <?= h($config['telefono_whatsapp']) ?>
                                 </span>
                             </div>
-                            <i class="bi bi-chevron-right text-slate-300 group-hover:text-emerald-500 transition-colors"></i>
                         </a>
                     <?php endif; ?>
 
                     <!-- Horario -->
                     <?php if (!empty($config['horario'])): ?>
                         <div class="flex items-center px-6 py-4 hover:bg-slate-50 transition-colors group">
-                            <div class="w-11 h-11 bg-amber-50 text-amber-600 rounded-none flex items-center justify-center shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
+                            <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-none flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300" style="min-width: 40px; min-height: 40px;">
                                 <i class="bi bi-clock-fill text-xl"></i>
                             </div>
-                            <div class="ml-4 flex flex-col text-left min-w-0 flex-1">
+                            <div class="ml-4 flex flex-col text-left">
                                 <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">Horario Laboral</span>
                                 <span class="text-xs font-semibold text-slate-700 leading-snug break-words">
                                     <?= h($config['horario']) ?>
@@ -199,16 +272,15 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                     <!-- Dirección -->
                     <?php if (!empty($config['direccion'])): ?>
                         <a href="https://maps.google.com/?q=<?= urlencode($config['direccion']) ?>" target="_blank" class="flex items-center px-6 py-4 hover:bg-slate-50 transition-colors group">
-                            <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-none flex items-center justify-center shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-300">
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-none flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-300" style="min-width: 40px; min-height: 40px;">
                                 <i class="bi bi-geo-alt-fill text-xl"></i>
                             </div>
-                            <div class="ml-4 flex flex-col text-left min-w-0 flex-1">
+                            <div class="ml-4 flex flex-col text-left">
                                 <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">Dirección</span>
-                                <span class="text-xs font-semibold text-slate-700 leading-snug line-clamp-2">
+                                <span class="text-xs font-semibold text-slate-700 leading-snug">
                                     <?= h($config['direccion']) ?>
                                 </span>
                             </div>
-                            <i class="bi bi-chevron-right text-slate-300 group-hover:text-indigo-500 transition-colors"></i>
                         </a>
                     <?php endif; ?>
                 </div>

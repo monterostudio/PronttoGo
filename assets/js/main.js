@@ -238,6 +238,7 @@ function toggleCartDrawer(show) {
     const drawer = document.getElementById('cart-drawer');
     if (!drawer) return;
     if (show) {
+        goToCartStep(1); // Siempre abrir en el paso 1
         drawer.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         setTimeout(() => {
@@ -249,6 +250,40 @@ function toggleCartDrawer(show) {
         drawer.classList.remove('opacity-100');
         document.body.style.overflow = '';
         setTimeout(() => drawer.classList.add('hidden'), 300);
+    }
+}
+
+let currentCartStep = 1;
+function goToCartStep(step) {
+    currentCartStep = step;
+    const step1 = document.getElementById('cart-step-1');
+    const step2 = document.getElementById('cart-step-2');
+    const btnStep1 = document.getElementById('cart-buttons-step1');
+    const btnStep2 = document.getElementById('cart-buttons-step2');
+
+    if (!step1 || !step2) return;
+
+    if (step === 1) {
+        step1.classList.remove('hidden');
+        setTimeout(() => step1.classList.remove('-translate-x-full'), 10);
+        step2.classList.add('translate-x-full');
+        setTimeout(() => step2.classList.add('hidden'), 300);
+        
+        btnStep1.classList.remove('hidden');
+        btnStep2.classList.add('hidden');
+    } else {
+        const cart = getCart();
+        if (cart.length === 0) return; // No permitir ir al paso 2 si está vacío
+        
+        step2.classList.remove('hidden');
+        setTimeout(() => {
+            step1.classList.add('-translate-x-full');
+            step2.classList.remove('translate-x-full');
+        }, 10);
+        
+        btnStep1.classList.add('hidden');
+        btnStep2.classList.remove('hidden');
+        btnStep2.classList.add('flex');
     }
 }
 
@@ -408,7 +443,42 @@ function updateCartUI() {
     const cartBadge = document.getElementById('cart-badge');
     if (cartBadge) cartBadge.textContent = totalItems > 99 ? '99+' : totalItems;
 
+    // Actualizar controles inline en las tarjetas de producto
+    updateInlineProductControls(cart);
+
     floatingCart.classList.remove('hidden');
+}
+
+function updateInlineProductControls(cart) {
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+        const prodId = parseInt(card.getAttribute('data-product-id'));
+        if (isNaN(prodId)) return;
+        
+        const btnAdd = card.querySelector('.btn-add');
+        const qtyControls = card.querySelector('.qty-controls');
+        const qtyValue = card.querySelector('.qty-value');
+        
+        if (!btnAdd || !qtyControls || !qtyValue) return;
+
+        // Calcular total en el carrito para este producto
+        const totalQty = cart
+            .filter(item => item.id === prodId)
+            .reduce((sum, item) => sum + item.quantity, 0);
+
+        if (totalQty > 0) {
+            btnAdd.classList.add('hidden');
+            qtyControls.classList.remove('hidden');
+            qtyControls.classList.add('flex');
+            qtyValue.textContent = totalQty;
+            card.classList.add('border-primary'); // Highlight the card
+        } else {
+            btnAdd.classList.remove('hidden');
+            qtyControls.classList.add('hidden');
+            qtyControls.classList.remove('flex');
+            card.classList.remove('border-primary');
+        }
+    });
 }
 
 let currentDeliveryType = 'delivery';
@@ -444,16 +514,13 @@ function loadCustomerData() {
     try {
         const name = localStorage.getItem('cust_name') || '';
         const address = localStorage.getItem('cust_address') || '';
-        const payment = localStorage.getItem('cust_payment') || 'Pago Móvil';
         const deliveryType = localStorage.getItem('cust_delivery_type') || 'delivery';
 
         const nameInput = document.getElementById('cust-name');
         const addressInput = document.getElementById('cust-address');
-        const paymentInput = document.getElementById('cust-payment');
 
         if (nameInput) nameInput.value = name;
         if (addressInput) addressInput.value = address;
-        if (paymentInput) paymentInput.value = payment;
         
         setDeliveryType(deliveryType);
     } catch (e) {
@@ -465,15 +532,12 @@ function saveCustomerData() {
     try {
         const nameInput = document.getElementById('cust-name');
         const addressInput = document.getElementById('cust-address');
-        const paymentInput = document.getElementById('cust-payment');
 
         const name = nameInput ? nameInput.value.trim() : '';
         const address = addressInput ? addressInput.value.trim() : '';
-        const payment = paymentInput ? paymentInput.value : 'Pago Móvil';
         
         localStorage.setItem('cust_name', name);
         localStorage.setItem('cust_address', address);
-        localStorage.setItem('cust_payment', payment);
         localStorage.setItem('cust_delivery_type', currentDeliveryType);
     } catch (e) {
         console.error(e);
@@ -509,9 +573,6 @@ function checkoutOrder() {
         if (addressInput) addressInput.focus();
         return;
     }
-
-    const paymentInput = document.getElementById('cust-payment');
-    const clientPayment = paymentInput ? paymentInput.value : 'Pago Móvil';
 
     let totalPrice = 0;
     let itemsText = "";
@@ -556,7 +617,6 @@ function checkoutOrder() {
                   `--------------------------\n` +
                   `👤 *Cliente:* ${clientName}\n` +
                   `${deliveryText}\n` +
-                  `💸 *Pago:* ${clientPayment}\n` +
                   `--------------------------\n` +
                   `${itemsText}` +
                   `--------------------------\n` +
@@ -578,11 +638,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Guardar datos del cliente mientras escribe
     const nameInput = document.getElementById('cust-name');
     const addressInput = document.getElementById('cust-address');
-    const paymentInput = document.getElementById('cust-payment');
 
     if (nameInput) nameInput.addEventListener('input', saveCustomerData);
     if (addressInput) addressInput.addEventListener('input', saveCustomerData);
-    if (paymentInput) paymentInput.addEventListener('change', saveCustomerData);
 });
 
 console.log("Assets JS unificado cargado.");
