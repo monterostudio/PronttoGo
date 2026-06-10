@@ -237,21 +237,30 @@ function clearCart() {
 function toggleCartDrawer(show) {
     const drawer = document.getElementById('cart-drawer');
     const panel = document.getElementById('cart-drawer-panel');
-    if (!drawer) return;
+    
+    if (!drawer) {
+        console.error("Cart drawer element not found");
+        return;
+    }
     
     if (show) {
-        goToCartStep(1); // Siempre abrir en el paso 1
+        try { goToCartStep(1); } catch (e) { console.error("Error en goToCartStep:", e); }
+        
+        // Ensure the drawer is displayed
+        drawer.style.display = 'flex';
         drawer.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
         // Use inline styles to bypass any missing Tailwind classes
         setTimeout(() => {
             drawer.style.opacity = '1';
+            drawer.style.visibility = 'visible';
             if (panel) {
                 panel.style.transform = 'translateX(0) scale(1)';
                 panel.style.opacity = '1';
+                panel.style.visibility = 'visible';
             }
-        }, 10);
+        }, 20);
     } else {
         if (panel) {
             panel.style.transform = 'scale(0.95)';
@@ -260,7 +269,11 @@ function toggleCartDrawer(show) {
         drawer.style.opacity = '0';
         
         document.body.style.overflow = '';
-        setTimeout(() => drawer.classList.add('hidden'), 300);
+        setTimeout(() => {
+            drawer.style.display = 'none';
+            drawer.style.visibility = 'hidden';
+            drawer.classList.add('hidden');
+        }, 300);
     }
 }
 
