@@ -197,7 +197,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             nombre: <?= json_encode(!empty($config['nombre']) && $config['nombre'] !== 'Mi Tienda' ? $config['nombre'] : 'PronttoGo') ?>
         };
     </script>
-    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/main.js?v=<?= time() ?>"></script>
 </body>
 </html>
 <?php endif; ?>

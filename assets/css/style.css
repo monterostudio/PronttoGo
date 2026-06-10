@@ -157,11 +157,26 @@ ul {
 
 .product-card {
     background: white;
-    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    text-align: center;
+    /* padding and text-align removed to allow tailwind utility classes to work */
 }
+
+/* Fallback Tailwind Utilities for Compact Layout */
+.flex-row { flex-direction: row !important; }
+.w-24 { width: 6rem !important; }
+.h-24 { height: 6rem !important; }
+.shrink-0 { flex-shrink: 0 !important; }
+.min-w-0 { min-width: 0 !important; }
+.truncate { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+
+@media (min-width: 640px) {
+    .sm\:w-28 { width: 7rem !important; }
+    .sm\:h-28 { height: 7rem !important; }
+    .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
 [x-cloak] { display: none !important; }
 .glass-panel {
     background: rgba(255, 255, 255, 0.85);

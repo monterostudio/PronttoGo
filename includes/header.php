@@ -28,7 +28,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <!-- Custom style.css -->
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css?v=<?= time() ?>">
 
     <!-- Favicons (Compatibles con Caché Búster) -->
     <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg?v=2">
