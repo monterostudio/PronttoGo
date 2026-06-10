@@ -26,7 +26,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
     <!-- Carrito Flotante (JS) -->
     <div id="floating-cart" class="fixed z-40 hidden pointer-events-none" style="bottom: 24px; left: 0; right: 0; display: flex; justify-content: center; padding: 0 16px;">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-3.5 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-full transition-all active:scale-95 pointer-events-auto" style="max-width: 320px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; align-items: center;">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-3.5 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-full transition-all active:scale-95 pointer-events-auto" style="max-width: 320px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; align-items: center; pointer-events: auto !important; cursor: pointer;">
             <div class="flex items-center space-x-3">
                 <div class="relative">
                     <i class="bi bi-bag-fill text-white text-lg"></i>
