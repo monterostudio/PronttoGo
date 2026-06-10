@@ -256,14 +256,14 @@ function toggleCartDrawer(show) {
             drawer.style.opacity = '1';
             drawer.style.visibility = 'visible';
             if (panel) {
-                panel.style.transform = 'translateX(0) scale(1)';
+                panel.style.transform = 'translateX(0)';
                 panel.style.opacity = '1';
                 panel.style.visibility = 'visible';
             }
         }, 20);
     } else {
         if (panel) {
-            panel.style.transform = 'scale(0.95)';
+            panel.style.transform = 'translateX(100%)';
             panel.style.opacity = '0';
         }
         drawer.style.opacity = '0';
