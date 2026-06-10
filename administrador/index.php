@@ -439,7 +439,7 @@ if (!is_admin_logged_in()): ?>
                                 <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
                                     <button type="button" @click="activeSection = (activeSection === 'identidad' ? '' : 'identidad')" class="w-full flex items-center justify-between p-3.5 sm:p-5 text-left bg-slate-50 hover:bg-slate-100/60 transition-colors focus:outline-none">
                                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2.5">
-                                            <i class="bi bi-shop-window text-indigo-650 text-lg"></i>
+                                            <i class="bi bi-shop-window text-indigo-600 text-lg w-6 flex justify-center shrink-0"></i>
                                             <span>Información del Negocio</span>
                                         </h3>
                                         <i class="bi bi-chevron-down text-slate-400 transition-transform duration-200" :class="activeSection === 'identidad' ? 'rotate-180 text-indigo-650' : ''"></i>
@@ -532,7 +532,7 @@ if (!is_admin_logged_in()): ?>
                                 <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
                                     <button type="button" @click="activeSection = (activeSection === 'atencion' ? '' : 'atencion')" class="w-full flex items-center justify-between p-3.5 sm:p-5 text-left bg-slate-50 hover:bg-slate-100/60 transition-colors focus:outline-none">
                                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2.5">
-                                            <i class="bi bi-geo-alt text-indigo-650 text-lg"></i>
+                                            <i class="bi bi-geo-alt text-indigo-650 text-lg w-6 flex justify-center shrink-0"></i>
                                             <span>Ubicación y Atención</span>
                                         </h3>
                                         <i class="bi bi-chevron-down text-slate-400 transition-transform duration-200" :class="activeSection === 'atencion' ? 'rotate-180 text-indigo-650' : ''"></i>
@@ -572,7 +572,7 @@ if (!is_admin_logged_in()): ?>
                                 <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300">
                                     <button type="button" @click="activeSection = (activeSection === 'finanzas' ? '' : 'finanzas')" class="w-full flex items-center justify-between p-3.5 sm:p-5 text-left bg-slate-50 hover:bg-slate-100/60 transition-colors focus:outline-none">
                                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2.5">
-                                            <i class="bi bi-wallet2 text-indigo-650 text-lg"></i>
+                                            <i class="bi bi-wallet2 text-indigo-650 text-lg w-6 flex justify-center shrink-0"></i>
                                             <span>Finanzas y Despacho</span>
                                         </h3>
                                         <i class="bi bi-chevron-down text-slate-400 transition-transform duration-200" :class="activeSection === 'finanzas' ? 'rotate-180 text-indigo-650' : ''"></i>
@@ -776,7 +776,8 @@ if (!is_admin_logged_in()): ?>
                                 <div class="relative">
                                     <select 
                                         x-model="selectedCategory" 
-                                        class="w-full pl-4 pr-10 py-2.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 appearance-none transition-all"
+                                        class="w-full py-2.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 appearance-none transition-all"
+                                        style="padding-left: 1rem; padding-right: 2.5rem;"
                                     >
                                         <option value="">Todas las Categorías</option>
                                         <?php foreach($categorias as $c): ?>

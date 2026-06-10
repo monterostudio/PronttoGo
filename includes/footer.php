@@ -95,8 +95,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <div class="space-y-2">
                             <label for="cust-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Tu Nombre *</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                    <i class="bi bi-person-fill text-slate-400"></i>
+                                <span class="absolute left-0 pl-4 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+                                    <i class="bi bi-person-fill text-slate-400 text-sm"></i>
                                 </span>
                                 <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
                                        class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
@@ -108,12 +108,12 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Tipo de Entrega</label>
                             <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl">
                                 <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
-                                        class="py-2.5 text-xs font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">
-                                    <i class="bi bi-truck mr-1"></i> Delivery
+                                        class="py-2.5 text-xs font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="bi bi-truck text-sm"></i> <span>Delivery</span>
                                 </button>
                                 <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
-                                        class="py-2.5 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
-                                    <i class="bi bi-shop mr-1"></i> Retiro
+                                        class="py-2.5 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="bi bi-shop text-sm"></i> <span>Retiro</span>
                                 </button>
                             </div>
                             <p id="delivery-cost-note" class="text-xs text-amber-600 font-semibold flex items-center gap-1.5 pl-1 pt-1">
@@ -129,7 +129,9 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <div id="delivery-address-container" class="space-y-2 transition-all duration-300">
                             <label for="cust-address" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega *</label>
                             <div class="relative">
-                                <i class="bi bi-geo-alt-fill absolute left-4 top-3.5 text-slate-400 pointer-events-none"></i>
+                                <span class="absolute left-0 pl-4 pt-3.5 pointer-events-none">
+                                    <i class="bi bi-geo-alt-fill text-slate-400 text-sm"></i>
+                                </span>
                                 <textarea id="cust-address" placeholder="Calle, edificio, número, referencias..." rows="3" required
                                           class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"></textarea>
                             </div>
