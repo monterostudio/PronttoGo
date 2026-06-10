@@ -25,30 +25,30 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
 
     <!-- Carrito Flotante (JS) -->
-    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent max-w-lg mx-auto z-40 hidden">
-        <button onclick="toggleCartDrawer(true)" class="w-full py-3.5 px-5 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-xl flex justify-between items-center transition-all active:scale-98">
-            <div class="flex items-center space-x-2.5">
+    <div id="floating-cart" class="fixed bottom-6 left-0 right-0 z-40 hidden pointer-events-none flex justify-center px-4">
+        <button onclick="toggleCartDrawer(true)" class="w-full max-w-[340px] py-3.5 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] shadow-primary/30 flex justify-between items-center transition-all active:scale-95 pointer-events-auto border border-white/20">
+            <div class="flex items-center space-x-3">
                 <div class="relative">
-                    <i class="bi bi-bag-fill text-white text-base"></i>
-                    <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-white text-primary text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center leading-none">0</span>
+                    <i class="bi bi-bag-fill text-white text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1.5 -right-2 bg-white text-primary text-[10px] font-black rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center leading-none shadow-sm">0</span>
                 </div>
-                <span id="cart-count" class="font-bold">0 artículos</span>
+                <span id="cart-count" class="font-bold tracking-wide">0 arts</span>
             </div>
-            <div class="text-right">
-                <span id="cart-total" class="block font-black text-sm md:text-base">$0.00</span>
+            <div class="text-right flex flex-col items-end">
+                <span id="cart-total" class="block font-black text-base leading-none">$0.00</span>
                 <?php if (isset($tasa_dolar) && $tasa_dolar > 1): ?>
-                    <span id="cart-total-local" class="block text-[10px] opacity-90 font-bold font-mono"></span>
+                    <span id="cart-total-local" class="block text-[10px] opacity-90 font-bold font-mono mt-0.5"></span>
                 <?php endif; ?>
             </div>
         </button>
     </div>
 
-    <!-- Drawer del Carrito (Bottom Sheet en móvil, Right Sidebar en desktop) -->
-    <div id="cart-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
+    <!-- Drawer del Carrito (Modal Centrado) -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
         <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
         
-        <!-- Panel del Carrito (Drawer Lateral Derecho) -->
-        <div class="absolute top-0 right-0 w-full md:w-[480px] h-full bg-white shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 transform translate-x-full" id="cart-drawer-panel">
+        <!-- Panel del Carrito (Modal Centrado) -->
+        <div class="relative w-full max-w-[440px] max-h-[85vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 scale-95 opacity-0" id="cart-drawer-panel">
             
             <!-- Header del panel -->
             <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">

@@ -670,15 +670,15 @@ if (!is_admin_logged_in()): ?>
 
                         <!-- Buscador de Categorías -->
                         <?php if(!empty($categorias)): ?>
-                            <div class="relative flex items-center bg-white p-2 rounded-xl border border-slate-200 shadow-sm max-w-md focus-within:ring-2 focus-within:ring-indigo-500/20">
-                                <span class="absolute pl-3 text-slate-400">
-                                    <i class="bi bi-search"></i>
+                            <div class="relative flex items-center bg-white rounded-xl border border-slate-200 shadow-sm max-w-md focus-within:ring-2 focus-within:ring-indigo-500/20">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="bi bi-search text-slate-400"></i>
                                 </span>
                                 <input 
                                     type="text" 
                                     x-model="searchQuery" 
                                     placeholder="Buscar categoría..." 
-                                    class="w-full pl-9 pr-4 py-1.5 text-xs outline-none bg-transparent"
+                                    class="w-full pl-9 pr-3 py-2 text-sm outline-none bg-transparent rounded-xl"
                                 >
                             </div>
                         <?php endif; ?>

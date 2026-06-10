@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 
                 <!-- Listado de Productos -->
-                <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
                     <?php 
                     foreach ($productos as $prod): 
                         $formattedPrice = number_format($prod['precio_usd'], 2);
@@ -170,7 +170,7 @@ require_once __DIR__ . '/../includes/header.php';
                             onclick="handleProductClick(event, <?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>)"
                         >
                             <!-- Imagen Superior -->
-                            <div class="w-full aspect-[4/3] bg-slate-50 relative overflow-hidden">
+                            <div class="w-full aspect-square bg-slate-50 relative overflow-hidden shrink-0">
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <img 
                                         src="<?= h($prod['imagen_url']) ?>" 
@@ -199,13 +199,13 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
 
                             <!-- Contenido Inferior -->
-                            <div class="p-4 flex flex-col flex-1">
-                                <div class="flex-1 space-y-1 mb-3">
-                                    <h3 class="product-title font-extrabold text-slate-800 text-sm md:text-base leading-snug group-hover:text-primary transition-colors">
+                            <div class="p-3 flex flex-col flex-1">
+                                <div class="flex-1 space-y-1 mb-2">
+                                    <h3 class="product-title font-extrabold text-slate-800 text-xs sm:text-sm leading-snug group-hover:text-primary transition-colors">
                                         <?= h($prod['nombre']) ?>
                                     </h3>
                                     <?php if (!empty($prod['descripcion'])): ?>
-                                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                        <p class="text-[10px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">
                                             <?= h($prod['descripcion']) ?>
                                         </p>
                                     <?php endif; ?>
@@ -213,7 +213,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <div class="flex items-end justify-between mt-auto">
                                     <div class="flex flex-col">
-                                        <span class="font-black text-base text-slate-900 leading-none">
+                                        <span class="font-black text-sm sm:text-base text-slate-900 leading-none">
                                             $<?= $formattedPrice ?>
                                         </span>
                                         <?php if ($tasa_dolar > 1): ?>
@@ -229,7 +229,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <!-- Botón Agregar (Visible por defecto) -->
                                             <button 
                                                 type="button"
-                                                class="btn-add w-9 h-9 rounded-xl bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-md shadow-primary/20 transition-all active:scale-95"
+                                                class="btn-add w-8 h-8 rounded-xl bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-md shadow-primary/20 transition-all active:scale-95"
                                                 onclick="event.stopPropagation(); handleAddClick(<?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>, event)"
                                                 title="Agregar al pedido"
                                             >
