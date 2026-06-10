@@ -25,19 +25,19 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
 
     <!-- Carrito Flotante (JS) -->
-    <div id="floating-cart" class="fixed bottom-6 left-0 right-0 z-40 hidden pointer-events-none flex justify-center px-4">
-        <button onclick="toggleCartDrawer(true)" class="w-full max-w-[340px] py-3.5 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] shadow-primary/30 flex justify-between items-center transition-all active:scale-95 pointer-events-auto border border-white/20">
+    <div id="floating-cart" class="fixed z-40 hidden pointer-events-none" style="bottom: 24px; left: 0; right: 0; display: flex; justify-content: center; padding: 0 16px;">
+        <button onclick="toggleCartDrawer(true)" class="w-full py-3.5 px-6 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-full transition-all active:scale-95 pointer-events-auto" style="max-width: 320px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; align-items: center;">
             <div class="flex items-center space-x-3">
                 <div class="relative">
                     <i class="bi bi-bag-fill text-white text-lg"></i>
-                    <span id="cart-badge" class="absolute -top-1.5 -right-2 bg-white text-primary text-[10px] font-black rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center leading-none shadow-sm">0</span>
+                    <span id="cart-badge" class="absolute bg-white text-primary text-[10px] font-black rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center leading-none shadow-sm" style="top: -6px; right: -8px;">0</span>
                 </div>
                 <span id="cart-count" class="font-bold tracking-wide">0 arts</span>
             </div>
             <div class="text-right flex flex-col items-end">
                 <span id="cart-total" class="block font-black text-base leading-none">$0.00</span>
                 <?php if (isset($tasa_dolar) && $tasa_dolar > 1): ?>
-                    <span id="cart-total-local" class="block text-[10px] opacity-90 font-bold font-mono mt-0.5"></span>
+                    <span id="cart-total-local" class="block text-[10px] opacity-90 font-bold font-mono" style="margin-top: 2px;"></span>
                 <?php endif; ?>
             </div>
         </button>
