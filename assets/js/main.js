@@ -244,27 +244,20 @@ function toggleCartDrawer(show) {
         drawer.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
+        // Use inline styles to bypass any missing Tailwind classes
         setTimeout(() => {
-            drawer.classList.remove('opacity-0');
-            drawer.classList.add('opacity-100');
+            drawer.style.opacity = '1';
             if (panel) {
-                panel.classList.remove('translate-x-full');
-                panel.classList.remove('scale-95');
-                panel.classList.remove('opacity-0');
-                panel.classList.add('scale-100');
-                panel.classList.add('opacity-100');
+                panel.style.transform = 'translateX(0) scale(1)';
+                panel.style.opacity = '1';
             }
         }, 10);
     } else {
         if (panel) {
-            panel.classList.add('translate-x-full');
-            panel.classList.remove('scale-100');
-            panel.classList.remove('opacity-100');
-            panel.classList.add('scale-95');
-            panel.classList.add('opacity-0');
+            panel.style.transform = 'scale(0.95)';
+            panel.style.opacity = '0';
         }
-        drawer.classList.remove('opacity-100');
-        drawer.classList.add('opacity-0');
+        drawer.style.opacity = '0';
         
         document.body.style.overflow = '';
         setTimeout(() => drawer.classList.add('hidden'), 300);
