@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 
                 <!-- Listado de Productos -->
-                <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                     <?php 
                     foreach ($productos as $prod): 
                         $formattedPrice = number_format($prod['precio_usd'], 2);
@@ -162,15 +162,15 @@ require_once __DIR__ . '/../includes/header.php';
                         $prod_stock = $prod['stock'] !== null ? intval($prod['stock']) : 'null';
                     ?>
                         <div 
-                            class="product-card bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 overflow-hidden flex flex-col relative group <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
+                            class="product-card bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 overflow-hidden flex flex-row items-center relative group <?= $isAgotado ? 'opacity-65 cursor-not-allowed' : '' ?>"
                             data-category-id="<?= $prod['categoria_id'] ?>"
                             data-product-id="<?= $prod_id ?>"
                             data-name="<?= h(strtolower($prod['nombre'])) ?>"
                             data-description="<?= h(strtolower($prod['descripcion'] ?? '')) ?>"
                             onclick="handleProductClick(event, <?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>)"
                         >
-                            <!-- Imagen Superior -->
-                            <div class="w-full aspect-square bg-slate-50 relative overflow-hidden shrink-0">
+                            <!-- Imagen Izquierda -->
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 relative shrink-0">
                                 <?php if (!empty($prod['imagen_url'])): ?>
                                     <img 
                                         src="<?= h($prod['imagen_url']) ?>" 
@@ -180,75 +180,75 @@ require_once __DIR__ . '/../includes/header.php';
                                     />
                                 <?php else: ?>
                                     <div class="w-full h-full flex items-center justify-center text-slate-300">
-                                        <i class="bi bi-image text-3xl"></i>
+                                        <i class="bi bi-image text-2xl"></i>
                                     </div>
                                 <?php endif; ?>
                                 
                                 <!-- Etiquetas Superpuestas -->
-                                <div class="absolute top-2 left-2 flex flex-col gap-1">
+                                <div class="absolute top-1 left-1 flex flex-col gap-1">
                                     <?php if ($isAgotado): ?>
-                                        <span class="bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
+                                        <span class="bg-red-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
                                             Agotado
                                         </span>
                                     <?php elseif ($isStockCritico): ?>
-                                        <span class="bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
-                                            ¡Quedan <?= $prod['stock'] ?>!
+                                        <span class="bg-amber-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                                            Quedan <?= $prod['stock'] ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
                             </div>
 
-                            <!-- Contenido Inferior -->
-                            <div class="p-3 flex flex-col flex-1">
-                                <div class="flex-1 space-y-1 mb-2">
-                                    <h3 class="product-title font-extrabold text-slate-800 text-xs sm:text-sm leading-snug group-hover:text-primary transition-colors">
+                            <!-- Contenido Derecha -->
+                            <div class="p-2 sm:p-3 flex flex-col flex-1 h-full justify-between min-w-0">
+                                <div class="space-y-0.5 mb-1">
+                                    <h3 class="product-title font-bold text-slate-800 text-sm leading-tight group-hover:text-primary transition-colors truncate">
                                         <?= h($prod['nombre']) ?>
                                     </h3>
                                     <?php if (!empty($prod['descripcion'])): ?>
-                                        <p class="text-[10px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                        <p class="text-[10px] text-slate-500 line-clamp-2 leading-snug">
                                             <?= h($prod['descripcion']) ?>
                                         </p>
                                     <?php endif; ?>
                                 </div>
 
                                 <div class="flex items-end justify-between mt-auto">
-                                    <div class="flex flex-col">
-                                        <span class="font-black text-sm sm:text-base text-slate-900 leading-none">
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="font-black text-sm text-slate-900 leading-none">
                                             $<?= $formattedPrice ?>
                                         </span>
                                         <?php if ($tasa_dolar > 1): ?>
-                                            <span class="text-[10px] font-bold text-slate-400 mt-1">
-                                                <?= $moneda_local_simbolo ?> <?= $formattedLocal ?> <?= $moneda_local_nombre ?>
+                                            <span class="text-[9px] font-bold text-slate-400 mt-0.5 truncate">
+                                                <?= $moneda_local_simbolo ?> <?= $formattedLocal ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>
 
                                     <!-- Controles de Agregar / Cantidad -->
-                                    <div class="relative min-w-[90px] flex justify-end">
+                                    <div class="relative shrink-0 flex justify-end ml-2">
                                         <?php if (!$isAgotado): ?>
-                                            <!-- Botón Agregar (Visible por defecto) -->
+                                            <!-- Botón Agregar -->
                                             <button 
                                                 type="button"
-                                                class="btn-add w-8 h-8 rounded-xl bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-md shadow-primary/20 transition-all active:scale-95"
+                                                class="btn-add w-7 h-7 rounded-lg bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-sm transition-all active:scale-95"
                                                 onclick="event.stopPropagation(); handleAddClick(<?= $prod_id ?>, <?= htmlspecialchars(json_encode($prod_nombre), ENT_QUOTES, 'UTF-8') ?>, <?= $prod_precio ?>, <?= $prod_stock ?>, <?= $isAgotado ? 'true' : 'false' ?>, event)"
-                                                title="Agregar al pedido"
+                                                title="Agregar"
                                             >
-                                                <i class="bi bi-plus-lg text-sm font-bold"></i>
+                                                <i class="bi bi-plus-lg text-xs font-bold"></i>
                                             </button>
 
-                                            <!-- Controles de Cantidad (Ocultos por defecto) -->
-                                            <div class="qty-controls hidden items-center justify-between bg-slate-100 rounded-xl p-1 w-24 border border-slate-200">
-                                                <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, -1, '')">
-                                                    <i class="bi bi-dash font-bold"></i>
+                                            <!-- Controles de Cantidad -->
+                                            <div class="qty-controls hidden items-center justify-between bg-slate-100 rounded-lg p-0.5 w-20 border border-slate-200">
+                                                <button type="button" class="w-6 h-6 flex items-center justify-center rounded-md bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, -1, '')">
+                                                    <i class="bi bi-dash font-bold text-sm"></i>
                                                 </button>
-                                                <span class="qty-value text-xs font-black text-slate-800 w-6 text-center">1</span>
-                                                <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, 1, '')">
-                                                    <i class="bi bi-plus font-bold"></i>
+                                                <span class="qty-value text-xs font-black text-slate-800 w-5 text-center">1</span>
+                                                <button type="button" class="w-6 h-6 flex items-center justify-center rounded-md bg-white shadow-sm text-slate-600 hover:text-primary transition-colors" onclick="event.stopPropagation(); updateQuantity(<?= $prod_id ?>, 1, '')">
+                                                    <i class="bi bi-plus font-bold text-sm"></i>
                                                 </button>
                                             </div>
                                         <?php else: ?>
-                                            <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 cursor-not-allowed">
-                                                <i class="bi bi-slash-circle text-sm"></i>
+                                            <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 cursor-not-allowed">
+                                                <i class="bi bi-slash-circle text-xs"></i>
                                             </div>
                                         <?php endif; ?>
                                     </div>
