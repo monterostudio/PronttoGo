@@ -95,7 +95,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <div class="space-y-2">
                             <label for="cust-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Tu Nombre *</label>
                             <div class="relative">
-                                <span class="absolute left-0 pl-4 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+                                <span class="absolute pointer-events-none" style="left: 16px; top: 50%; transform: translateY(-50%);">
                                     <i class="bi bi-person-fill text-slate-400 text-sm"></i>
                                 </span>
                                 <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
@@ -129,7 +129,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         <div id="delivery-address-container" class="space-y-2 transition-all duration-300">
                             <label for="cust-address" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega *</label>
                             <div class="relative">
-                                <span class="absolute left-0 pl-4 pt-3.5 pointer-events-none">
+                                <span class="absolute pointer-events-none" style="left: 16px; top: 14px;">
                                     <i class="bi bi-geo-alt-fill text-slate-400 text-sm"></i>
                                 </span>
                                 <textarea id="cust-address" placeholder="Calle, edificio, número, referencias..." rows="3" required

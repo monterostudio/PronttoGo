@@ -237,7 +237,7 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <div class="bg-slate-50 rounded-none shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border border-slate-200 w-full max-w-sm relative z-10 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
                 
                 <!-- Dark Header Structure -->
-                <div class="w-full bg-slate-900 px-6 py-7 flex flex-col items-center text-center">
+                <div class="w-full bg-slate-900 flex flex-col items-center text-center" style="padding: 24px 20px;">
                     <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Información Comercial</span>
                     <h3 class="font-extrabold text-xl sm:text-2xl text-white tracking-tight leading-tight">
                         <?= h($nombre) ?>
