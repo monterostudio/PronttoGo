@@ -47,27 +47,27 @@ $es_admin = isset($es_admin) ? $es_admin : false;
     <div id="cart-drawer" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300">
         <div onclick="toggleCartDrawer(false)" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
         
-        <!-- Panel del Carrito (Bottom Sheet Centrado en Pantalla) -->
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg md:max-w-xl max-h-[80vh] md:max-h-[75vh] bg-white rounded-t-3xl shadow-2xl border-t border-slate-200/60 flex flex-col overflow-hidden transition-all duration-300">
+        <!-- Panel del Carrito (Drawer Lateral Derecho) -->
+        <div class="absolute top-0 right-0 w-full md:w-[480px] h-full bg-white shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 transform translate-x-full" id="cart-drawer-panel">
             
             <!-- Header del panel -->
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
 
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-bag-fill text-primary text-sm"></i>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center">
+                        <i class="bi bi-bag-fill text-primary text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-extrabold text-base text-slate-800 leading-tight">Mi Pedido</h3>
-                        <p class="text-[10px] text-slate-400 leading-tight">Revisa y confirma tus artículos</p>
+                        <h3 class="font-black text-lg text-slate-800 leading-tight">Mi Pedido</h3>
+                        <p class="text-xs text-slate-500 leading-tight">Revisa tus artículos</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="clearCart()" class="text-[10px] font-bold text-red-400 hover:text-red-600 transition-colors px-2 py-1 rounded-lg hover:bg-red-50">
+                <div class="flex items-center gap-3">
+                    <button onclick="clearCart()" class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors px-3 py-1.5 rounded-xl hover:bg-red-50 flex items-center gap-1.5">
                         <i class="bi bi-trash"></i> Vaciar
                     </button>
-                    <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
-                        <i class="bi bi-x-lg text-xs"></i>
+                    <button onclick="toggleCartDrawer(false)" class="w-9 h-9 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors shadow-sm">
+                        <i class="bi bi-x-lg text-sm"></i>
                     </button>
                 </div>
             </div>
@@ -76,8 +76,8 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             <div class="flex-1 overflow-y-auto relative overflow-x-hidden">
                 <!-- PASO 1: Listado de Productos -->
                 <div id="cart-step-1" class="absolute inset-0 w-full transition-transform duration-300 transform translate-x-0 bg-white">
-                    <div class="p-5 space-y-5">
-                        <div id="cart-items" class="space-y-1 divide-y divide-slate-100 pb-20">
+                    <div class="p-6 space-y-6">
+                        <div id="cart-items" class="space-y-4 pb-24">
                             <!-- Se rellena por JS -->
                         </div>
                     </div>
@@ -85,38 +85,38 @@ $es_admin = isset($es_admin) ? $es_admin : false;
 
                 <!-- PASO 2: Datos de Envío -->
                 <div id="cart-step-2" class="absolute inset-0 w-full transition-transform duration-300 transform translate-x-full bg-white hidden">
-                    <div class="p-5 space-y-5">
-                        <div class="pb-1">
-                            <h4 class="font-extrabold text-sm text-slate-800">Datos de Entrega</h4>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Por favor, indícanos cómo y a quién entregaremos tu pedido.</p>
+                    <div class="p-6 space-y-6">
+                        <div class="pb-2 border-b border-slate-100">
+                            <h4 class="font-black text-base text-slate-800">Datos de Entrega</h4>
+                            <p class="text-xs text-slate-500 mt-1">Por favor, indícanos cómo y a quién entregaremos tu pedido.</p>
                         </div>
 
                         <!-- Nombre -->
-                        <div class="space-y-1">
-                            <label for="cust-name" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tu Nombre *</label>
+                        <div class="space-y-2">
+                            <label for="cust-name" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Tu Nombre *</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i class="bi bi-person-fill text-slate-400 text-xs"></i>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                    <i class="bi bi-person-fill text-slate-400"></i>
                                 </span>
                                 <input type="text" id="cust-name" placeholder="Ej. Carlos Mendoza" required
-                                       class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                                       class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                             </div>
                         </div>
 
                         <!-- Tipo de entrega -->
-                        <div class="space-y-1.5">
-                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Tipo de Entrega</label>
-                            <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Tipo de Entrega</label>
+                            <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl">
                                 <button type="button" id="delivery-type-delivery" onclick="setDeliveryType('delivery')" 
-                                        class="py-2 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">
-                                    <i class="bi bi-truck"></i> Delivery
+                                        class="py-2.5 text-xs font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">
+                                    <i class="bi bi-truck mr-1"></i> Delivery
                                 </button>
                                 <button type="button" id="delivery-type-pickup" onclick="setDeliveryType('pickup')" 
-                                        class="py-2 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
-                                    <i class="bi bi-shop"></i> Retiro
+                                        class="py-2.5 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-800">
+                                    <i class="bi bi-shop mr-1"></i> Retiro
                                 </button>
                             </div>
-                            <p id="delivery-cost-note" class="text-[10px] text-amber-600 font-semibold flex items-center gap-1 pl-0.5">
+                            <p id="delivery-cost-note" class="text-xs text-amber-600 font-semibold flex items-center gap-1.5 pl-1 pt-1">
                                 <?php if (isset($costo_delivery) && $costo_delivery > 0): ?>
                                     <i class="bi bi-info-circle-fill"></i> Costo de envío: $<?= number_format($costo_delivery, 2) ?>
                                 <?php else: ?>
@@ -126,12 +126,12 @@ $es_admin = isset($es_admin) ? $es_admin : false;
                         </div>
 
                         <!-- Dirección -->
-                        <div id="delivery-address-container" class="space-y-1 transition-all duration-300">
-                            <label for="cust-address" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega *</label>
+                        <div id="delivery-address-container" class="space-y-2 transition-all duration-300">
+                            <label for="cust-address" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Dirección de Entrega *</label>
                             <div class="relative">
-                                <i class="bi bi-geo-alt-fill absolute left-3 top-2.5 text-slate-400 text-xs pointer-events-none"></i>
-                                <textarea id="cust-address" placeholder="Calle, edificio, número, referencias..." rows="2" required
-                                          class="w-full pl-8 pr-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"></textarea>
+                                <i class="bi bi-geo-alt-fill absolute left-4 top-3.5 text-slate-400 pointer-events-none"></i>
+                                <textarea id="cust-address" placeholder="Calle, edificio, número, referencias..." rows="3" required
+                                          class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"></textarea>
                             </div>
                         </div>
                     </div>
@@ -139,44 +139,44 @@ $es_admin = isset($es_admin) ? $es_admin : false;
             </div>
 
             <!-- Footer del panel (Total + Enviar) -->
-            <div class="p-5 border-t border-slate-100 space-y-3 bg-slate-50/80 shrink-0 relative z-10">
+            <div class="p-6 border-t border-slate-100 space-y-4 bg-white shrink-0 relative z-10 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.05)]">
                 <!-- Desglose de Pedido -->
-                <div class="space-y-1 text-xs text-slate-500">
+                <div class="space-y-2 text-sm text-slate-500">
                     <div class="flex justify-between">
                         <span>Subtotal</span>
-                        <span id="drawer-subtotal" class="font-bold text-slate-700">$0.00</span>
+                        <span id="drawer-subtotal" class="font-bold text-slate-800">$0.00</span>
                     </div>
                     <div id="drawer-delivery-row" class="flex justify-between">
                         <span>Costo de Envío</span>
-                        <span id="drawer-delivery-cost" class="font-bold text-slate-700">$0.00</span>
+                        <span id="drawer-delivery-cost" class="font-bold text-slate-800">$0.00</span>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center font-extrabold text-slate-800 border-t border-slate-200/70 pt-2 pb-2">
-                    <span class="text-sm">Total a pagar</span>
+                <div class="flex justify-between items-center font-extrabold text-slate-900 border-t border-slate-100 pt-4 pb-2">
+                    <span class="text-base">Total a pagar</span>
                     <div class="text-right">
-                        <span id="drawer-total" class="text-lg block text-slate-800">$0.00</span>
+                        <span id="drawer-total" class="text-2xl block tracking-tight">$0.00</span>
                         <?php if (isset($tasa_dolar) && $tasa_dolar > 1): ?>
-                            <span id="drawer-total-local" class="text-[10px] font-bold text-slate-500 block mt-0.5 font-mono"></span>
+                            <span id="drawer-total-local" class="text-xs font-bold text-slate-500 block mt-0.5 font-mono"></span>
                         <?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Botones Paso 1 -->
                 <div id="cart-buttons-step1" class="w-full">
-                    <button onclick="goToCartStep(2)" class="w-full py-3.5 px-5 bg-primary hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg transition-all flex justify-center items-center active:scale-95 gap-2">
+                    <button onclick="goToCartStep(2)" class="w-full py-4 px-6 bg-primary hover:bg-primary-hover text-white font-bold text-base rounded-2xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center active:scale-[0.98] gap-3">
                         <span>Continuar Compra</span>
-                        <i class="bi bi-arrow-right"></i>
+                        <i class="bi bi-arrow-right text-lg"></i>
                     </button>
                 </div>
                 
                 <!-- Botones Paso 2 -->
-                <div id="cart-buttons-step2" class="w-full hidden flex gap-2">
-                    <button onclick="goToCartStep(1)" class="w-12 h-[50px] shrink-0 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl shadow-sm transition-all flex justify-center items-center active:scale-95">
-                        <i class="bi bi-arrow-left"></i>
+                <div id="cart-buttons-step2" class="w-full hidden flex gap-3">
+                    <button onclick="goToCartStep(1)" class="w-14 h-[56px] shrink-0 bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-2xl shadow-sm transition-all flex justify-center items-center active:scale-[0.98]">
+                        <i class="bi bi-arrow-left text-lg"></i>
                     </button>
-                    <button onclick="checkoutOrder()" class="flex-1 h-[50px] bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/30 transition-all flex justify-center items-center active:scale-95 gap-2">
-                        <i class="bi bi-whatsapp text-lg"></i>
+                    <button onclick="checkoutOrder()" class="flex-1 h-[56px] bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-base rounded-2xl shadow-lg shadow-[#25D366]/30 transition-all flex justify-center items-center active:scale-[0.98] gap-2">
+                        <i class="bi bi-whatsapp text-xl"></i>
                         <span>Enviar Pedido</span>
                     </button>
                 </div>

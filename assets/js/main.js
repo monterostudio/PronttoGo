@@ -236,18 +236,28 @@ function clearCart() {
 
 function toggleCartDrawer(show) {
     const drawer = document.getElementById('cart-drawer');
+    const panel = document.getElementById('cart-drawer-panel');
     if (!drawer) return;
+    
     if (show) {
         goToCartStep(1); // Siempre abrir en el paso 1
         drawer.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        
         setTimeout(() => {
-            drawer.classList.add('opacity-100');
             drawer.classList.remove('opacity-0');
+            drawer.classList.add('opacity-100');
+            if (panel) {
+                panel.classList.remove('translate-x-full');
+            }
         }, 10);
     } else {
-        drawer.classList.add('opacity-0');
+        if (panel) {
+            panel.classList.add('translate-x-full');
+        }
         drawer.classList.remove('opacity-100');
+        drawer.classList.add('opacity-0');
+        
         document.body.style.overflow = '';
         setTimeout(() => drawer.classList.add('hidden'), 300);
     }

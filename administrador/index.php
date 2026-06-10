@@ -763,20 +763,20 @@ if (!is_admin_logged_in()): ?>
                         <?php if(!empty($productos)): ?>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
                                 <div class="relative flex items-center focus-within:ring-2 focus-within:ring-indigo-500/20 rounded-xl">
-                                    <span class="absolute pl-3 text-slate-400 pointer-events-none">
-                                        <i class="bi bi-search"></i>
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+                                        <i class="bi bi-search text-sm"></i>
                                     </span>
                                     <input 
                                         type="text" 
                                         x-model="searchQuery" 
                                         placeholder="Buscar producto por nombre..." 
-                                        class="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 placeholder-slate-400 transition-all"
+                                        class="w-full pl-10 pr-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 placeholder-slate-400 transition-all"
                                     >
                                 </div>
                                 <div class="relative">
                                     <select 
                                         x-model="selectedCategory" 
-                                        class="w-full pl-3 pr-10 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 appearance-none transition-all"
+                                        class="w-full pl-4 pr-10 py-2.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 text-slate-900 appearance-none transition-all"
                                     >
                                         <option value="">Todas las Categorías</option>
                                         <?php foreach($categorias as $c): ?>
